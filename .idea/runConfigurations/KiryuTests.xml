@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="KiryuTests" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="Tests.KiryuTests" />
+    <module name="KiryuProject" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
