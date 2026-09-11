@@ -3,14 +3,57 @@ package KiryuEngine.KiryuPhysics;
 import static java.lang.Math.sqrt;
 
 public class Vector3 {
+    public static final Vector3 NULL_VECTOR = new Vector3();
+
     double x;
     double y;
     double z;
 
-    Vector3(double x, double y, double z) {
+    public Vector3() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+    }
+    public Vector3(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+    public Vector3(Vector3 vecteur) {
+        this.x = vecteur.x;
+        this.y = vecteur.y;
+        this.z = vecteur.z;
+    }
+
+    /**
+     * Remplace les coordonnées du vecteur.
+     * @param x Abscisse.
+     * @param y Ordonnée.
+     * @param z Cote.
+     * @return Soi.
+     */
+    public Vector3 set(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        return this;
+    }
+
+    public boolean equals(Vector3 other) {
+        return
+                this.x == other.x &&
+                this.y == other.y &&
+                this.z == other.z;
+    }
+    public boolean equals(double x, double y, double z) {
+        return
+                this.x == x &&
+                this.y == y &&
+                this.z == z;
+    }
+
+    public String toString() {
+        return "(" + this.x + ", " + this.y + ", " + this.z + ")";
     }
 
     /**
@@ -28,10 +71,13 @@ public class Vector3 {
 
     /**
      * Calcule une version normalisée du vecteur.
-     * @return Vecteur de longueur 1.
+     * @return Nouveau vecteur, de longueur 1.
      */
     public Vector3 normalize() {
         double norme = getNorme();
+        if (norme == 0)
+            return new Vector3(this);
+
         double x = this.x / norme;
         double y = this.y / norme;
         double z = this.z / norme;
@@ -40,42 +86,69 @@ public class Vector3 {
     }
 
     /**
-     * Additionne deux vecteurs.
-     * @param a Premier vecteur à additionner.
-     * @param b Second vecteur à additionner.
-     * @return Vecteur <code>v = a + b</code>
+     * Multiplie un vecteur par un scalaire.
+     * @param val Coefficient à appliquer au vecteur.
+     * @return Nouveau vecteur.
      */
-    public static Vector3 add(Vector3 a, Vector3 b) {
-        double x = a.x + b.x;
-        double y = a.y + b.y;
-        double z = a.z + b.z;
+    public Vector3 mult(double val) {
+        double x = val * this.x;
+        double y = val * this.y;
+        double z = val * this.z;
         return new Vector3(x, y, z);
     }
 
     /**
-     * Calcule le produit scalaire de deux vecteurs.
-     * @param a Premier vecteur.
-     * @param b Second vecteur.
+     * Additionne les deux vecteurs.
+     * @param other Second vecteur.
+     * @return Vecteur <code>v = a + b</code>, nouveau vecteur.
+     */
+    public Vector3 add(Vector3 other) {
+        double x = this.x + other.x;
+        double y = this.y + other.y;
+        double z = this.z + other.z;
+        return new Vector3(x, y, z);
+    }
+
+    /**
+     * Calcule le produit scalaire des deux vecteurs.
+     * @param other Second vecteur.
      * @return Produit <code>S = xa*xb + ya*yb + za*zb</code>
      */
-    public static double produitScalaire(Vector3 a, Vector3 b) {
+    public double produitScalaire(Vector3 other) {
         double produit =
-                (a.x * b.x) +
-                (a.y * b.y) +
-                (a.z * b.z);
+                (this.x * other.x) +
+                (this.y * other.y) +
+                (this.z * other.z);
         return produit;
     }
 
     /**
-     * Calcule le produit vectoriel de deux vecteurs.
-     * @param a Premier vecteur.
-     * @param b Second vecteur.
-     * @return Produit vectoriel.
+     * Calcule le produit vectoriel des deux vecteurs.
+     * @param other Second vecteur.
+     * @return Nouveau vecteur.
      */
-    public static Vector3 produitVectoriel(Vector3 a, Vector3 b) {
-        double x = a.y*b.z - a.z*b.y;
-        double y = a.z*b.x - a.x*b.z;
-        double z = a.x*b.y - a.y*b.x;
+    public Vector3 produitVectoriel(Vector3 other) {
+        double x = this.y*other.z - this.z*other.y;
+        double y = this.z*other.x - this.x*other.z;
+        double z = this.x*other.y - this.y*other.x;
         return new Vector3(x, y, z);
+    }
+
+    /**
+     * Renvoie si les deux vecteurs sont orthogonaux/perpendiculaires.
+     * @param other Second vecteur.
+     * @return Booléen. <i>"Les deux vecteurs sont orthogonaux."</i>
+     */
+    public boolean isOrthogonal(Vector3 other) {
+        return this.produitScalaire(other) == 0;
+    }
+
+    /**
+     * Renvoie si les deux vecteurs sont colinéaires/parallèles.
+     * @param other Second vecteur.
+     * @return Booléen. <i>"Les deux vecteurs sont colinéaires."</i>
+     */
+    public boolean isColineaire(Vector3 other) {
+        return this.produitVectoriel(other).equals(Vector3.NULL_VECTOR);
     }
 }
