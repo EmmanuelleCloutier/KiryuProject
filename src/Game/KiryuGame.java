@@ -1,5 +1,7 @@
 package Game;
 
+import Game.code.Projectile;
+import Game.code.ProjectileType;
 import processing.core.PApplet;
 
 
