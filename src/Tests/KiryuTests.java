@@ -5,9 +5,8 @@ import processing.core.PApplet;
 public class KiryuTests extends PApplet {
 
   public static void main(String[] args) {
-    System.out.println("MARMITE");
     // Tells Processing to run this specific class
-    //PApplet.main("Tests.KiryuTests");
+    PApplet.main("Tests.KiryuTests");
   }
 
   @Override
