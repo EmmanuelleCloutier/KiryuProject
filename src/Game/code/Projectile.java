@@ -31,7 +31,7 @@ public class Projectile {
    * @param deltaTime time elapsed to create a frame
    */
   public void updateMovement(float deltaTime){
-    this.velocity = this.direction.mult(this.speed * deltaTime);
+    this.velocity = this.direction.scale(this.speed * deltaTime);
     this.position.add(this.velocity);
   }
 
@@ -113,7 +113,8 @@ public class Projectile {
    *
    * @return a formatted version of the projectile's information
    */
-  public String ToString(){
+  @Override
+  public String toString(){
 
     return String.format("projectile info: \n" +
         "type: %s" +
