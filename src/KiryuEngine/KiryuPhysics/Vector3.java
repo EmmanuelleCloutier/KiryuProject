@@ -15,9 +15,9 @@ public class Vector3 {
 
     private static final float epsilon = 0.00001f;
 
-    double x;
-    double y;
-    double z;
+    public double x;
+    public double y;
+    public double z;
 
     public Vector3() {}
 

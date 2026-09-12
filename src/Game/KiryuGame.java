@@ -1,11 +1,22 @@
 package Game;
 
-import Game.code.Projectile;
-import Game.code.ProjectileType;
+import Game.code.projectile.ProjectileData;
+import Game.code.projectile.ProjectileSystem;
+import Game.code.projectile.ProjectileType;
+import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuRendering.ProjectileRenderer;
+import KiryuEngine.KiryuRendering.Sprite;
+import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
+import processing.core.PGraphics;
+import processing.core.PImage;
 
 
 public class KiryuGame extends PApplet {
+
+  SpriteRenderer spriteRenderer;
+  ProjectileSystem projectileSystem;
+
 
   public static void main(String[] args) {
     // Tells Processing to run this specific class
@@ -14,17 +25,27 @@ public class KiryuGame extends PApplet {
 
   @Override
   public void settings() {
-    size(800, 600);
+    size(1400, 1400);
   }
 
   @Override
   public void setup() {
-    background(20, 20, 20);
+    projectileSystem = new ProjectileSystem(
+        new ProjectileData(),new ProjectileRenderer(this)
+    );
+
+    projectileSystem.addProjectile(ProjectileType.BALL,
+        new Vector3(200,200,0),
+        new Vector3(0,0,0));
+
+    projectileSystem.setupProjectileRenderer();
+
+
   }
 
   @Override
   public void draw() {
-    fill(0, 150, 255);
-    ellipse(mouseX, mouseY, 50, 50);
+    projectileSystem.drawProjectiles();
   }
+
 }
