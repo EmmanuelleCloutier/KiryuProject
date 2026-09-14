@@ -5,16 +5,11 @@ import Game.code.projectile.ProjectileSystem;
 import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuRendering.ProjectileRenderer;
-import KiryuEngine.KiryuRendering.Sprite;
-import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
-import processing.core.PGraphics;
-import processing.core.PImage;
 
 
 public class KiryuGame extends PApplet {
 
-  SpriteRenderer spriteRenderer;
   ProjectileSystem projectileSystem;
 
 
@@ -30,6 +25,9 @@ public class KiryuGame extends PApplet {
 
   @Override
   public void setup() {
+
+    frameRate(120);
+
     projectileSystem = new ProjectileSystem(
         new ProjectileData(),new ProjectileRenderer(this)
     );
@@ -38,14 +36,36 @@ public class KiryuGame extends PApplet {
         new Vector3(200,200,0),
         new Vector3(0,0,0));
 
-    projectileSystem.setupProjectileRenderer();
 
+
+    projectileSystem.addProjectile(ProjectileType.CANNON_BALL,
+        new Vector3(500,800,0),
+        new Vector3(0,0,0));
+
+
+    projectileSystem.addProjectile(ProjectileType.LASER,
+        new Vector3(600,200,0),
+        new Vector3(0,0,0));
+
+
+    for (int i = 0; i < projectileSystem.getProjectileCount(); i++) {
+      projectileSystem.setProjectileDirection(i,new Vector3(1,0,0));
+    }
 
   }
 
   @Override
   public void draw() {
+
+    background(100);
+
     projectileSystem.drawProjectiles();
+
+
+    projectileSystem.updatePosition();
   }
+
+
+
 
 }
