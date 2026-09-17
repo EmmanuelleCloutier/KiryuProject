@@ -52,7 +52,6 @@ public class TestsUnitaires {
     assert a.isCollinear(a.normalize()) : errorMessage(test, "vrai");
     assert !a.isCollinear(b) : errorMessage(test, "faux");
     assert a.isCollinear(Vector3.ZERO_VECTOR) : errorMessage(test, "nul");
-
   }
 
   void main() {

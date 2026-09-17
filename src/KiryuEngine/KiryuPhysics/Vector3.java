@@ -3,7 +3,6 @@ package KiryuEngine.KiryuPhysics;
 import static java.lang.Math.sqrt;
 
 public class Vector3 {
-    public static final Vector3 NULL_VECTOR = new Vector3();
     public static final Vector3 ZERO_VECTOR = new Vector3(0,0,0);
     public static final Vector3 UP_VECTOR = new Vector3(0,1,0);
     public static final Vector3 DOWN_VECTOR = new Vector3(0,-1,0);
@@ -12,15 +11,18 @@ public class Vector3 {
     public static final Vector3 FORWARD_VECTOR = new Vector3(0,0,1);
     public static final Vector3 BACKWARD_VECTOR = new Vector3(0,0,-1);
 
-
+    // Marge d'erreur pour les vérifications d'égalité (.equals)
     private static final float epsilon = 0.00001f;
 
     public double x;
     public double y;
     public double z;
 
-    public Vector3() {}
-
+    public Vector3() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+    }
     public Vector3(double x, double y, double z) {
         this.x = x;
         this.y = y;
@@ -43,7 +45,6 @@ public class Vector3 {
         this.y = y;
         this.z = z;
     }
-
     /**
      * Remplace les coordonnées du vecteur.
      * @param other Second vecteur.
@@ -55,9 +56,9 @@ public class Vector3 {
     }
 
     /**
-     *
+     * Renvoie si les deux vecteurs ont les mêmes coordonnées.
      * @param other Second vecteur.
-     * @return retourne si les vecteur sont egaux
+     * @return Booléen. <i>"Les deux vecteurs sont égaux."</i>
      */
     public boolean equals(Vector3 other) {
         return Math.abs(this.x - other.x) < epsilon &&
@@ -66,10 +67,11 @@ public class Vector3 {
     }
 
     /**
+     * Renvoie si le vecteur possède des coordonnées spécifiques.
      * @param x Abscisse.
      * @param y Ordonnée.
      * @param z Cote.
-     * @return retourne si le vecteur est egale au coordonnes fournis
+     * @return Booléen. <i>"Le vecteur possède ces coordonnées."</i>
      */
     public boolean equals(double x, double y, double z) {
         return Math.abs(this.x - x) < epsilon &&
@@ -78,13 +80,21 @@ public class Vector3 {
     }
 
     /**
-     *
-     * @return retourne une string formattee des info du vecteur
-     * avec une precision de 3 decimales
+     * Représente le vecteur sous la forme d'une chaîne de caractères.
+     * @return Chaîne de caractères (x, y, z), précis à la troisième décimale.
      */
     @Override
     public String toString() {
         return String.format("(%.3f, %.3f, %.3f)", x, y, z);
+    }
+
+
+    /**
+     * Calcule la norme (ou longueur) du vecteur au carré.
+     * @return Norme <code>L² = x² + y² + z²</code>
+     */
+    public double getLengthSquared() {
+        return x * x + y * y + z * z;
     }
 
     /**
@@ -92,21 +102,13 @@ public class Vector3 {
      * @return Norme <code>L = sqrt(x² + y² + z²)</code>
      */
     public double getLength() {
-        return sqrt(x*x + y*y + z*z);
+        return sqrt(getLengthSquared());
     }
 
     /**
-     * Calcule la norme (ou longueur) du vecteur au carre.
-     * @return Norme <code>L² = (x² + y² + z²)</code>
-     */
-    public double getLengthSquared() {
-        return x * x + y * y + z * z;
-    }
-
-    /**
-     *
-     * @param other second vecteur
-     * @return la distance au carre entre les deux vecteurs
+     * Calcule la distance au carré entre deux vecteurs.
+     * @param other Second vecteur.
+     * @return Distance <code>D² = Δx² + Δy² + Δz²</code>
      */
     public double distanceSquared(Vector3 other) {
         double dx = this.x - other.x;
@@ -116,26 +118,20 @@ public class Vector3 {
     }
 
     /**
-     *
-     * @param other second vecteur
-     * @return la distance reel entre les deux vecteurs
+     * Calcule la distance entre deux vecteurs.
+     * @param other Second vecteur.
+     * @return Distance <code>D = sqrt(Δx² + Δy² + Δz²)</code>
      */
     public double distance(Vector3 other) {
-        double dx = this.x - other.x;
-        double dy = this.y - other.y;
-        double dz = this.z - other.z;
-
-        return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        return Math.sqrt(distanceSquared(other));
     }
 
 
     /**
-     * Calcule une version normalisée du vecteur.
-     * @return Nouveau vecteur, de longueur 1.
+     * Normalise le vecteur actuel.
+     * @return Soi, avec une longueur de 1.
      */
     public Vector3 normalize() {
-
-
         //les multiplications sont plus rapides que les divisions
         //j'ai optimiser un peu le calcul de la normalisation afin
         //d'avoir le moins de division possible sachant qu'on risque
@@ -194,9 +190,8 @@ public class Vector3 {
         return new Vector3(x, y, z);
     }
 
-
     /**
-     * multiplie les deux vecteurs.
+     * Multiplie les deux vecteurs.
      * @param other Second vecteur.
      * @return Vecteur <code>v = a * b</code>, nouveau vecteur.
      */
