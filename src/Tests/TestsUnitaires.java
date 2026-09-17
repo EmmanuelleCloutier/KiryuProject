@@ -22,9 +22,13 @@ public class TestsUnitaires {
     assert Vector3.ZERO_VECTOR.getLength() == 0 : errorMessage(test, "nul");
 
     test = "normalisation";
-    assert b.normalize().equals(0, -1, 0) : errorMessage(test, "quelconque");
-    assert a.normalize().getLength() == 1 : errorMessage(test, "norme");
+    a.normalize();
+    b.normalize();
+    assert b.equals(0, -1, 0) : errorMessage(test, "quelconque");
+    assert a.getLength() == 1 : errorMessage(test, "norme");
     assert Vector3.ZERO_VECTOR.normalize().equals(0, 0, 0) : errorMessage(test, "nul");
+    a.set(1, 2, 4);
+    b.set(0, -2, 0);
 
     test = "multiplication";
     assert a.scale(3).equals(3, 6, 12) : errorMessage(test, "quelconque");
