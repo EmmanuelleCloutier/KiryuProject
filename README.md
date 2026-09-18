@@ -2,7 +2,7 @@
 
 > **Par:** 
 > Nathanael Tremblay — TREN19089806 <br/>
-> Emmanuelle Cloutier — <br/>
+> Emmanuelle Cloutier — CLOE15510400 <br/>
 > Aria Hugot — <br/>
 > Julie Mignotte — <br/>
 ---
