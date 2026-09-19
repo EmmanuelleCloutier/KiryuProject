@@ -4,7 +4,7 @@ import Game.code.projectile.ProjectileData;
 import Game.code.projectile.ProjectileSystem;
 import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuPhysics.Vector3;
-import KiryuEngine.KiryuRendering.ProjectileRenderer;
+import Game.code.projectile.ProjectileRenderer;
 import processing.core.PApplet;
 
 

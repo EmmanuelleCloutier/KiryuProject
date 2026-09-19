@@ -1,7 +1,6 @@
 package Game.code.projectile;
 
 import KiryuEngine.KiryuPhysics.Vector3;
-import KiryuEngine.KiryuRendering.ProjectileRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
