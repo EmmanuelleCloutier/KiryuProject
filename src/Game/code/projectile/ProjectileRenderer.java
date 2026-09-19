@@ -1,7 +1,8 @@
-package KiryuEngine.KiryuRendering;
+package Game.code.projectile;
 
 import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 /**
  * this is basically a sprite renderer but with some logic specific for projectiles
  */
-public class ProjectileRenderer extends SpriteRenderer{
+public class ProjectileRenderer extends SpriteRenderer {
 
   /**
    * @param sketch processing applet, calls super since we rely on the parent class
