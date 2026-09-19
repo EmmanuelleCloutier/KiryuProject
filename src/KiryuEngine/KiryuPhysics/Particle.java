@@ -11,7 +11,7 @@ public class Particle {
 
     private final double damping = 1.f;
 
-
+//constructeur qui cre une particule seulement avec une masse (tout est 0,0,0)
     Particle(double mass) {
 
         this.mass = mass;
@@ -22,7 +22,11 @@ public class Particle {
         this.linearVelocity = new Vector3();
     }
 
-
+    
+//constructeur qui cree une particule avec une masse,
+//mais aussi avec une position et une vitesse initiale deja definies
+//utile pour creer un projectile directement a sa position de depart
+//avec sa vitesse de lancement
     public Particle(
         double mass,
         Vector3 position,

@@ -1,5 +1,4 @@
 package Game.code.bloc;
-
 import KiryuEngine.KiryuPhysics.Vector3;
 import processing.core.PApplet;
 
@@ -7,6 +6,7 @@ public class Block {
 
     public static final float SIZE = 75;
 
+    //position du centre du bloc dans le jeu
     private Vector3 position;
 
     public Block(Vector3 position) {

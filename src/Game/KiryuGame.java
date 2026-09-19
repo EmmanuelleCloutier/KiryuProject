@@ -18,18 +18,23 @@ import processing.core.PApplet;
 
 public class KiryuGame extends PApplet {
 
-  ProjectileSystem projectileSystem;
-  BlockManager blockManager;
-  ProjectileType selectedProjectile = ProjectileType.BALL;
-  TrajectoryRenderer trajectoryRenderer;
+  ProjectileSystem projectileSystem; //system qui gere les donnees et l'affichage des projectiles 
+  BlockManager blockManager; //manager qui gere la creation et l'affichage des bloccs 
 
+  //types de projectiles actuellement actif dans les main des joueurs 
+  ProjectileType selectedProjectile = ProjectileType.BALL;
+  TrajectoryRenderer trajectoryRenderer;  //renderer utilise pour afficher trajectoire du projectile
+
+  //la liste des particules utilises pour stimuler la physique des projectiles 
   ArrayList<Particle> particles = new ArrayList<>();
 
   boolean isAiming = false;
 
+  //vitesse 
   Vector3 projectileStartPosition;
   Vector3 launchVelocity;
 
+  //image pour le bas
   PImage ballIcon;
   PImage cannonBallIcon;
   PImage laserIcon;
@@ -40,6 +45,7 @@ public class KiryuGame extends PApplet {
     PApplet.main("Game.KiryuGame");
   }
 
+  //pour switch between les images
   @Override
   public void keyPressed() {
 
@@ -62,32 +68,37 @@ public class KiryuGame extends PApplet {
 
   @Override
   public void settings() {
-    size(1200, 800);
+    size(1200, 800); //changement de la windows pour qu'on voit actuellement les choix des projectiles 
   }
 
   @Override
   public void setup() {
 
+    //delta time
     KiryuTime.init();
     frameRate(120);
 
-    //test uno projecto
+    //cree le system de projectile 
     projectileSystem = new ProjectileSystem(
       new ProjectileData(),
       new ProjectileRenderer(this)
     );  
 
+    //cree le rendere de la trajectoire 
     trajectoryRenderer = new TrajectoryRenderer(this);
 
+    //les images en bas
     ballIcon = loadImage("Game/data/ball.png");
     cannonBallIcon = loadImage("Game/data/cannonball.png");
     laserIcon = loadImage("Game/data/laser.png");
     fireBallIcon = loadImage("Game/data/fireball.png");
 
+    //construction du manager de blocs
     blockManager = new BlockManager();
 
     float gameBottom = height - 170;
 
+    //generation de structure 
     blockManager.generateRandomStructure(
         width * 0.75f,
         gameBottom
@@ -122,6 +133,7 @@ public class KiryuGame extends PApplet {
 
   public void drawProjectileHUD() {
 
+    //windwos en bas 
       float hudHeight = 170;
       float hudY = height - hudHeight;
 
@@ -130,6 +142,7 @@ public class KiryuGame extends PApplet {
       strokeWeight(3);
       line(0, hudY, width, hudY);
 
+    //separe lecran en 4 partie pour avoir une partie egale en bas
       float slotWidth = width / 4.0f;
 
       float iconSize = 80;
@@ -187,6 +200,7 @@ public class KiryuGame extends PApplet {
     float dt = KiryuTime.getDeltaTime();
     background(100);
 
+    blockManager.draw(this);
 
     /* TEMPORAIREMENT DISABLE
     projectileSystem.drawProjectiles();
@@ -200,16 +214,19 @@ public class KiryuGame extends PApplet {
     // While the player is aiming
     if (isAiming) {
 
+      //recupere la position actuelle de la mouse
         Vector3 mousePosition = new Vector3(
             mouseX,
             mouseY,
             0
         );
 
+        //calcule la vitesse de lancement selon la distance, entre la position de depart et la sourie 
         launchVelocity = mousePosition
             .sub(projectileStartPosition)
             .scale(2.0);
 
+        //acceleration de la gravité utilisee pour preduire la trajectoire
         Vector3 gravity = new Vector3(
             0,
             200,
@@ -226,33 +243,55 @@ public class KiryuGame extends PApplet {
     }
 
 
-  float gameBottom = height - 170;
+float gameBottom = height - 170;
 
-  for (int i = particles.size() - 1; i >= 0; i--) {
+for (int i = particles.size() - 1; i >= 0; i--) {
 
-      Particle particle = particles.get(i);
+    Particle particle = particles.get(i);
 
-      Force.applyGravity(particle);
+    //appliquer la gravite a la particule 
+    Force.applyGravity(particle);
 
-      Integrator.integrate(
-          particle,
-          dt
-      );
+    //mettre a jouer la vitesse et la position de la particule 
+    Integrator.integrate(
+        particle,
+        dt
+    );
 
+    //recupere la nouvelle position calculee
       Vector3 position = particle.getPosition();
 
-      // Destroy projectile when it leaves the game area
+
+      //verifie si le projectile touch bloc
+      boolean hitBlock =
+          blockManager.checkProjectileCollision(
+              position
+          );
+
+      // If a block was hit, destroy the projectile too
+      if (hitBlock) {
+
+          particles.remove(i);
+          projectileSystem.removeProjectile(i);
+
+          continue;
+      }
+
+
+      //verification si le projectile est out
       if (
           position.x < 0 ||
           position.x > width ||
           position.y < 0 ||
           position.y > gameBottom
       ) {
+
           particles.remove(i);
           projectileSystem.removeProjectile(i);
 
           continue;
       }
+
 
       projectileSystem.setProjectilePosition(
           i,
@@ -260,16 +299,15 @@ public class KiryuGame extends PApplet {
       );
   }
 
-  blockManager.draw(this);
-
   drawProjectileHUD();
 }
 
 
-    //quand le player clique ca fait aparaitre un projectile sur le mouse position
+  //quand le player clique ca fait aparaitre un projectile sur le mouse position
   @Override
   public void mousePressed() {
 
+    //commence une nouvelle visee seulement si le joueur est pas en train de viser
       if (!isAiming) {
           projectileStartPosition = new Vector3(
               mouseX,
@@ -277,9 +315,10 @@ public class KiryuGame extends PApplet {
               0
           );
 
+          //ajoute le projectile au projectile system
           projectileSystem.addProjectile(
-              selectedProjectile,
-              new Vector3(projectileStartPosition),
+              selectedProjectile, //type actif
+              new Vector3(projectileStartPosition), //position de depart
               new Vector3(0, 0, 0)
           );
 
@@ -287,11 +326,13 @@ public class KiryuGame extends PApplet {
       }
   }
 
+  //se fait call quand on relache la mouse
   @Override
   public void mouseReleased() {
 
       if (isAiming) {
 
+        //cree une particule physique pour le projectile 
         Particle newParticle = new Particle(
             selectedProjectile.mass,
             projectileStartPosition,
