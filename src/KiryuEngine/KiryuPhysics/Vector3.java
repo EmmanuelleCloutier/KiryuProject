@@ -4,6 +4,7 @@ import static java.lang.Math.sqrt;
 
 public class Vector3 {
     public static final Vector3 ZERO_VECTOR = new Vector3(0,0,0);
+    public static final Vector3 UNIT_VECTOR = new Vector3(1,1,1);
     public static final Vector3 UP_VECTOR = new Vector3(0,1,0);
     public static final Vector3 DOWN_VECTOR = new Vector3(0,-1,0);
     public static final Vector3 RIGHT_VECTOR = new Vector3(1,0,0);
