@@ -9,6 +9,8 @@ import Game.code.projectile.ProjectileRenderer;
 import Game.code.projectile.TrajectoryRenderer;
 import processing.core.PImage;
 import java.util.ArrayList;
+import KiryuEngine.KiryuPhysics.Force;
+import KiryuEngine.KiryuPhysics.Integrator;
 import KiryuEngine.KiryuPhysics.Particle;
 import processing.core.PApplet;
 
@@ -219,17 +221,25 @@ public class KiryuGame extends PApplet {
 
 
   // Update every launched projectile using physics
-for (int i = 0; i < particles.size(); i++) {
+  for (int i = 0; i < particles.size(); i++) {
 
-    Particle particle = particles.get(i);
+      Particle particle = particles.get(i);
 
-    particle.integrate(dt);
+      // Apply gravity
+      Force.applyGravity(particle);
 
-    projectileSystem.setProjectilePosition(
-        i,
-        particle.getPosition()
-    );
-}
+      // Euler integration
+      Integrator.integrate(
+          particle,
+          dt
+      );
+
+      // Update visual projectile position
+      projectileSystem.setProjectilePosition(
+          i,
+          particle.getPosition()
+      );
+  }
 
  drawProjectileHUD();
 }
@@ -266,10 +276,7 @@ for (int i = 0; i < particles.size(); i++) {
             projectileStartPosition,
             launchVelocity
         );
-          newParticle.setAcceleration(
-              new Vector3(0, 200, 0)
-          );
-
+        
           particles.add(newParticle);
 
           isAiming = false;

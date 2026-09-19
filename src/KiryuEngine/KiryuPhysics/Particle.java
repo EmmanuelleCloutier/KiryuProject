@@ -2,100 +2,110 @@ package KiryuEngine.KiryuPhysics;
 
 public class Particle {
 
-  private final double mass;
+    private final double mass;
+    private final double inverseMass;
 
-  private final double inverseMass;
-  private Vector3 acceleration = Vector3.ZERO_VECTOR;
-  private Vector3 position;
-  private Vector3 linearVelocity;
-  private final double damping = 1.f;
+    private Vector3 acceleration;
+    private Vector3 position;
+    private Vector3 linearVelocity;
 
-  Particle(double mass){
-    this.mass = mass;
-    this.inverseMass = 1/this.mass;
+    private final double damping = 1.f;
 
-    //empeche une position et une velocity null
-      this.position = new Vector3();
-      this.linearVelocity = new Vector3();
-  };
+
+    Particle(double mass) {
+
+        this.mass = mass;
+        this.inverseMass = 1 / this.mass;
+
+        this.acceleration = new Vector3();
+        this.position = new Vector3();
+        this.linearVelocity = new Vector3();
+    }
+
 
     public Particle(
-      double mass,
-      Vector3 position,
-      Vector3 linearVelocity
-  ) {
-      this.mass = mass;
-      this.inverseMass = 1 / this.mass;
+        double mass,
+        Vector3 position,
+        Vector3 linearVelocity
+    ) {
 
-      this.position = new Vector3(position);
-      this.linearVelocity = new Vector3(linearVelocity);
-  }
+        this.mass = mass;
+        this.inverseMass = 1 / this.mass;
 
-  /**
-   * @return the mass of the particle
-   */
-  public double getMass() {
-    return mass;
-  }
+        this.acceleration = new Vector3();
+        this.position = new Vector3(position);
+        this.linearVelocity = new Vector3(linearVelocity);
+    }
 
-  /**
-   * @return 1 / mass of the particle, used for physics, precalculated for shortcut
-   */
-  public double getInverseMass() {
-    return inverseMass;
-  }
 
-  /**
-   * @return particle's acceleration
-   */
-  public Vector3 getAcceleration() {
-    return acceleration;
-  }
+    /**
+     * @return the mass of the particle
+     */
+    public double getMass() {
+        return mass;
+    }
 
-  /**
-   * @param acceleration sets the particle's acceleration
-   */
-  public void setAcceleration(Vector3 acceleration) {
-    this.acceleration = acceleration;
-  }
 
-  /**
-   * @return particle's position
-   */
-  public Vector3 getPosition() {
-    return position;
-  }
+    /**
+     * @return 1 / mass of the particle
+     */
+    public double getInverseMass() {
+        return inverseMass;
+    }
 
-  /**
-   * @return particle's velocity along planes
-   */
-  public Vector3 getLinearVelocity() {
-    return linearVelocity;
-  }
 
-  /**
-   * @return friction coefficient
-   */
-  public double getDamping() {
-    return damping;
-  }
+    /**
+     * @return particle's acceleration
+     */
+    public Vector3 getAcceleration() {
+        return acceleration;
+    }
 
-  /**
-   * implementation of Euler's integration
-   * @param deltaTime time between each frames
-   */
-  public void integrate(float deltaTime){
 
-    //new velocity is equals to:
-    // ((damping ^ deltaTime) * currentVelocity) + (acceleration * deltaTime)
-    // v1 = ((d^dt) * v0) + (dt * a)
-    this.linearVelocity = this.linearVelocity.scale(Math.pow(this.damping,deltaTime))
-        .add(this.acceleration.scale(deltaTime));
+    /**
+     * @param acceleration sets the particle's acceleration
+     */
+    public void setAcceleration(Vector3 acceleration) {
+        this.acceleration = acceleration;
+    }
 
-    //new position equals to:
-    // position + (current velocity * deltaTime)
-    // p1 = p0 + (v1 * dt)
-    this.position = this.position.add(this.linearVelocity.scale(deltaTime));
-  }
 
+    /**
+     * @return particle's position
+     */
+    public Vector3 getPosition() {
+        return position;
+    }
+
+
+    /**
+     * @param position sets the particle's position
+     */
+    public void setPosition(Vector3 position) {
+        this.position = position;
+    }
+
+
+    /**
+     * @return particle's linear velocity
+     */
+    public Vector3 getLinearVelocity() {
+        return linearVelocity;
+    }
+
+
+    /**
+     * @param linearVelocity sets the particle's velocity
+     */
+    public void setLinearVelocity(Vector3 linearVelocity) {
+        this.linearVelocity = linearVelocity;
+    }
+
+
+    /**
+     * @return damping coefficient
+     */
+    public double getDamping() {
+        return damping;
+    }
 }
