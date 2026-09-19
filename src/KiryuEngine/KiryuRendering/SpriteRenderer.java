@@ -64,11 +64,31 @@ public class SpriteRenderer {
     loadedSprites.get(spritePath).draw(sketch,position);
   }
 
-  /**
-   * @return returns the reference to the processing applet
-   */
-  public PApplet getSketch() {
-    return sketch;
+    /**
+     * @return returns the reference to the processing applet
+     */
+    public PApplet getSketch() {
+      return sketch;
+    }
+
+    public void drawSprite(
+      String spritePath,
+      Vector3 position,
+      float width,
+      float height
+  ) {
+
+      if (!loadedSprites.containsKey(spritePath)) {
+          Sprite sprite = new Sprite(spritePath);
+          addSprite(sprite);
+      }
+
+      loadedSprites.get(spritePath).draw(
+          sketch,
+          position,
+          width,
+          height
+      );
   }
 
 }
