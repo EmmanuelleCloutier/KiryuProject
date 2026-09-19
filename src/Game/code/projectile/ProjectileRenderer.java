@@ -33,7 +33,15 @@ public class ProjectileRenderer extends SpriteRenderer {
       ArrayList<Vector3> positions = entry.getValue();
 
       for (Vector3 position : positions) {
-        this.drawSprite(type.sprite.getSpritePath(), position);
+        //this.drawSprite(type.sprite.getSpritePath(), position);
+
+        //each sont plus petits...
+        this.drawSprite(
+            type.sprite.getSpritePath(),
+            position,
+            50,
+            50
+        );
       }
     }
   }

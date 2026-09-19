@@ -44,6 +44,25 @@ public class Sprite implements Renderable{
     sketch.image(sprite,(float)position.x,(float)position.y);
   }
 
+
+  //new draw pour mettre les sprite plus petit 
+  public void draw(
+        PApplet sketch,
+        Vector3 position,
+        float width,
+        float height
+    ) {
+        sketch.imageMode(CENTER);
+
+        sketch.image(
+            sprite,
+            (float)position.x,
+            (float)position.y,
+            width,
+            height
+        );
+    }
+
   /**
    * @param sketch the processing applet keeps in memory the image, so we can
    * reuse it later
