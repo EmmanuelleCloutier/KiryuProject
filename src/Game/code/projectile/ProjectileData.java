@@ -33,7 +33,7 @@ public class ProjectileData {
   public boolean addProjectile(ProjectileType type, Vector3 pos, Vector3 dir){
     projectileCount++;
     return types.add(type) &&
-           velocities.add(Vector3.ZERO_VECTOR) &&
+           velocities.add(new Vector3()) &&
            positions.add(pos) &&
            directions.add(dir);
   }

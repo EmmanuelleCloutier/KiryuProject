@@ -7,17 +7,22 @@ import KiryuEngine.KiryuCore.KiryuTime;
 import KiryuEngine.KiryuPhysics.Vector3;
 import Game.code.projectile.ProjectileRenderer;
 import Game.code.projectile.TrajectoryRenderer;
+import java.util.ArrayList;
+import KiryuEngine.KiryuPhysics.Particle;
 import processing.core.PApplet;
 
 
 public class KiryuGame extends PApplet {
 
   ProjectileSystem projectileSystem;
-
   TrajectoryRenderer trajectoryRenderer;
-  boolean isAiming = false;
-  Vector3 projectileStartPosition;
 
+  ArrayList<Particle> particles = new ArrayList<>();
+
+  boolean isAiming = false;
+
+  Vector3 projectileStartPosition;
+  Vector3 launchVelocity;
 
   public static void main(String[] args) {
     // Tells Processing to run this specific class
@@ -82,8 +87,11 @@ public class KiryuGame extends PApplet {
     projectileSystem.updatePosition();
     */
 
-        projectileSystem.drawProjectiles();
+      // Draw the projectile
+    projectileSystem.drawProjectiles();
 
+
+    // While the player is aiming
     if (isAiming) {
 
         Vector3 mousePosition = new Vector3(
@@ -92,7 +100,7 @@ public class KiryuGame extends PApplet {
             0
         );
 
-        Vector3 velocity = mousePosition
+        launchVelocity = mousePosition
             .sub(projectileStartPosition)
             .scale(2.0);
 
@@ -104,21 +112,32 @@ public class KiryuGame extends PApplet {
 
         trajectoryRenderer.drawTrajectory(
             projectileStartPosition,
-            velocity,
+            launchVelocity,
             gravity
         );
     }
 
-    // PAS ENCORE
-    // projectileSystem.updatePosition();
-  }
+
+  // Update every launched projectile using physics
+for (int i = 0; i < particles.size(); i++) {
+
+    Particle particle = particles.get(i);
+
+    particle.integrate(dt);
+
+    projectileSystem.setProjectilePosition(
+        i,
+        particle.getPosition()
+    );
+}
+}
 
 
     //quand le player clique ca fait aparaitre un projectile sur le mouse position
-    @Override
-    public void mousePressed() {
+  @Override
+  public void mousePressed() {
 
-        if (!isAiming) {
+      if (!isAiming) {
 
           projectileStartPosition = new Vector3(
               mouseX,
@@ -128,13 +147,33 @@ public class KiryuGame extends PApplet {
 
           projectileSystem.addProjectile(
               ProjectileType.BALL,
-              projectileStartPosition,
+              new Vector3(projectileStartPosition),
               new Vector3(0, 0, 0)
           );
 
           isAiming = true;
       }
-    }
+  }
 
+  @Override
+  public void mouseReleased() {
 
+      if (isAiming) {
+
+          Particle newParticle = new Particle(
+              ProjectileType.BALL.mass,
+              projectileStartPosition,
+              launchVelocity
+          );
+
+          newParticle.setAcceleration(
+              new Vector3(0, 200, 0)
+          );
+
+          particles.add(newParticle);
+
+          isAiming = false;
+      }
+  }
+  
 }

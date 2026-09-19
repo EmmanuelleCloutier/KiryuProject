@@ -5,7 +5,7 @@ public class Particle {
   private final double mass;
 
   private final double inverseMass;
-  private Vector3 acceleration = Vector3.UNIT_VECTOR;
+  private Vector3 acceleration = Vector3.ZERO_VECTOR;
   private Vector3 position;
   private Vector3 linearVelocity;
   private final double damping = 1.f;
@@ -13,7 +13,23 @@ public class Particle {
   Particle(double mass){
     this.mass = mass;
     this.inverseMass = 1/this.mass;
+
+    //empeche une position et une velocity null
+      this.position = new Vector3();
+      this.linearVelocity = new Vector3();
   };
+
+    public Particle(
+      double mass,
+      Vector3 position,
+      Vector3 linearVelocity
+  ) {
+      this.mass = mass;
+      this.inverseMass = 1 / this.mass;
+
+      this.position = new Vector3(position);
+      this.linearVelocity = new Vector3(linearVelocity);
+  }
 
   /**
    * @return the mass of the particle
