@@ -3,6 +3,7 @@ package Game;
 import Game.code.projectile.ProjectileData;
 import Game.code.projectile.ProjectileSystem;
 import Game.code.projectile.ProjectileType;
+import KiryuEngine.KiryuCore.KiryuTime;
 import KiryuEngine.KiryuPhysics.Vector3;
 import Game.code.projectile.ProjectileRenderer;
 import processing.core.PApplet;
@@ -25,6 +26,8 @@ public class KiryuGame extends PApplet {
 
   @Override
   public void setup() {
+    KiryuTime.init();
+
 
     frameRate(120);
 
@@ -56,6 +59,8 @@ public class KiryuGame extends PApplet {
 
   @Override
   public void draw() {
+    KiryuTime.update();
+    float dt = KiryuTime.getDeltaTime();
 
     background(100);
 
