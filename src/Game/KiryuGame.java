@@ -7,6 +7,7 @@ import KiryuEngine.KiryuCore.KiryuTime;
 import KiryuEngine.KiryuPhysics.Vector3;
 import Game.code.projectile.ProjectileRenderer;
 import Game.code.projectile.TrajectoryRenderer;
+import processing.core.PImage;
 import java.util.ArrayList;
 import KiryuEngine.KiryuPhysics.Particle;
 import processing.core.PApplet;
@@ -15,6 +16,7 @@ import processing.core.PApplet;
 public class KiryuGame extends PApplet {
 
   ProjectileSystem projectileSystem;
+  ProjectileType selectedProjectile = ProjectileType.BALL;
   TrajectoryRenderer trajectoryRenderer;
 
   ArrayList<Particle> particles = new ArrayList<>();
@@ -24,14 +26,39 @@ public class KiryuGame extends PApplet {
   Vector3 projectileStartPosition;
   Vector3 launchVelocity;
 
+  PImage ballIcon;
+  PImage cannonBallIcon;
+  PImage laserIcon;
+  PImage fireBallIcon;
+
   public static void main(String[] args) {
     // Tells Processing to run this specific class
     PApplet.main("Game.KiryuGame");
   }
 
   @Override
+  public void keyPressed() {
+
+      if (key == '1') {
+          selectedProjectile = ProjectileType.BALL;
+      }
+
+      if (key == '2') {
+          selectedProjectile = ProjectileType.CANNON_BALL;
+      }
+
+      if (key == '3') {
+          selectedProjectile = ProjectileType.LASER;
+      }
+
+      if (key == '4') {
+          selectedProjectile = ProjectileType.FIRE_BALL;
+      }
+  }
+
+  @Override
   public void settings() {
-    size(1400, 1400);
+    size(1200, 800);
   }
 
   @Override
@@ -47,6 +74,11 @@ public class KiryuGame extends PApplet {
     );  
 
     trajectoryRenderer = new TrajectoryRenderer(this);
+
+    ballIcon = loadImage("Game/data/ball.png");
+    cannonBallIcon = loadImage("Game/data/cannonball.png");
+    laserIcon = loadImage("Game/data/laser.png");
+    fireBallIcon = loadImage("Game/data/fireball.png");
 
     /* TEMPORAIREMENT DISABLE
     projectileSystem = new ProjectileSystem(
@@ -75,12 +107,78 @@ public class KiryuGame extends PApplet {
 
   }
 
+  public void drawProjectileHUD() {
+
+      float hudHeight = 170;
+      float hudY = height - hudHeight;
+
+      // HUD background
+      noStroke();
+      fill(50);
+      rect(0, hudY, width, hudHeight);
+
+      // Separation line
+      stroke(255);
+      strokeWeight(3);
+      line(0, hudY, width, hudY);
+
+      float slotWidth = width / 4.0f;
+
+      float iconSize = 80;
+      float iconY = hudY + 60;
+
+      // Center images
+      imageMode(CENTER);
+
+      image(
+          ballIcon,
+          slotWidth * 0.5f,
+          iconY,
+          iconSize,
+          iconSize
+      );
+
+      image(
+          cannonBallIcon,
+          slotWidth * 1.5f,
+          iconY,
+          iconSize,
+          iconSize
+      );
+
+      image(
+          laserIcon,
+          slotWidth * 2.5f,
+          iconY,
+          iconSize,
+          iconSize
+      );
+
+      image(
+          fireBallIcon,
+          slotWidth * 3.5f,
+          iconY,
+          iconSize,
+          iconSize
+      );
+
+      // Numbers
+      fill(255);
+      textAlign(CENTER, CENTER);
+      textSize(24);
+
+      text("1", slotWidth * 0.5f, hudY + 130);
+      text("2", slotWidth * 1.5f, hudY + 130);
+      text("3", slotWidth * 2.5f, hudY + 130);
+      text("4", slotWidth * 3.5f, hudY + 130);
+  }
+
   @Override
   public void draw() {
     KiryuTime.update();
     float dt = KiryuTime.getDeltaTime();
-
     background(100);
+
 
     /* TEMPORAIREMENT DISABLE
     projectileSystem.drawProjectiles();
@@ -115,6 +213,8 @@ public class KiryuGame extends PApplet {
             launchVelocity,
             gravity
         );
+
+      
     }
 
 
@@ -130,6 +230,8 @@ for (int i = 0; i < particles.size(); i++) {
         particle.getPosition()
     );
 }
+
+ drawProjectileHUD();
 }
 
 
@@ -138,7 +240,6 @@ for (int i = 0; i < particles.size(); i++) {
   public void mousePressed() {
 
       if (!isAiming) {
-
           projectileStartPosition = new Vector3(
               mouseX,
               mouseY,
@@ -146,7 +247,7 @@ for (int i = 0; i < particles.size(); i++) {
           );
 
           projectileSystem.addProjectile(
-              ProjectileType.BALL,
+              selectedProjectile,
               new Vector3(projectileStartPosition),
               new Vector3(0, 0, 0)
           );
@@ -160,12 +261,11 @@ for (int i = 0; i < particles.size(); i++) {
 
       if (isAiming) {
 
-          Particle newParticle = new Particle(
-              ProjectileType.BALL.mass,
-              projectileStartPosition,
-              launchVelocity
-          );
-
+        Particle newParticle = new Particle(
+            selectedProjectile.mass,
+            projectileStartPosition,
+            launchVelocity
+        );
           newParticle.setAcceleration(
               new Vector3(0, 200, 0)
           );
@@ -175,5 +275,5 @@ for (int i = 0; i < particles.size(); i++) {
           isAiming = false;
       }
   }
-  
+
 }
