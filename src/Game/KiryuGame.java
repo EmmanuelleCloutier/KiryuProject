@@ -11,6 +11,7 @@ import processing.core.PImage;
 import java.util.ArrayList;
 import KiryuEngine.KiryuPhysics.Force;
 import KiryuEngine.KiryuPhysics.Integrator;
+import Game.code.bloc.BlockManager;
 import KiryuEngine.KiryuPhysics.Particle;
 import processing.core.PApplet;
 
@@ -18,6 +19,7 @@ import processing.core.PApplet;
 public class KiryuGame extends PApplet {
 
   ProjectileSystem projectileSystem;
+  BlockManager blockManager;
   ProjectileType selectedProjectile = ProjectileType.BALL;
   TrajectoryRenderer trajectoryRenderer;
 
@@ -82,6 +84,15 @@ public class KiryuGame extends PApplet {
     laserIcon = loadImage("Game/data/laser.png");
     fireBallIcon = loadImage("Game/data/fireball.png");
 
+    blockManager = new BlockManager();
+
+    float gameBottom = height - 170;
+
+    blockManager.generateRandomStructure(
+        width * 0.75f,
+        gameBottom
+    );
+
     /* TEMPORAIREMENT DISABLE
     projectileSystem = new ProjectileSystem(
         new ProjectileData(),new ProjectileRenderer(this)
@@ -113,11 +124,6 @@ public class KiryuGame extends PApplet {
 
       float hudHeight = 170;
       float hudY = height - hudHeight;
-
-      // HUD background
-      noStroke();
-      fill(50);
-      rect(0, hudY, width, hudHeight);
 
       // Separation line
       stroke(255);
@@ -254,7 +260,9 @@ public class KiryuGame extends PApplet {
       );
   }
 
- drawProjectileHUD();
+  blockManager.draw(this);
+
+  drawProjectileHUD();
 }
 
 
