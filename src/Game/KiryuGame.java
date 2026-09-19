@@ -220,24 +220,37 @@ public class KiryuGame extends PApplet {
     }
 
 
-  // Update every launched projectile using physics
-  for (int i = 0; i < particles.size(); i++) {
+  float gameBottom = height - 170;
+
+  for (int i = particles.size() - 1; i >= 0; i--) {
 
       Particle particle = particles.get(i);
 
-      // Apply gravity
       Force.applyGravity(particle);
 
-      // Euler integration
       Integrator.integrate(
           particle,
           dt
       );
 
-      // Update visual projectile position
+      Vector3 position = particle.getPosition();
+
+      // Destroy projectile when it leaves the game area
+      if (
+          position.x < 0 ||
+          position.x > width ||
+          position.y < 0 ||
+          position.y > gameBottom
+      ) {
+          particles.remove(i);
+          projectileSystem.removeProjectile(i);
+
+          continue;
+      }
+
       projectileSystem.setProjectilePosition(
           i,
-          particle.getPosition()
+          position
       );
   }
 
