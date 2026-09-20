@@ -30,7 +30,7 @@ public class HUD {
 
   public void draw(){
 
-    //windwos en bas
+    //windows en bas
     float hudHeight = 170;
     float hudY = this.sketch.height - hudHeight;
 
@@ -42,50 +42,54 @@ public class HUD {
     //separe lecran en 4 partie pour avoir une partie egale en bas
     float slotWidth = this.sketch.width / 5.0f;
 
-    float iconSize = 50.f;
-    float iconY = hudY + 37.5f;
+    float iconWidth = 75.f;
+    float iconHeight = 56.f;
+    float iconY = hudY + 50f;
 
     // Center images
     this.sketch.imageMode(this.sketch.CENTER);
 
+    this.sketch.fill(255);
+    this.sketch.circle(slotWidth * (1.5f + (0.5f * this.selectedProjectile.ordinal())), iconY, iconWidth);
+
     this.sketch.image(
         this.ballIcon,
-        slotWidth * 0.5f,
+        slotWidth * 1.5f,
         iconY,
-        iconSize,
-        iconSize
+        iconWidth,
+        iconHeight
     );
 
     this.sketch.image(
         this.cannonBallIcon,
-        slotWidth * 1.5f,
+        slotWidth * 2f,
         iconY,
-        iconSize,
-        iconSize
+        iconWidth,
+        iconHeight
     );
 
     this.sketch.image(
         this.laserIcon,
         slotWidth * 2.5f,
         iconY,
-        iconSize,
-        iconSize
+        iconWidth,
+        iconHeight
     );
 
     this.sketch.image(
         this.fireBallIcon,
-        slotWidth * 3.5f,
+        slotWidth * 3f,
         iconY,
-        iconSize,
-        iconSize
+        iconWidth,
+        iconHeight
     );
 
     this.sketch.image(
         this.duckIcon,
-        slotWidth * 4.5f,
+        slotWidth * 3.5f,
         iconY,
-        iconSize,
-        iconSize
+        iconWidth,
+        iconHeight
     );
 
     // Numbers
@@ -93,20 +97,18 @@ public class HUD {
     this.sketch.textAlign(this.sketch.CENTER, this.sketch.CENTER);
     this.sketch.textSize(24);
 
-    this.sketch.text("1", slotWidth * 0.5f, hudY + 130);
-    this.sketch.text("2", slotWidth * 1.5f, hudY + 130);
-    this.sketch.text("3", slotWidth * 2.5f, hudY + 130);
-    this.sketch.text("4", slotWidth * 3.5f, hudY + 130);
-    this.sketch.text("5", slotWidth * 4.5f, hudY + 130);
+    this.sketch.text("1", slotWidth * 1.35f, hudY + 15);
+    this.sketch.text("2", slotWidth * 1.85f, hudY + 15);
+    this.sketch.text("3", slotWidth * 2.35f, hudY + 15);
+    this.sketch.text("4", slotWidth * 2.85f, hudY + 15);
+    this.sketch.text("5", slotWidth * 3.35f, hudY + 15);
   }
 
   public ProjectileType getSelectedProjectile() {
     return selectedProjectile;
   }
 
-  public void setSelectedProjectile(ProjectileType selectedProjectile) {
-    this.selectedProjectile = selectedProjectile;
-  }
+  public void setSelectedProjectile(ProjectileType selectedProjectile) { this.selectedProjectile = selectedProjectile; }
 
 
 }

@@ -8,6 +8,7 @@ import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class GameManager {
 
