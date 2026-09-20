@@ -35,6 +35,8 @@ public class Integrator {
             newVelocity
         );
 
+        Vector3 newDirection = Vector3.getVectorNormal(particle.getLinearVelocity());
+        particle.setDirection(newDirection);
 
         // p1 = p0 + (v1 * dt)
 
@@ -49,5 +51,7 @@ public class Integrator {
         particle.setPosition(
             newPosition
         );
+
+
     }
 }

@@ -9,6 +9,7 @@ import KiryuEngine.KiryuPhysics.Vector3;
  * easier and faster because we reduce the number of cache misses when doing
  * large quantity of operations
  */
+@Deprecated
 public class ProjectileData {
 
   ArrayList<Vector3> positions;

@@ -11,6 +11,12 @@ public interface Renderable {
 
   void draw(PApplet sketch,Vector3 position);
 
+  void draw(PApplet sketch,Vector3 position, Vector3 direction);
+
+  void draw(PApplet sketch, Vector3 position, float width, float height);
+
+  void draw(PApplet sketch, Vector3 position,Vector3 direction, float width, float height);
+
   void loadRenderableImage(PApplet sketch);
 
 }
