@@ -50,6 +50,7 @@ public class GameManager {
   public void update(float deltaTime){
 
     this.projectileSystem.update(deltaTime);
+    this.headUpDisplay.setDelta(deltaTime);
     detectCollisions();
   }
 

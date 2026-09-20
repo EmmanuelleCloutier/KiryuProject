@@ -15,7 +15,7 @@ public class HUD {
 
   //types de projectiles actuellement actif dans les main des joueurs
   private ProjectileType selectedProjectile = ProjectileType.BALL;
-
+  private float deltaTime = 0.f;
 
   private final PApplet sketch;
 
@@ -103,6 +103,9 @@ public class HUD {
     this.sketch.text("4", slotWidth * 2.85f, hudY + 15);
     this.sketch.text("5", slotWidth * 3.35f, hudY + 15);
 
+    this.sketch.textAlign(this.sketch.LEFT, this.sketch.CENTER);
+    this.sketch.text("delta time :" + String.valueOf(this.deltaTime), 25,25);
+
   }
 
   public ProjectileType getSelectedProjectile() {
@@ -111,5 +114,8 @@ public class HUD {
 
   public void setSelectedProjectile(ProjectileType selectedProjectile) { this.selectedProjectile = selectedProjectile; }
 
+  public void setDelta(float deltaTime) {
+    this.deltaTime = deltaTime;
+  }
 
 }
