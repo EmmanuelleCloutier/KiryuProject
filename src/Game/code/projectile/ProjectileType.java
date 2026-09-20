@@ -71,7 +71,7 @@ public enum ProjectileType {
     /**
      * BALL DEFAULTS
      */
-    public static final double DEFAULT_BALL_SPEED = 5.f;
+    public static final double DEFAULT_BALL_SPEED = 5f;
     public static final double DEFAULT_BALL_MASS = 2.f;
     public static final float DEFAULT_BALL_SPRITE_HEIGHT = 50.f;
     public static final float DEFAULT_BALL_SPRITE_WIDTH = 66.f;
@@ -81,7 +81,7 @@ public enum ProjectileType {
     /**
      * CANNON BALL DEFAULTS
      */
-    public static final double DEFAULT_CANNONBALL_SPEED = 5.f;
+    public static final double DEFAULT_CANNONBALL_SPEED = 1.5f;
     public static final double DEFAULT_CANNONBALL_MASS = 10.f;
     public static final float DEFAULT_CANNONBALL_SPRITE_HEIGHT = 50.f;
     public static final float DEFAULT_CANNONBALL_SPRITE_WIDTH = 66.f;
@@ -99,7 +99,7 @@ public enum ProjectileType {
     /**
      * FIREBALL DEFAULTS
      */
-    public static final double DEFAULT_FIREBALL_SPEED= 5.f;
+    public static final double DEFAULT_FIREBALL_SPEED= 0.5f;
     public static final double DEFAULT_FIREBALL_MASS = 5.f;
     public static final float DEFAULT_FIREBALL_SPRITE_HEIGHT = 50.f;
     public static final float DEFAULT_FIREBALL_SPRITE_WIDTH = 66.f;
@@ -108,7 +108,7 @@ public enum ProjectileType {
     /**
      * DUCK DEFAULTS
      */
-    public static final double DEFAULT_DUCK_SPEED= 5.f;
+    public static final double DEFAULT_DUCK_SPEED= 4.f;
     public static final double DEFAULT_DUCK_MASS = 5.f;
     public static final float DEFAULT_DUCK_SPRITE_HEIGHT = 50.f;
     public static final float DEFAULT_DUCK_SPRITE_WIDTH = 66.f;
