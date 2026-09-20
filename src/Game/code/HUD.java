@@ -102,6 +102,7 @@ public class HUD {
     this.sketch.text("3", slotWidth * 2.35f, hudY + 15);
     this.sketch.text("4", slotWidth * 2.85f, hudY + 15);
     this.sketch.text("5", slotWidth * 3.35f, hudY + 15);
+
   }
 
   public ProjectileType getSelectedProjectile() {
