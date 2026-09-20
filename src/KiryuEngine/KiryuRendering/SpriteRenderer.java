@@ -46,23 +46,42 @@ public class SpriteRenderer {
   }
 
   /**
-   * @param spritePath the loaded sprites list is a hashmap using the image directory
-   * path as the key
+   * @param sprite the loaded sprites list is a hashmap using the image directory
+   * path as the key so we need the sprite to find its path
    * @param position the position where the sprite will be drawn
    */
-  public void drawSprite(String spritePath,Vector3 position){
+  public void drawSprite(Sprite sprite,Vector3 position){
     // if the sprites doesn't exist in the list we simply add it
     // this is done at runtime and done once per sprite
     // if we have 10k particles using 1 sprite, the sprite is loaded once
     // but if we have 10k particles with 100 different sprites that needs
     // to be loaded in the same frame, that is where we might encounter lag
-    if(!loadedSprites.containsKey(spritePath)){
-      Sprite sprite = new Sprite(spritePath);
+    if(!loadedSprites.containsKey(sprite.getSpritePath())){
       addSprite(sprite);
     }
 
-    loadedSprites.get(spritePath).draw(sketch,position);
+    loadedSprites.get(sprite.getSpritePath()).draw(sketch,position);
   }
+
+
+  /**
+   * @param sprite the loaded sprites list is a hashmap using the image directory
+   * path as the key so we need the sprite to find its path
+   * @param position the position where the sprite will be drawn
+   */
+  public void drawSprite(Sprite sprite,Vector3 position, Vector3 direction){
+    // if the sprites doesn't exist in the list we simply add it
+    // this is done at runtime and done once per sprite
+    // if we have 10k particles using 1 sprite, the sprite is loaded once
+    // but if we have 10k particles with 100 different sprites that needs
+    // to be loaded in the same frame, that is where we might encounter lag
+    if(!loadedSprites.containsKey(sprite.getSpritePath())){
+      addSprite(sprite);
+    }
+
+    loadedSprites.get(sprite.getSpritePath()).draw(sketch,position,direction);
+  }
+
 
     /**
      * @return returns the reference to the processing applet
@@ -79,7 +98,7 @@ public class SpriteRenderer {
   ) {
 
       if (!loadedSprites.containsKey(spritePath)) {
-          Sprite sprite = new Sprite(spritePath);
+          Sprite sprite = new Sprite(spritePath,height,width);
           addSprite(sprite);
       }
 

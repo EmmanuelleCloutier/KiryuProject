@@ -1,7 +1,7 @@
 package Game.code.projectile;
 
-import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuRendering.Sprite;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
 
@@ -21,28 +21,24 @@ public class ProjectileRenderer extends SpriteRenderer {
     super(sketch);
   }
 
-  /**
-   * @param spritePositions a map of the type of projectiles and all the positions
-   * where that projectile needs to be drawn
-   */
-  public void drawProjectileSprites(HashMap<ProjectileType, ArrayList<Vector3>> spritePositions) {
 
-    for (var entry : spritePositions.entrySet()) {
+  public void drawProjectileSprites(
+      ArrayList<ProjectileType> types,
+      ArrayList<Vector3> positions,
+      ArrayList<Vector3> directions
+  ) {
 
-      ProjectileType type = entry.getKey();
-      ArrayList<Vector3> positions = entry.getValue();
+    if (types.isEmpty()||positions.isEmpty() || directions.isEmpty()) return;
 
-      for (Vector3 position : positions) {
-        //this.drawSprite(type.sprite.getSpritePath(), position);
 
-        //each sont plus petits...
-        this.drawSprite(
-            type.sprite.getSpritePath(),
-            position,
-            50,
-            50
-        );
-      }
+    for (int i = 0; i < types.size(); i++) {
+      Sprite sprite = types.get(i).sprite;
+      Vector3 position = positions.get(i);
+      Vector3 direction = directions.get(i);
+
+      drawSprite(sprite,position,direction);
     }
+
+
   }
 }

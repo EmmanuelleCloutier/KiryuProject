@@ -8,18 +8,20 @@ public class Particle {
     private Vector3 acceleration;
     private Vector3 position;
     private Vector3 linearVelocity;
+    private Vector3 direction;
 
     private final double damping = 1.f;
 
 //constructeur qui cre une particule seulement avec une masse (tout est 0,0,0)
-    Particle(double mass) {
+    public Particle(double mass) {
 
         this.mass = mass;
         this.inverseMass = 1 / this.mass;
 
-        this.acceleration = new Vector3();
-        this.position = new Vector3();
-        this.linearVelocity = new Vector3();
+        this.acceleration = Vector3.ZERO_VECTOR;
+        this.position = Vector3.ZERO_VECTOR;
+        this.linearVelocity = Vector3.ZERO_VECTOR;
+        this.direction = Vector3.ZERO_VECTOR;
     }
 
     
@@ -112,4 +114,13 @@ public class Particle {
     public double getDamping() {
         return damping;
     }
+
+    public Vector3 getDirection() {
+        return direction;
+    }
+
+    public void setDirection(Vector3 direction) {
+        this.direction = direction;
+    }
+
 }

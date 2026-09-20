@@ -141,10 +141,7 @@ public class Vector3 {
         double lenSq = getLengthSquared();
 
         if (lenSq == 0.0f) {
-            this.x = 0.0f;
-            this.y = 0.0f;
-            this.z = 0.0f;
-            return this;
+            return Vector3.ZERO_VECTOR;
         }
 
         double invLen = 1.0f / Math.sqrt(lenSq);
@@ -154,6 +151,33 @@ public class Vector3 {
 
         return this;
     }
+
+    /**
+     * Normalise le vecteur actuel.
+     * @return Soi, avec une longueur de 1.
+     */
+    public static Vector3 getVectorNormal(Vector3 vector) {
+        //les multiplications sont plus rapides que les divisions
+        //j'ai optimiser un peu le calcul de la normalisation afin
+        //d'avoir le moins de division possible sachant qu'on risque
+        //de beaucoup utiliser cette fonction
+
+        double lenSq = vector.getLengthSquared();
+
+        if (lenSq == 0.0f) {
+            return Vector3.ZERO_VECTOR;
+        }
+
+        Vector3 normalizedVector = new Vector3();
+        normalizedVector.set(vector);
+        double invLen = 1.0f / Math.sqrt(lenSq);
+        normalizedVector.x *= invLen;
+        normalizedVector.y *= invLen;
+        normalizedVector.z *= invLen;
+
+        return normalizedVector;
+    }
+
 
     /**
      * Multiplie un vecteur par un scalaire.

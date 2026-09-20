@@ -1,4 +1,5 @@
 package Game.code.bloc;
+import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import processing.core.PApplet;
 import java.util.ArrayList;
@@ -11,6 +12,18 @@ public class BlockManager {
 
     //generateur de nombre aletoire
     private final Random random = new Random();
+
+    private final PApplet sketch;
+
+    private final BlockRenderer blockRenderer;
+
+
+    public BlockManager(PApplet sketch){
+        this.sketch = sketch;
+        this.blockRenderer = new BlockRenderer(sketch);
+    }
+
+
 
     //genere une structure aleatoire d'une position donnée
     public void generateRandomStructure(
@@ -144,11 +157,9 @@ public class BlockManager {
 
 
     //dessine tous les blocs actuellement présent
-    public void draw(PApplet sketch) {
-
-        for (Block block : blocks) {
-            block.draw(sketch);
-        }
+    public void drawBlocks() {
+        if (blocks.isEmpty()) return;
+        blockRenderer.drawBlockSprites(blocks);
     }
 
     //retourne la liste de tous les blocs 
@@ -157,9 +168,14 @@ public class BlockManager {
     }
 
     //set up collision simple 
-    public boolean checkProjectileCollision(Vector3 projectilePosition) {
+    public boolean checkProjectileCollision(
+        Particle particle,
+        float particleWidth,
+        float particleHeight
+    ) {
+        if (blocks.isEmpty()) return false;
 
-        float projectileSize = 50;
+        Vector3 projectilePosition = particle.getPosition();
 
         //parcour tous les blocs de la structure
         //la liste est parcourue a l'envers parce qu'un des blocs peut etre delete
@@ -170,11 +186,11 @@ public class BlockManager {
 
             boolean collisionX =
                 Math.abs(projectilePosition.x - blockPosition.x)
-                < (projectileSize / 2 + Block.SIZE / 2);
+                < (particleWidth / 2 + Block.SIZE / 2);
 
             boolean collisionY =
                 Math.abs(projectilePosition.y - blockPosition.y)
-                < (projectileSize / 2 + Block.SIZE / 2);
+                < (particleHeight / 2 + Block.SIZE / 2);
 
             if (collisionX && collisionY) {
 

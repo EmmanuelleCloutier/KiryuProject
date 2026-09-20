@@ -2,8 +2,11 @@ package KiryuEngine.KiryuPhysics;
 
 public class Force {
 
-    private static final Vector3 GRAVITY =
+    public static final Vector3 GRAVITY =
         new Vector3(0, 200, 0);
+
+    public static final Vector3 INFINITE =
+        new Vector3(Float.MAX_VALUE,Float.MAX_VALUE,Float.MAX_VALUE);
 
 
     /**
