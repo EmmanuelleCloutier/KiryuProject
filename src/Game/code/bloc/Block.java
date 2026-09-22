@@ -1,5 +1,7 @@
 package Game.code.bloc;
+import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuRendering.Animation;
 import KiryuEngine.KiryuRendering.Sprite;
 import processing.core.PApplet;
 
@@ -12,13 +14,24 @@ public class Block {
 
     private final Sprite sprite;
 
-    public Block(Vector3 position) {
+    private final Animation destroyAnimation;
+
+    public Block(PApplet sketch, Vector3 position) {
         this.position = position;
         this.sprite = new Sprite(
             "Game/data/brick_tillable.png",
             SIZE,
             SIZE
         );
+
+        this.destroyAnimation = new Animation(
+            "Game/data/destroy.gif",
+            50,
+            50,
+            false
+        );
+        destroyAnimation.loadRenderableImage(sketch,"explosion.gif");
+
     }
 
     public Vector3 getPosition() {
@@ -29,4 +42,7 @@ public class Block {
         return sprite;
     }
 
+    public Animation getDestroyAnimation() {
+        return destroyAnimation;
+    }
 }

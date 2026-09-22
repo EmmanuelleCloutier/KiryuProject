@@ -52,6 +52,14 @@ public class Animation implements Renderable{
     }
   }
 
+  public boolean isbIsFinished() {
+    return bIsFinished;
+  }
+  public boolean isbIsLooping() {
+    return bIsLooping;
+  }
+
+
   @Override
   public void draw(
       PApplet sketch,
@@ -244,7 +252,7 @@ public class Animation implements Renderable{
 
   @Override
   public void loadRenderableImage(PApplet sketch) {
-
+    loadRenderableImage(sketch,"todo");
   }
 
   @Override
