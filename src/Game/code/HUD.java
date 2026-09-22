@@ -1,6 +1,7 @@
 package Game.code;
 
 import Game.code.projectile.ProjectileType;
+import KiryuEngine.KiryuCore.KiryuTime;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -15,7 +16,6 @@ public class HUD {
 
   //types de projectiles actuellement actif dans les main des joueurs
   private ProjectileType selectedProjectile = ProjectileType.BALL;
-  private float deltaTime = 0.f;
 
   private final PApplet sketch;
 
@@ -104,7 +104,13 @@ public class HUD {
     this.sketch.text("5", slotWidth * 3.35f, hudY + 15);
 
     this.sketch.textAlign(this.sketch.LEFT, this.sketch.CENTER);
-    this.sketch.text("delta time :" + String.valueOf(this.deltaTime), 25,25);
+    String deltaTimeString = String.format("DeltaTime : %.4f", KiryuTime.getDeltaTime());
+    this.sketch.textSize(15);
+    this.sketch.fill(0);
+    this.sketch.text("Debug info:", 25,25);
+    this.sketch.text(deltaTimeString, 35,45);
+    String frameRateString = String.format("FrameRate : %.2f", this.sketch.frameRate);
+    this.sketch.text(frameRateString, 35,65);
 
   }
 
@@ -112,10 +118,8 @@ public class HUD {
     return selectedProjectile;
   }
 
-  public void setSelectedProjectile(ProjectileType selectedProjectile) { this.selectedProjectile = selectedProjectile; }
-
-  public void setDelta(float deltaTime) {
-    this.deltaTime = deltaTime;
+  public void setSelectedProjectile(ProjectileType selectedProjectile) {
+    this.selectedProjectile = selectedProjectile;
   }
 
 }
