@@ -8,6 +8,7 @@ import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import processing.core.PApplet;
+import processing.core.PImage;
 
 public class GameManager {
 
@@ -49,6 +50,7 @@ public class GameManager {
   public void update(float deltaTime){
 
     this.projectileSystem.update(deltaTime);
+    this.headUpDisplay.setDelta(deltaTime);
     detectCollisions();
   }
 

@@ -15,7 +15,7 @@ public class Cannon {
   private TrajectoryRenderer trajectoryRenderer;
   private Vector3 projectileStartPosition;
   private Vector3 launchVelocity;
-  private ProjectileType selectedProjectileType;
+  private ProjectileType selectedProjectileType = ProjectileType.BALL;
 
 
 
@@ -67,7 +67,7 @@ public class Cannon {
 
     launchVelocity = new Vector3(this.sketch.mouseX,this.sketch.mouseY,0)
         .sub(projectileStartPosition)
-        .scale(2.0);
+        .scale(selectedProjectileType.speed);
 
 
     if (selectedProjectileType == ProjectileType.LASER){
