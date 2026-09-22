@@ -6,8 +6,6 @@ import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
 
 /**
  * this is basically a sprite renderer but with some logic specific for projectiles

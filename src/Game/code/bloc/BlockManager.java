@@ -207,4 +207,8 @@ public class BlockManager {
 
         return false;
     }
+
+    public boolean areAllBlocksDestroyed() {
+    return blocks.isEmpty();
+    }
 }

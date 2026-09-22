@@ -8,7 +8,6 @@ import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import processing.core.PApplet;
-import processing.core.PConstants;
 import processing.core.PImage;
 
 public class GameManager {
@@ -56,6 +55,14 @@ public class GameManager {
 
     this.projectileSystem.update(deltaTime);
     detectCollisions();
+
+    //si tous les blocs sont détruit ca regerenere une nouvelle structure 
+      if (blockManager.areAllBlocksDestroyed()) {
+        blockManager.generateRandomStructure(
+            sketch.width * 0.75f,
+            gameBottom
+        );
+    }
   }
 
   public void draw(){
