@@ -8,6 +8,7 @@ import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import processing.core.PApplet;
+import processing.core.PConstants;
 import processing.core.PImage;
 
 public class GameManager {
@@ -18,6 +19,7 @@ public class GameManager {
   public ProjectileSystem projectileSystem;
   public HUD headUpDisplay;
   public Cannon cannon;
+  PImage backGround;
 
   private final float gameBottom;
 
@@ -45,17 +47,20 @@ public class GameManager {
     headUpDisplay = new HUD(sketch);
 
     cannon = new Cannon(sketch,new Vector3(70,gameBottom - 60,0));
+
+    backGround = this.sketch.loadImage("Game/data/background.png");
+
   }
 
   public void update(float deltaTime){
 
     this.projectileSystem.update(deltaTime);
-    this.headUpDisplay.setDelta(deltaTime);
     detectCollisions();
   }
 
   public void draw(){
-    this.sketch.background(100);
+    this.sketch.background(0);
+    this.sketch.image(backGround, this.sketch.width/2.f, this.sketch.height/2.f);
     this.blockManager.drawBlocks();
     this.headUpDisplay.draw();
     this.cannon.draw();

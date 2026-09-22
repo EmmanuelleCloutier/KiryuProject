@@ -9,6 +9,7 @@ public class KiryuGame extends PApplet {
 
   GameManager gameManager;
 
+
   public static void main(String[] args) {
     // Tells Processing to run this specific class
     PApplet.main("Game.KiryuGame");
@@ -22,11 +23,13 @@ public class KiryuGame extends PApplet {
 
   @Override
   public void settings() {
-    size(1200, 800); //changement de la windows pour qu'on voit actuellement les choix des projectiles 
+    size(1920, 1080); //changement de la windows pour qu'on voit actuellement les choix des projectiles
   }
 
   @Override
   public void setup() {
+    frameRate(100000);
+    loadImage("Game/data/background.png");
 
     //delta time
     KiryuTime.init();

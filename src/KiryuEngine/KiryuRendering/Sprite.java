@@ -25,7 +25,12 @@ public class Sprite implements Renderable{
    * Constructor
    * @param spritePath the project path of the image that the sprite is using
    */
-  public Sprite(String spritePath, float height, float width){
+  public Sprite(
+      String spritePath,
+      float height,
+      float width
+  ) {
+
     this.spritePath = spritePath;
     this.height = height;
     this.width = width;
@@ -43,7 +48,10 @@ public class Sprite implements Renderable{
    * @param position the position where the sprite will be drawn
    */
   @Override
-  public void draw(PApplet sketch,Vector3 position) {
+  public void draw(
+      PApplet sketch,
+      Vector3 position
+  ) {
     sketch.imageMode(CENTER);
     sketch.image(sprite,
         (float)position.x,
@@ -54,10 +62,34 @@ public class Sprite implements Renderable{
   }
 
   @Override
-  public void draw(PApplet sketch, Vector3 position, Vector3 direction) {
+  public void draw(
+      PApplet sketch,
+      Vector3 position,
+      Vector3 direction
+  ) {
+
     sketch.pushMatrix();
     sketch.translate((float)position.x,(float)position.y);
     float angle = PApplet.atan2((float)direction.y,(float)direction.x);
+    sketch.rotate(angle);
+    sketch.imageMode(CENTER);
+    sketch.image(sprite,
+        0,
+        0,
+        this.width,
+        this.height
+    );
+    sketch.popMatrix();
+  }
+
+  @Override
+  public void draw(
+      PApplet sketch,
+      Vector3 position,
+      float angle
+  ) {
+    sketch.pushMatrix();
+    sketch.translate((float)position.x,(float)position.y);
     sketch.rotate(angle);
     sketch.imageMode(CENTER);
     sketch.image(sprite,
@@ -73,24 +105,30 @@ public class Sprite implements Renderable{
   //new draw pour mettre les sprite plus petit
   @Override
   public void draw(
-        PApplet sketch,
-        Vector3 position,
-        float width,
-        float height
-    ) {
-        sketch.imageMode(CENTER);
-
-        sketch.image(
-            sprite,
-            (float)position.x,
-            (float)position.y,
-            width,
-            height
-        );
-    }
+      PApplet sketch,
+      Vector3 position,
+      float width,
+      float height
+  ) {
+      sketch.imageMode(CENTER);
+      sketch.image(
+          sprite,
+          (float)position.x,
+          (float)position.y,
+          width,
+          height
+      );
+  }
 
   @Override
-  public void draw(PApplet sketch, Vector3 position, Vector3 direction, float width, float height) {
+  public void draw(
+      PApplet sketch,
+      Vector3 position,
+      Vector3 direction,
+      float width,
+      float height
+  ) {
+
     sketch.pushMatrix();
     sketch.translate((float)position.x,(float)position.y);
     float angle = PApplet.atan2((float)direction.x,(float)direction.y) - sketch.HALF_PI;
@@ -112,5 +150,10 @@ public class Sprite implements Renderable{
   @Override
   public void loadRenderableImage(PApplet sketch) {
     this.sprite = loadImage(sketch, this.spritePath);
+  }
+
+  @Override
+  public void loadRenderableImage(PApplet sketch, String filename) {
+
   }
 }

@@ -1,6 +1,7 @@
 package Game.code.bloc;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuRendering.Animation;
 import processing.core.PApplet;
 import java.util.ArrayList;
 import java.util.Random;
@@ -60,6 +61,7 @@ public class BlockManager {
 
         blocks.add(
             new Block(
+                this.sketch,
                 new Vector3(
                     centerX,
                     groundY - Block.SIZE / 2,
@@ -98,6 +100,7 @@ public class BlockManager {
 
                 blocks.add(
                     new Block(
+                        this.sketch,
                         new Vector3(x, y, 0)
                     )
                 );
@@ -148,6 +151,7 @@ public class BlockManager {
 
                 blocks.add(
                     new Block(
+                        this.sketch,
                         new Vector3(x, y, 0)
                     )
                 );
@@ -193,7 +197,7 @@ public class BlockManager {
                 < (particleHeight / 2 + Block.SIZE / 2);
 
             if (collisionX && collisionY) {
-
+                
                 // Destroy the block
                 blocks.remove(i);
 
