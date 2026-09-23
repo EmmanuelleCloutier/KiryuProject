@@ -21,6 +21,7 @@ public class Force {
         Particle particle
     ) {
 
+        /*
         // F = m * g
         Vector3 gravityForce =
             GRAVITY.scale(
@@ -34,9 +35,16 @@ public class Force {
                 particle.getInverseMass()
             );
 
-
         particle.setAcceleration(
             acceleration
         );
+        */
+
+        // Simplification => fonctionne pareil que plus haut.
+        // Preuve : a = F x 1/m
+        //          a = g x m x 1/m
+        //          a = g x 1
+        //          a = g
+        particle.setAcceleration(GRAVITY);
     }
 }
