@@ -1,6 +1,5 @@
 package Game.code.cannon;
 
-import KiryuEngine.KiryuPhysics.Force;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuRendering.Sprite;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
