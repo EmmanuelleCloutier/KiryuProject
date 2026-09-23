@@ -56,12 +56,15 @@ public class GameManager {
     this.projectileSystem.update(deltaTime);
     detectCollisions();
 
+    blockManager.generateRandomStructure(
+        sketch.width * 0.75f,
+        gameBottom
+    );
+    blockManager.updateStructureGeneration();
+
     //si tous les blocs sont détruit ca regerenere une nouvelle structure 
       if (blockManager.areAllBlocksDestroyed()) {
-        blockManager.generateRandomStructure(
-            sketch.width * 0.75f,
-            gameBottom
-        );
+        blockManager.loadNextStructure();
     }
   }
 

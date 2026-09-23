@@ -34,7 +34,8 @@ public class Cannon {
         "Game/data/explosion.gif",
         50,
         50,
-        false
+        false,
+        1
     );
     blastAnimation.loadRenderableImage(sketch,"explosion.gif");
 

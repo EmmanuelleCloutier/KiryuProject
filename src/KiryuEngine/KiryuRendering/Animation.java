@@ -33,7 +33,8 @@ public class Animation implements Renderable{
       String animationPath,
       float width,
       float height,
-      boolean looping
+      boolean looping,
+      int tickRate
   ) {
     this.animationPath = animationPath;
     this.width = width;
@@ -42,6 +43,7 @@ public class Animation implements Renderable{
     bIsLooping = looping;
     bIsFinished = true;
     bIsPlaying = false;
+    ticksPerAnimationFrame = tickRate;
   }
 
   public void playAnimation(){
@@ -52,10 +54,10 @@ public class Animation implements Renderable{
     }
   }
 
-  public boolean isbIsFinished() {
+  public boolean isFinished() {
     return bIsFinished;
   }
-  public boolean isbIsLooping() {
+  public boolean isLooping() {
     return bIsLooping;
   }
 
