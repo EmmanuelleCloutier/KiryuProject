@@ -12,7 +12,6 @@ public class BlockRenderer extends SpriteRenderer {
    *               sprites later when we need to load or draw them
    */
 
-
   public BlockRenderer(PApplet sketch) {
     super(sketch);
   }
@@ -24,6 +23,5 @@ public class BlockRenderer extends SpriteRenderer {
          ) {
       this.drawSprite(block.getSprite(),block.getPosition());
     }
-    
   }
 }

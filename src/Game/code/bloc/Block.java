@@ -9,29 +9,19 @@ public class Block {
 
     public static final float SIZE = 75;
 
-    //position du centre du bloc dans le jeu
     private final Vector3 position;
 
     private final Sprite sprite;
-
     private final Animation destroyAnimation;
 
-    public Block(PApplet sketch, Vector3 position) {
+    public Block(
+        Vector3 position,
+        Sprite sprite,
+        Animation destroyAnimation
+    ) {
         this.position = position;
-        this.sprite = new Sprite(
-            "Game/data/brick_tillable.png",
-            SIZE,
-            SIZE
-        );
-
-        this.destroyAnimation = new Animation(
-            "Game/data/destroy.gif",
-            50,
-            50,
-            false
-        );
-        destroyAnimation.loadRenderableImage(sketch,"explosion.gif");
-
+        this.sprite = sprite;
+        this.destroyAnimation = destroyAnimation;
     }
 
     public Vector3 getPosition() {

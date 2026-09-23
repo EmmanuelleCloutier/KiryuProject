@@ -2,173 +2,131 @@ package Game.code.bloc;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuRendering.Animation;
+import KiryuEngine.KiryuRendering.Sprite;
 import processing.core.PApplet;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class BlockManager {
 
     //liste contenant la liste des blocs de la structure
-    private final ArrayList<Block> blocks = new ArrayList<>();
+    private ArrayList<Block> currentStructure = new ArrayList<>();
+    private ArrayList<Block> nextStructure = new ArrayList<>();
+    private boolean bIsNextStructureGenerated = false;
+    private boolean bIsNextStructureGenerating = false;
 
     //generateur de nombre aletoire
     private final Random random = new Random();
 
     private final PApplet sketch;
+    private final Sprite blockSprite;
+    private final Animation destroyAnimation;
 
     private final BlockRenderer blockRenderer;
+    private final StructureGenerator structureGenerator;
+    private volatile List<StructureGenerator.BlockData> generatedStructure;
 
 
     public BlockManager(PApplet sketch){
         this.sketch = sketch;
         this.blockRenderer = new BlockRenderer(sketch);
+        this.structureGenerator = new StructureGenerator();
+
+        blockSprite = new Sprite(
+            "Game/data/brick_tillable.png",
+            Block.SIZE,
+            Block.SIZE
+        );
+
+        destroyAnimation = new Animation(
+            "Game/data/destroy.gif",
+            50,
+            50,
+            false
+        );
+
+        destroyAnimation.loadRenderableImage(
+            sketch,
+            "explosion.gif"
+        );
+
+    }
+
+    public void loadNextStructure(){
+        ArrayList<Block> temp = currentStructure;
+
+        currentStructure = nextStructure;
+        nextStructure = temp;
+
+        bIsNextStructureGenerated = false;
     }
 
 
+    public void updateStructureGeneration() {
+
+        if (generatedStructure == null) {
+            return;
+        }
+
+        nextStructure.clear();
+
+        for (StructureGenerator.BlockData data : generatedStructure) {
+
+            nextStructure.add(
+                new Block(
+                    new Vector3(
+                        data.x(),
+                        data.y(),
+                        data.z()
+                    ),
+                    blockSprite,
+                    destroyAnimation
+                )
+            );
+        }
+
+        generatedStructure = null;
+
+        bIsNextStructureGenerating = false;
+        bIsNextStructureGenerated = true;
+    }
 
     //genere une structure aleatoire d'une position donnée
     public void generateRandomStructure(
         float centerX,
         float groundY
     ) {
-        //supprime les bloc de l'ancienne structure
-        blocks.clear();
 
-        int structureType = random.nextInt(3);
-
-        switch (structureType) {
-
-            case 0: //uno bloco
-                generateSingleBlock(centerX, groundY);
-                break;
-
-            case 1: //rectangle
-                generateRectangle(centerX, groundY);
-                break;
-
-            case 2: //pyramide
-                generatePyramid(centerX, groundY);
-                break;
+        if (bIsNextStructureGenerating) {
+            return;
         }
-    }
 
-
-    
-    private void generateSingleBlock(
-        float centerX,
-        float groundY
-    ) {
-
-        blocks.add(
-            new Block(
-                this.sketch,
-                new Vector3(
-                    centerX,
-                    groundY - Block.SIZE / 2,
-                    0
-                )
-            )
-        );
-    }
-
-
-    private void generateRectangle(
-        float centerX,
-        float groundY
-    ) {
-
-        //pour faire quel genre de rectangle on fait
-        int columns = random.nextInt(3) + 2; // 2-4
-        int rows = random.nextInt(2) + 2;    // 2-3
-
-        //calcul la position x du premier bloc pour center la structure
-        float startX =
-            centerX - ((columns - 1) * Block.SIZE) / 2;
-
-        //parcour chaque rangee de la structure
-        for (int row = 0; row < rows; row++) {
-
-            for (int column = 0; column < columns; column++) {
-
-                double x =
-                    startX + column * Block.SIZE;
-
-                double y =
-                    groundY
-                    - Block.SIZE / 2
-                    - row * Block.SIZE;
-
-                blocks.add(
-                    new Block(
-                        this.sketch,
-                        new Vector3(x, y, 0)
-                    )
-                );
-            }
+        // Already have a generated structure
+        if (bIsNextStructureGenerated) {
+            return;
         }
-    }
 
+        bIsNextStructureGenerating = true;
 
-    private void generatePyramid(
-        float centerX,
-        float groundY
-    ) {
-
-        //choisit aleatoirement si c pyramide de 3 ou 4
-        int rows = random.nextInt(2) + 3;
-        // 3 or 4 rows
-
-        //parcourir chaque rangée de la pyramide 
-        for (int row = 0; row < rows; row++) {
-
-            //calcul le nombre de blocs dans cette rangée / quand on monte -1 bloc
-            int blocksInRow = rows - row;
-
-            //calcul largeur totale de la rangée
-            float rowWidth =
-                blocksInRow * Block.SIZE;
-
-                //calcule la position du premier bloc pour centrer la rangée
-            float startX =
-                centerX
-                - rowWidth / 2
-                + Block.SIZE / 2;
-
-            for (
-                int column = 0;
-                column < blocksInRow;
-                column++
-            ) {
-
-                double x =
-                    startX
-                    + column * Block.SIZE;
-
-                double y =
-                    groundY
-                    - Block.SIZE / 2
-                    - row * Block.SIZE;
-
-                blocks.add(
-                    new Block(
-                        this.sketch,
-                        new Vector3(x, y, 0)
-                    )
-                );
-            }
-        }
+        structureGenerator.generateRandomStructureAsync(
+            centerX,
+            groundY
+        ).thenAccept(data -> {
+            generatedStructure = data;
+        });
     }
 
 
     //dessine tous les blocs actuellement présent
     public void drawBlocks() {
-        if (blocks.isEmpty()) return;
-        blockRenderer.drawBlockSprites(blocks);
+        if (currentStructure.isEmpty()) return;
+        blockRenderer.drawBlockSprites(currentStructure);
     }
 
     //retourne la liste de tous les blocs 
-    public ArrayList<Block> getBlocks() {
-        return blocks;
+    public ArrayList<Block> getCurrentStructure() {
+        return currentStructure;
     }
 
     //set up collision simple 
@@ -177,15 +135,15 @@ public class BlockManager {
         float particleWidth,
         float particleHeight
     ) {
-        if (blocks.isEmpty()) return false;
+        if (currentStructure.isEmpty()) return false;
 
         Vector3 projectilePosition = particle.getPosition();
 
         //parcour tous les blocs de la structure
         //la liste est parcourue a l'envers parce qu'un des blocs peut etre delete
-        for (int i = blocks.size() - 1; i >= 0; i--) {
+        for (int i = currentStructure.size() - 1; i >= 0; i--) {
 
-            Block block = blocks.get(i);
+            Block block = currentStructure.get(i);
             Vector3 blockPosition = block.getPosition();
 
             boolean collisionX =
@@ -197,9 +155,11 @@ public class BlockManager {
                 < (particleHeight / 2 + Block.SIZE / 2);
 
             if (collisionX && collisionY) {
-                
+
+                block.getDestroyAnimation().playAnimation();
                 // Destroy the block
-                blocks.remove(i);
+                currentStructure.remove(i);
+
 
                 return true;
             }
@@ -209,6 +169,6 @@ public class BlockManager {
     }
 
     public boolean areAllBlocksDestroyed() {
-    return blocks.isEmpty();
+    return currentStructure.isEmpty();
     }
 }
