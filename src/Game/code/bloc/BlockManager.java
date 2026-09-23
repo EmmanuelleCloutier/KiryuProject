@@ -4,15 +4,15 @@ import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuRendering.Animation;
 import KiryuEngine.KiryuRendering.Sprite;
 import processing.core.PApplet;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+
+import java.util.*;
 
 public class BlockManager {
 
     //liste contenant la liste des blocs de la structure
     private ArrayList<Block> currentStructure = new ArrayList<>();
     private ArrayList<Block> nextStructure = new ArrayList<>();
+    private HashMap<Animation, Vector3> destroyAnimationPositions = new HashMap<>();
     private boolean bIsNextStructureGenerated = false;
     private boolean bIsNextStructureGenerating = false;
 
@@ -41,14 +41,15 @@ public class BlockManager {
 
         destroyAnimation = new Animation(
             "Game/data/destroy.gif",
-            50,
-            50,
-            false
+            75,
+            75,
+            false,
+            1
         );
 
         destroyAnimation.loadRenderableImage(
             sketch,
-            "explosion.gif"
+            "destroy.gif"
         );
 
     }
@@ -122,6 +123,24 @@ public class BlockManager {
     public void drawBlocks() {
         if (currentStructure.isEmpty()) return;
         blockRenderer.drawBlockSprites(currentStructure);
+
+
+        Iterator<Map.Entry<Animation, Vector3>> iterator =
+            destroyAnimationPositions.entrySet().iterator();
+
+        while (iterator.hasNext()) {
+            Map.Entry<Animation, Vector3> entry = iterator.next();
+
+            Animation animation = entry.getKey();
+            Vector3 position = entry.getValue();
+
+            animation.draw(this.sketch, position);
+
+            if (animation.isFinished()) {
+                iterator.remove();
+            }
+        }
+
     }
 
     //retourne la liste de tous les blocs 
@@ -155,6 +174,7 @@ public class BlockManager {
                 < (particleHeight / 2 + Block.SIZE / 2);
 
             if (collisionX && collisionY) {
+                destroyAnimationPositions.put(block.getDestroyAnimation(),blockPosition);
 
                 block.getDestroyAnimation().playAnimation();
                 // Destroy the block
