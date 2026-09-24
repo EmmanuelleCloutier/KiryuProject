@@ -1,4 +1,5 @@
 package Game.code.bloc;
+import KiryuEngine.KiryuCore.KiryuSound;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuRendering.Animation;
@@ -22,6 +23,7 @@ public class BlockManager {
     private final PApplet sketch;
     private final Sprite blockSprite;
     private final Animation destroyAnimation;
+    private final KiryuSound destroySound;
 
     private final BlockRenderer blockRenderer;
     private final StructureGenerator structureGenerator;
@@ -52,6 +54,8 @@ public class BlockManager {
             "destroy.gif"
         );
 
+
+        destroySound = new KiryuSound(sketch,"impact.wav");
     }
 
     public void loadNextStructure(){
@@ -61,6 +65,7 @@ public class BlockManager {
         nextStructure = temp;
 
         bIsNextStructureGenerated = false;
+
     }
 
 
@@ -177,6 +182,9 @@ public class BlockManager {
                 destroyAnimationPositions.put(block.getDestroyAnimation(),blockPosition);
 
                 block.getDestroyAnimation().playAnimation();
+
+                destroySound.play();
+                destroySound.setVolume(0.25f);
                 // Destroy the block
                 currentStructure.remove(i);
 

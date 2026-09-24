@@ -47,11 +47,12 @@ public class Cannon {
     this.launchVelocity = Vector3.ZERO_VECTOR;
 
     blastSound = new KiryuSound(sketch,"cannonblast.wav");
-    blastSound.setVolume(0.25f);
+
   }
 
   public void shoot(){
     blastSound.play();
+    blastSound.setVolume(0.25f);
     blastAnimation.playAnimation();
   }
 
