@@ -3,6 +3,8 @@ package Game;
 import Game.code.GameManager;
 import KiryuEngine.KiryuCore.KiryuTime;
 import processing.core.PApplet;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
 
 public class KiryuGame extends PApplet {
@@ -23,7 +25,13 @@ public class KiryuGame extends PApplet {
 
   @Override
   public void settings() {
-    size(1920, 1080); //changement de la windows pour qu'on voit actuellement les choix des projectiles
+    //size(1920, 1080); //changement de la windows pour qu'on voit actuellement les choix des projectiles
+
+    // Récupération de la taille de l'écran
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    int width = screenSize.width;
+    int height = screenSize.height;
+    size(width, height);
   }
 
   @Override

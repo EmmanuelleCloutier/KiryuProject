@@ -7,6 +7,7 @@ public class KiryuTime {
   public static float deltaTime = 0.0f;
   public static float timeScale = 1.0f; // 1.0 = normal, 0.0 = paused
   private static float smoothDelta = 0.016f;
+  private static double unitCoef = 1 / 1_000_000_000.0;
 
   private static boolean paused = false;
 
@@ -23,7 +24,7 @@ public class KiryuTime {
    */
   public static void update() {
     long currentTime = System.nanoTime();
-    float rawDeltaTime = (float)((currentTime - lastTime) / 1_000_000_000.0);
+    float rawDeltaTime = (float)((currentTime - lastTime) * unitCoef);
     lastTime = currentTime;
 
     deltaTime = rawDeltaTime * timeScale;
@@ -44,14 +45,14 @@ public class KiryuTime {
    * useful for ui animations
    */
   public static float getUnscaledDeltaTime() {
-    return (float)((System.nanoTime() - lastTime) / 1_000_000_000.0);
+    return (float)((System.nanoTime() - lastTime) * unitCoef);
   }
 
   /**
    * @return time elapsed since the initialization of the time class
    */
   public static float getTotalTime() {
-    return (float)((System.nanoTime() - startTime) / 1_000_000_000.0);
+    return (float)((System.nanoTime() - startTime) * unitCoef);
   }
 
   /**
