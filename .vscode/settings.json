@@ -1,8 +1,6 @@
 {
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "src/ProcessingCore/core-4.5.6.jar",
-        "src/ProcessingCore/gluegen-rt-2.6.0.jar",
-        "src/ProcessingCore/jogl-all-2.6.0.jar"
+        "src/ProcessingCore/*.jar"
     ]
 }
