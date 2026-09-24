@@ -5,6 +5,7 @@ import Game.code.cannon.Cannon;
 import Game.code.projectile.ProjectileRenderer;
 import Game.code.projectile.ProjectileSystem;
 import Game.code.projectile.ProjectileType;
+import KiryuEngine.KiryuCore.KiryuSound;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import processing.core.PApplet;
@@ -18,7 +19,8 @@ public class GameManager {
   public ProjectileSystem projectileSystem;
   public HUD headUpDisplay;
   public Cannon cannon;
-  PImage backGround;
+  private final PImage backGround;
+  private final KiryuSound backGroundMusic;
 
   private final float gameBottom;
 
@@ -49,6 +51,10 @@ public class GameManager {
 
     backGround = this.sketch.loadImage("Game/data/background.png");
 
+    backGroundMusic = new KiryuSound(sketch, "music.wav");
+
+    backGroundMusic.loop();
+    backGroundMusic.setVolume(0.25f);
   }
 
   public void update(float deltaTime){

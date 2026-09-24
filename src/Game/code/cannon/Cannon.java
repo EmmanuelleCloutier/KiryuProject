@@ -1,6 +1,7 @@
 package Game.code.cannon;
 
 import Game.code.projectile.ProjectileType;
+import KiryuEngine.KiryuCore.KiryuSound;
 import KiryuEngine.KiryuPhysics.Force;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuRendering.Animation;
@@ -12,6 +13,7 @@ public class Cannon {
 
   private final Sprite sprite;
   private final Animation blastAnimation;
+  private final KiryuSound blastSound;
   private final PApplet sketch;
   private final Vector3 position;
   private final TrajectoryRenderer trajectoryRenderer;
@@ -44,9 +46,13 @@ public class Cannon {
     this.projectileStartPosition = position;
     this.launchVelocity = Vector3.ZERO_VECTOR;
 
+    blastSound = new KiryuSound(sketch,"cannonblast.wav");
+
   }
 
   public void shoot(){
+    blastSound.play();
+    blastSound.setVolume(0.25f);
     blastAnimation.playAnimation();
   }
 

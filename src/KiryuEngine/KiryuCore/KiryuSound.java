@@ -8,16 +8,15 @@ import java.io.File;
 public class KiryuSound {
 
   private SoundFile soundFile;
+  private float volume = 1.0f;
 
   public KiryuSound(PApplet sketch, String filename) {
     try {
-      // Build the path to your audio file inside the data folder
-      String path = sketch.sketchPath("src/Game/data/" + filename);
 
-      // Make sure the file exists before loading to prevent crashes
-      File file = new File(path);
+      File file = new File("src/Game/data/" + filename);
+
       if (file.exists()) {
-        soundFile = new SoundFile(sketch, path);
+        soundFile = new SoundFile(sketch, file.getAbsolutePath());
       } else {
         System.err.println("CRITICAL ERROR: Sound file not found at " + file.getAbsolutePath());
       }
@@ -26,14 +25,29 @@ public class KiryuSound {
     }
   }
 
-  // Play the sound once from the beginning (perfect for explosions!)
+
+  public void setVolume(float newVolume) {
+
+    this.volume = Math.max(0.0f, newVolume);
+
+
+    if (soundFile != null && soundFile.isPlaying()) {
+      soundFile.amp(this.volume);
+    }
+  }
+
+  public float getVolume() {
+    return this.volume;
+  }
+
+
   public void play() {
     if (soundFile != null) {
       soundFile.play();
     }
   }
 
-  // Play the sound on a continuous loop (perfect for background music)
+
   public void loop() {
     if (soundFile != null) {
       soundFile.loop();
