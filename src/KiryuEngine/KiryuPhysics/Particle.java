@@ -1,5 +1,7 @@
 package KiryuEngine.KiryuPhysics;
 
+import KiryuEngine.KiryuPhysics.Collision.Collider;
+
 public class Particle {
 
     private final double mass;
@@ -11,6 +13,9 @@ public class Particle {
     private Vector3 direction;
 
     private final double damping = 1.f;
+
+    //Collider associé à la particule
+    private Collider collider = null;
 
 //constructeur qui cre une particule seulement avec une masse (tout est 0,0,0)
     public Particle(double mass) {
@@ -42,7 +47,6 @@ public class Particle {
         this.position = new Vector3(position);
         this.linearVelocity = new Vector3(linearVelocity);
     }
-
 
     /**
      * @return the mass of the particle
@@ -121,6 +125,14 @@ public class Particle {
 
     public void setDirection(Vector3 direction) {
         this.direction = direction;
+    }
+
+    public void setCollider(Collider collider) {
+        this.collider = collider;
+    }
+
+    public Collider getCollider() {
+        return collider;
     }
 
 }
