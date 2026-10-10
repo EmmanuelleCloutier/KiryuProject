@@ -1,6 +1,6 @@
 package KiryuEngine.KiryuPhysics.Collision;
 
-public class CollisionSphere implements Collider {
+public class CollisionSphere extends Collider {
 
     private double rayon;
 
