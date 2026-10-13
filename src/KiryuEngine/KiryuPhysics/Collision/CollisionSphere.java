@@ -1,6 +1,6 @@
 package KiryuEngine.KiryuPhysics.Collision;
 
-public class CollisionSphere extends Collider {
+public class CollisionSphere implements Collider {
 
     private double rayon;
 
@@ -15,4 +15,6 @@ public class CollisionSphere extends Collider {
     public void setRayon(double rayon) {
         this.rayon = rayon;
     }
+
+    public double getSize() { return rayon; }
 }
