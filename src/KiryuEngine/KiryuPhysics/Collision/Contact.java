@@ -31,8 +31,14 @@ public class Contact {
         return normale;
     }
 
-    public static boolean isContactAtRest(float deltaTime) {
+    public boolean isContactAtRest(float deltaTime) {
 
-        return false;
+        Vector3 gravity = new Vector3(0, 200, 0); //A changer
+
+        gravity = gravity.scale(deltaTime);
+        
+
+        return gravity.dotProduct(this.normale) >
+                this.particle.getLinearVelocity().dotProduct(this.normale);
     }
 }
