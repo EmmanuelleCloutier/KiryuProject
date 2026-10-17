@@ -13,9 +13,9 @@ public class Contact {
 
         this.particle = particle;
 
-        this.normale = particle.getPosition().sub(particle2.getPosition());
+        this.normale = particle2.getPosition().sub(particle.getPosition());
         this.contactPoint = particle.getPosition().add(
-                this.normale.normalize().scale(particle.getCollider().getSize()));
+                Vector3.getVectorNormal(this.normale).scale(particle.getCollider().getSize()));
 
     }
 
@@ -38,7 +38,7 @@ public class Contact {
         gravity = gravity.scale(deltaTime);
         
 
-        return gravity.dotProduct(this.normale) >
-                this.particle.getLinearVelocity().dotProduct(this.normale);
+        return Math.abs(gravity.dotProduct(this.normale)) >
+                Math.abs(this.particle.getLinearVelocity().dotProduct(this.normale));
     }
 }

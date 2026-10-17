@@ -89,12 +89,30 @@ public class TestsCollision {
 
     }
 
+    public static void test_contact() {
+        Collider c1 = new CollisionSphere(1);
+        Collider c2 = new CollisionSphere(2);
+
+        Particle p1 = new Particle(0, new Vector3(1,1,0), new Vector3(0,0,0));
+        Particle p2 = new Particle(0, new Vector3(4,1,0), new Vector3(0,0,0));
+
+        p1.setCollider(c1);
+        p2.setCollider(c2);
+
+        Contact contact = new Contact(p1, p2);
+
+        assert contact.getContactPoint().equals(new Vector3(2, 1, 0)) : "Error : Point de contact incorrect";
+        assert contact.getNormale().equals(new Vector3(3, 0, 0)) : "Error : Normale incorrect";
+
+    }
+
     static void main() {
 
         System.out.println("Début des tests\n");
         TestsCollision.test_overlapping_2_particle();
         TestsCollision.test_cable();
         TestsCollision.test_tige();
+        TestsCollision.test_contact();
         System.out.println("Fin des tests\n");
 
     }
