@@ -192,6 +192,14 @@ public class Vector3 {
     }
 
     /**
+     * Retourne le vecteur, équivalent à multiplier par -1.
+     * @return Nouveau vecteur.
+     */
+    public Vector3 reverse() {
+        return this.scale(-1);
+    }
+
+    /**
      * Additionne les deux vecteurs.
      * @param other Second vecteur.
      * @return Vecteur <code>v = a + b</code>, nouveau vecteur.
