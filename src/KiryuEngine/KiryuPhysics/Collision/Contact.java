@@ -1,5 +1,6 @@
 package KiryuEngine.KiryuPhysics.Collision;
 
+import KiryuEngine.KiryuPhysics.Forces.GravityGenerator;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 
@@ -33,11 +34,10 @@ public class Contact {
 
     public boolean isContactAtRest(float deltaTime) {
 
-        Vector3 gravity = new Vector3(0, 200, 0); //A changer
+        Vector3 gravity = GravityGenerator.GRAVITY;
 
         gravity = gravity.scale(deltaTime);
         
-
         return Math.abs(gravity.dotProduct(this.normale)) >
                 Math.abs(this.particle.getLinearVelocity().dotProduct(this.normale));
     }
