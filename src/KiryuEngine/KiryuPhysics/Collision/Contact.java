@@ -37,7 +37,7 @@ public class Contact {
         Vector3 gravity = GravityGenerator.GRAVITY;
 
         gravity = gravity.scale(deltaTime);
-        
+
         return Math.abs(gravity.dotProduct(this.normale)) >
                 Math.abs(this.particle.getLinearVelocity().dotProduct(this.normale));
     }
