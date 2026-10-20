@@ -2,7 +2,7 @@ package Game.code.cannon;
 
 import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuCore.KiryuSound;
-import KiryuEngine.KiryuPhysics.Force;
+import KiryuEngine.KiryuPhysics.Forces.Force;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuRendering.Animation;
 import KiryuEngine.KiryuRendering.Sprite;

@@ -13,7 +13,7 @@ public class Vector3 {
     public static final Vector3 BACKWARD_VECTOR = new Vector3(0,0,-1);
 
     // Marge d'erreur pour les vérifications d'égalité (.equals)
-    private static final float epsilon = 0.00001f;
+    public static final float epsilon = 0.00001f;
 
     public double x;
     public double y;

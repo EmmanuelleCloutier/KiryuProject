@@ -4,29 +4,12 @@ import KiryuEngine.KiryuPhysics.Collision.Collider;
 
 public class Particle {
 
-    private final double mass;
-    private final double inverseMass;
-
-    private Vector3 acceleration;
-    private Vector3 position;
-    private Vector3 linearVelocity;
-    private Vector3 direction;
-
-    private final double damping = 1.f;
-
-    //Collider associé à la particule
-    private Collider collider = null;
+  private final RigidBody rigidbody;
 
 //constructeur qui cre une particule seulement avec une masse (tout est 0,0,0)
-    public Particle(double mass) {
-
-        this.mass = mass;
-        this.inverseMass = 1 / this.mass;
-
-        this.acceleration = Vector3.ZERO_VECTOR;
-        this.position = Vector3.ZERO_VECTOR;
-        this.linearVelocity = Vector3.ZERO_VECTOR;
-        this.direction = Vector3.ZERO_VECTOR;
+    public Particle(World world, double mass, double size) {
+        this.rigidbody = new RigidBody(mass,size);
+        world.addRigidBody(this.rigidbody);
     }
 
     
@@ -35,24 +18,24 @@ public class Particle {
 //utile pour creer un projectile directement a sa position de depart
 //avec sa vitesse de lancement
     public Particle(
+        World world,
         double mass,
+        double size,
         Vector3 position,
         Vector3 linearVelocity
     ) {
 
-        this.mass = mass;
-        this.inverseMass = 1 / this.mass;
-
-        this.acceleration = new Vector3();
-        this.position = new Vector3(position);
-        this.linearVelocity = new Vector3(linearVelocity);
+        this.rigidbody = new RigidBody(mass,size);
+        this.rigidbody.setPosition(position);
+        this.rigidbody.setLinearVelocity(linearVelocity);
+        world.addRigidBody(this.rigidbody);
     }
 
     /**
      * @return the mass of the particle
      */
     public double getMass() {
-        return mass;
+        return rigidbody.getMass();
     }
 
 
@@ -60,7 +43,7 @@ public class Particle {
      * @return 1 / mass of the particle
      */
     public double getInverseMass() {
-        return inverseMass;
+        return rigidbody.getInverseMass();
     }
 
 
@@ -68,7 +51,7 @@ public class Particle {
      * @return particle's acceleration
      */
     public Vector3 getAcceleration() {
-        return acceleration;
+        return rigidbody.getForce();
     }
 
 
@@ -76,7 +59,7 @@ public class Particle {
      * @param acceleration sets the particle's acceleration
      */
     public void setAcceleration(Vector3 acceleration) {
-        this.acceleration = acceleration;
+        this.rigidbody.setForce(acceleration);
     }
 
 
@@ -84,7 +67,7 @@ public class Particle {
      * @return particle's position
      */
     public Vector3 getPosition() {
-        return position;
+        return rigidbody.getPosition();
     }
 
 
@@ -92,7 +75,7 @@ public class Particle {
      * @param position sets the particle's position
      */
     public void setPosition(Vector3 position) {
-        this.position = position;
+        this.rigidbody.setPosition(position);
     }
 
 
@@ -100,7 +83,7 @@ public class Particle {
      * @return particle's linear velocity
      */
     public Vector3 getLinearVelocity() {
-        return linearVelocity;
+        return rigidbody.getLinearVelocity();
     }
 
 
@@ -108,7 +91,7 @@ public class Particle {
      * @param linearVelocity sets the particle's velocity
      */
     public void setLinearVelocity(Vector3 linearVelocity) {
-        this.linearVelocity = linearVelocity;
+        this.rigidbody.setLinearVelocity(linearVelocity);
     }
 
 
@@ -116,23 +99,22 @@ public class Particle {
      * @return damping coefficient
      */
     public double getDamping() {
-        return damping;
+        return rigidbody.getDamping();
     }
 
     public Vector3 getDirection() {
-        return direction;
+        return rigidbody.getDirection();
     }
 
     public void setDirection(Vector3 direction) {
-        this.direction = direction;
-    }
-
-    public void setCollider(Collider collider) {
-        this.collider = collider;
+        this.rigidbody.setDirection(direction);
     }
 
     public Collider getCollider() {
-        return collider;
+        return rigidbody.getCollider();
     }
 
+    public RigidBody getRigidbody() {
+        return rigidbody;
+    }
 }

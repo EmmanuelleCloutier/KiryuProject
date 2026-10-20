@@ -1,12 +1,12 @@
 package Game.code.projectile;
 
-import KiryuEngine.KiryuPhysics.Force;
+import KiryuEngine.KiryuPhysics.Forces.Force;
 import KiryuEngine.KiryuPhysics.Integrator;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuPhysics.World;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 /**
@@ -21,15 +21,17 @@ public class ProjectileSystem {
 
 
   private final ProjectileRenderer projectileRenderer;
+  private final World world;
 
   /**
    *
    * @param projectileRenderer the projectile renderer
    */
-  public ProjectileSystem(ProjectileRenderer projectileRenderer){
+  public ProjectileSystem(World world, ProjectileRenderer projectileRenderer){
     this.projectileRenderer = projectileRenderer;
     this.projectiles = new ArrayList<>();
     this.projectileTypes = new ArrayList<>();
+    this.world = world;
   }
 
   /**
@@ -50,7 +52,7 @@ public class ProjectileSystem {
 
       //mettre a jouer la vitesse et la position de la particule
       Integrator.integrate(
-          particle,
+          particle.getRigidbody(),
           deltaTime
       );
     }
@@ -85,7 +87,7 @@ public class ProjectileSystem {
   public boolean addProjectile(ProjectileType type) {
 
     return (
-        this.projectiles.add(new Particle(type.mass)) &&
+        this.projectiles.add(new Particle(this.world,type.mass, 50.f)) &&
             this.projectileTypes.add(type)
     );
   }
@@ -94,7 +96,9 @@ public class ProjectileSystem {
 
     return (this.projectiles.add(
         new Particle(
+            this.world,
             type.mass,
+            50.f,
             position,
             velocity)
     )

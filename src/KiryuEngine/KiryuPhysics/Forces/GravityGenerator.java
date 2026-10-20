@@ -1,13 +1,12 @@
 package KiryuEngine.KiryuPhysics.Forces;
 
-import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 
-public class GravityGenerator implements ForceGenerator {
-    public static final Vector3 GRAVITY =
-            new Vector3(0, 200, 0);
+import static KiryuEngine.KiryuPhysics.Forces.Force.GRAVITY;
 
-    public void applyForce(Particle particle) {
-        particle.setAcceleration(GRAVITY);
+public class GravityGenerator implements ForceGenerator {
+
+    public void applyForce(Vector3 applyForceTo) {
+        applyForceTo.add(GRAVITY);
     }
 }
