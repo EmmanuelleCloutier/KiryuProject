@@ -8,6 +8,7 @@ import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuCore.KiryuSound;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuPhysics.World;
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -21,17 +22,21 @@ public class GameManager {
   public Cannon cannon;
   private final PImage backGround;
   private final KiryuSound backGroundMusic;
+  private final World world;
 
   private final float gameBottom;
 
 
-  public GameManager(PApplet sketch){
+  public GameManager(PApplet sketch, World world){
 
     this.sketch = sketch;
+    this.world = world;
+
     gameBottom = sketch.height - 170;
 
     //cree le system de projectile
     this.projectileSystem = new ProjectileSystem(
+        this.world,
         new ProjectileRenderer(sketch)
     );
 

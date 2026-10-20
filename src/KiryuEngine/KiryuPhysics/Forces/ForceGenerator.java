@@ -1,7 +1,7 @@
 package KiryuEngine.KiryuPhysics.Forces;
 
-import KiryuEngine.KiryuPhysics.Particle;
+import KiryuEngine.KiryuPhysics.Vector3;
 
 public interface ForceGenerator {
-    public void applyForce(Particle particle);
+    void applyForce(Vector3 applyForceTo);
 }

@@ -1,9 +1,17 @@
 package KiryuEngine.KiryuPhysics.Collision;
 
-public interface Collider {
+import KiryuEngine.KiryuPhysics.RigidBody;
 
-    public default void onCollision(Collider collider) {};
+public abstract class Collider {
 
-    public double getSize();
+    protected RigidBody rigidBody = null;
+
+    public abstract void onCollision(Collider other);
+
+    public abstract double getSize();
+
+    public RigidBody getRigidBody(){
+        return this.rigidBody;
+    }
 
 }

@@ -1,4 +1,7 @@
-package KiryuEngine.KiryuPhysics;
+package KiryuEngine.KiryuPhysics.Forces;
+
+import KiryuEngine.KiryuPhysics.Particle;
+import KiryuEngine.KiryuPhysics.Vector3;
 
 public class Force {
 
@@ -17,6 +20,7 @@ public class Force {
      *
      * @param particle particle affected by gravity
      */
+    @Deprecated
     public static void applyGravity(
         Particle particle
     ) {

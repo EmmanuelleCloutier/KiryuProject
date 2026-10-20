@@ -1,44 +1,59 @@
 package KiryuEngine.KiryuPhysics.Collision;
 
-import KiryuEngine.KiryuPhysics.Forces.GravityGenerator;
-import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
+
+
 
 public class Contact {
 
-    Particle particle;
-    Vector3 normale;
+    Collider other;
+    Vector3 normal;
     Vector3 contactPoint;
 
-    public Contact(Particle particle, Particle particle2) {
+    public Contact(Collider self, Collider other) {
 
-        this.particle = particle;
+        if (self == null || other == null) return;
 
-        this.normale = particle2.getPosition().sub(particle.getPosition());
-        this.contactPoint = particle.getPosition().add(
-                Vector3.getVectorNormal(this.normale).scale(particle.getCollider().getSize()));
+        this.other = other;
+
+        this.normal.set(
+            this.other.getRigidBody()
+            .getPosition()
+            .sub(
+                self.getRigidBody().getPosition()
+            ).normalize()
+        );
+
+        this.contactPoint.set(
+            self.getRigidBody()
+            .getPosition()
+            .add(
+                this.normal.scale(self.getSize())
+            )
+        );
 
     }
 
-    public Particle getParticle() {
-        return particle;
+    public Collider getOther() {
+        return other;
     }
 
     public Vector3 getContactPoint() {
         return contactPoint;
     }
 
-    public Vector3 getNormale() {
-        return normale;
+    public Vector3 getNormal() {
+        return normal;
     }
 
     public boolean isContactAtRest(float deltaTime) {
 
-        Vector3 gravity = GravityGenerator.GRAVITY;
-
-        gravity = gravity.scale(deltaTime);
-
-        return Math.abs(gravity.dotProduct(this.normale)) >
-                Math.abs(this.particle.getLinearVelocity().dotProduct(this.normale));
+//        Vector3 gravity = GRAVITY;
+//
+//        gravity = gravity.scale(deltaTime);
+//
+//        return Math.abs(gravity.dotProduct(this.normal)) >
+//                Math.abs(this.particle.getLinearVelocity().dotProduct(this.normal));
+     return false;
     }
 }

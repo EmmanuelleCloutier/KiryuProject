@@ -2,6 +2,7 @@ package Game;
 
 import Game.code.GameManager;
 import KiryuEngine.KiryuCore.KiryuTime;
+import KiryuEngine.KiryuPhysics.World;
 import processing.core.PApplet;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -10,6 +11,7 @@ import java.awt.Toolkit;
 public class KiryuGame extends PApplet {
 
   GameManager gameManager;
+  World world;
 
 
   public static void main(String[] args) {
@@ -42,7 +44,8 @@ public class KiryuGame extends PApplet {
     //delta time
     KiryuTime.init();
 
-    gameManager = new GameManager(this);
+    world = new World();
+    gameManager = new GameManager(this,world);
   }
 
 
