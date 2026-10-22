@@ -20,11 +20,11 @@ public class SheepGameManager {
     private final ArrayList<Sheep> sheepList;
     private final Random random;
     private final Dog dog;
-    private final ArrayList<Spring> springs;
+    //private final ArrayList<Spring> springs;
     private float impulseTimer = 0f;
+    private int lostSheepCount = 0;
 
-    private static final double LOST_DISTANCE = 180.0;
-    private static final double REJOIN_DISTANCE = 100.0;
+    private static final double HERD_CONNECTION_DISTANCE = 105.0;
 
     private static final int INITIAL_SHEEP_COUNT = 50;
     private static final float SHEEP_SPACING = 75f;
@@ -34,7 +34,7 @@ public class SheepGameManager {
 
         world = new World();
         spriteRenderer = new SpriteRenderer(sketch);
-        springs = new ArrayList<>();
+        //springs = new ArrayList<>();
 
         sheepList = new ArrayList<>();
         random = new Random();
@@ -65,7 +65,7 @@ public class SheepGameManager {
     private void generateInitialHerd() {
 
         int columns = 5;
-        int rows = 4;
+        int rows = 10;
 
         float centerX = sketch.width / 2f;
         float centerY = sketch.height / 2f;
@@ -90,56 +90,91 @@ public class SheepGameManager {
     }
 
     
+   
     private void updateLostSheep() {
 
-        double centerX = 0;
-        double centerY = 0;
-        int activeCount = 0;
+        int count = sheepList.size();
 
-        // Calculate the center of the active herd.
-        for (Sheep sheep : sheepList) {
+        boolean[] visited = new boolean[count];
 
-            if (!sheep.isLost()) {
-                centerX += sheep.getPosition().x;
-                centerY += sheep.getPosition().y;
-                activeCount++;
+        ArrayList<Integer> mainHerd = new ArrayList<>();
+
+        // Find all groups of nearby sheep.
+        for (int i = 0; i < count; i++) {
+
+            if (visited[i]) {
+                continue;
+            }
+
+            ArrayList<Integer> group = new ArrayList<>();
+            ArrayList<Integer> queue = new ArrayList<>();
+
+            queue.add(i);
+            visited[i] = true;
+
+            // Explore all sheep connected by proximity.
+            for (int q = 0; q < queue.size(); q++) {
+
+                int currentIndex = queue.get(q);
+                group.add(currentIndex);
+
+                Sheep current = sheepList.get(currentIndex);
+
+                for (int j = 0; j < count; j++) {
+
+                    if (visited[j]) {
+                        continue;
+                    }
+
+                    Sheep other = sheepList.get(j);
+
+                    double distance = current.getPosition()
+                        .sub(other.getPosition())
+                        .getLength();
+
+                    if (distance <= HERD_CONNECTION_DISTANCE) {
+
+                        visited[j] = true;
+                        queue.add(j);
+                    }
+                }
+            }
+
+            // Keep the largest connected group.
+            if (group.size() > mainHerd.size()) {
+                mainHerd = group;
             }
         }
 
-        if (activeCount == 0) {
-            return;
+        // Mark sheep outside the main herd as lost.
+        boolean[] belongsToMainHerd = new boolean[count];
+
+        for (int index : mainHerd) {
+            belongsToMainHerd[index] = true;
         }
 
-        centerX /= activeCount;
-        centerY /= activeCount;
+        for (int i = 0; i < count; i++) {
 
-        for (Sheep sheep : sheepList) {
+            Sheep sheep = sheepList.get(i);
 
-            double dx = sheep.getPosition().x - centerX;
-            double dy = sheep.getPosition().y - centerY;
-
-            double distance = Math.sqrt(dx * dx + dy * dy);
-
-            if (!sheep.isLost() && distance > LOST_DISTANCE) {
-                sheep.setLost(true);
-            }
-            else if (sheep.isLost() && distance < REJOIN_DISTANCE) {
-                sheep.setLost(false);
-            }
+            sheep.setLost(!belongsToMainHerd[i]);
         }
+
+        lostSheepCount = count - mainHerd.size();
     }
+
 
 
     
     private void createSheepSprings() {
 
         int columns = 5;
-        int rows = 4;
+        int rows = 10;
 
         float restLength = SHEEP_SPACING;
 
-        double stiffness = 12.0;
-        double damping = 5.0;
+        double stiffness = 4.0;
+        double damping = 2.0;
 
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
@@ -169,19 +204,24 @@ public class SheepGameManager {
                 }
 
                 // Connect to the sheep below.
+               
                 if (row < rows - 1) {
 
-                    Sheep below =
-                        sheepList.get(index + columns);
+                    Sheep below = sheepList.get(index + columns);
 
-                    springs.add(new Spring(
+                    Spring spring = new Spring(
                         current.getParticle().getCollider(),
                         below.getParticle().getCollider(),
                         restLength,
                         stiffness,
                         damping
-                    ));
+                    );
+
+                    connections.add(
+                        new SheepConnection(current, below, spring)
+                    );
                 }
+
             }
         }
     }
@@ -245,18 +285,30 @@ public class SheepGameManager {
 
 
 
+  
     public void draw() {
 
-    sketch.background(110, 155, 95);
+        sketch.background(110, 155, 95);
 
-    // Draw the herd.
-    for (Sheep sheep : sheepList) {
-        sheep.draw(spriteRenderer);
+        // Draw the herd.
+        for (Sheep sheep : sheepList) {
+            sheep.draw(spriteRenderer);
+        }
+
+        // Draw the dog above the sheep.
+        dog.draw(spriteRenderer);
+
+        // Display lost sheep counter.
+        sketch.fill(255);
+        sketch.textSize(22);
+
+        sketch.text(
+            "Lost sheep: " + lostSheepCount,
+            20,
+            35
+        );
     }
 
-    // Draw the dog above the sheep.
-    dog.draw(spriteRenderer);
-}
 
     public ArrayList<Sheep> getSheepList() {
         return sheepList;
@@ -265,4 +317,6 @@ public class SheepGameManager {
     public World getWorld() {
         return world;
     }
+
+    
 }
