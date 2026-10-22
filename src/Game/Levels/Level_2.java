@@ -1,31 +1,50 @@
 
 package Game.Levels;
 
+import Game.codesheep.Sheep;
+import KiryuEngine.KiryuPhysics.World;
+import KiryuEngine.KiryuRendering.SpriteRenderer;
+
 import processing.core.PApplet;
 
 public class Level_2 {
 
     private final PApplet app;
+    private final World world;
+    private final SpriteRenderer spriteRenderer;
+
+    private final Sheep sheep;
 
     public Level_2(PApplet app) {
+
         this.app = app;
+
+        // Independent physics world for Game 2.
+        world = new World();
+
+        // Shared rendering system.
+        spriteRenderer = new SpriteRenderer(app);
+
+        // Create one sheep at the center of the screen.
+        sheep = new Sheep(
+            world,
+            app.width / 2.0,
+            app.height / 2.0
+        );
     }
 
     public void update(float deltaTime) {
-        // Future logique des moutons
+
+        // No physics simulation yet.
+        // We will activate it when movement is implemented.
     }
 
     public void draw() {
-        app.background(100, 180, 100);
 
-        app.fill(255);
-        app.textAlign(PApplet.CENTER, PApplet.CENTER);
-        app.textSize(50);
+        // Grass background.
+        app.background(110, 155, 95);
 
-        app.text(
-            "SHEEP GAME - COMING SOON",
-            app.width / 2f,
-            app.height / 2f
-        );
+        // Render the sheep.
+        sheep.draw(spriteRenderer);
     }
 }

@@ -19,6 +19,16 @@ public class RigidBody {
   private Vector3 linearVelocity;
   private Vector3 direction;
 
+  public RigidBody(double mass, double size) {
+    this(
+        mass,
+        size,
+        new Vector3(),
+        new Vector3()
+    );
+}
+
+  /* 
   public RigidBody(
       double mass,
       double size
@@ -26,7 +36,7 @@ public class RigidBody {
     this.mass = mass;
     this.inverseMass = 1/mass;
     this.size = size;
-  }
+  }*/
 
 
   public RigidBody(
