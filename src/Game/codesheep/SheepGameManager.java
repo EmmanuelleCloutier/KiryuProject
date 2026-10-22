@@ -21,6 +21,7 @@ public class SheepGameManager {
     private final Random random;
     private final Dog dog;
     private final ArrayList<Spring> springs;
+    private float impulseTimer = 0f;
 
     private static final int INITIAL_SHEEP_COUNT = 20;
     private static final float SHEEP_SPACING = 75f;
@@ -122,6 +123,26 @@ public class SheepGameManager {
         // Update dog position.
         dog.update(deltaTime);
 
+        
+        impulseTimer += deltaTime;
+
+        // Apply random impulses every 0.4 seconds.
+        if (impulseTimer >= 0.4f) {
+
+            impulseTimer = 0f;
+
+            // Move a few sheep at a time.
+            for (int i = 0; i < 4; i++) {
+
+                Sheep sheep = sheepList.get(
+                    random.nextInt(sheepList.size())
+                );
+
+                sheep.applyRandomImpulse(random);
+            }
+        }
+
+
         // 1. Apply dog repulsion.
         // This also resets the previous frame's acceleration.
         for (Sheep sheep : sheepList) {
@@ -137,7 +158,7 @@ public class SheepGameManager {
         world.UpdatePhysics(deltaTime);
 
         // 4. Slow down the sheep.
-        double damping = Math.exp(-4.0 * deltaTime);
+        double damping = Math.exp(-2.0 * deltaTime);
 
         for (Sheep sheep : sheepList) {
             sheep.getParticle().setLinearVelocity(

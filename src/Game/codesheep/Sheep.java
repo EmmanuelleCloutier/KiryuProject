@@ -3,6 +3,7 @@ package Game.codesheep;
 
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
+import java.util.Random;
 import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
 
@@ -41,6 +42,27 @@ public class Sheep {
     public void testMethod() {
     System.out.println("TEST SHEEP");
     }
+
+    
+    public void applyRandomImpulse(Random random) {
+
+        // Random direction.
+        double angle = random.nextDouble() * Math.PI * 2.0;
+
+        // Small random velocity impulse.
+        double strength = 20.0 + random.nextDouble() * 35.0;
+
+        Vector3 impulse = new Vector3(
+            Math.cos(angle) * strength,
+            Math.sin(angle) * strength,
+            0
+        );
+
+        particle.setLinearVelocity(
+            particle.getLinearVelocity().add(impulse)
+        );
+    }
+
     
     public void applyDogRepulsion(Vector3 dogPosition) {
 
