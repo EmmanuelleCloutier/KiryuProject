@@ -51,10 +51,10 @@ public class SheepGameManager {
 
         sheepPen = new SheepPen(
             sketch,
-            sketch.width - 300,
-            40,
-            260,
-            200
+            70f,
+            sketch.height - 330f,
+            450f,
+            290f
         );
 
         generateInitialHerd();
@@ -64,20 +64,28 @@ public class SheepGameManager {
     }
 
     
+  
     private void updateSheepPen() {
 
         for (Sheep sheep : sheepList) {
 
-            // Already saved sheep should not be counted twice.
             if (sheep.isSafe()) {
                 continue;
             }
 
             if (sheepPen.contains(sheep.getPosition())) {
 
+                // Assign a unique position inside the pen.
+                Vector3 safePosition =
+                    sheepPen.getSafePosition(safeSheepCount);
+
                 sheep.setSafe(true);
                 sheep.setLost(false);
 
+                // Move sheep to its assigned position.
+                sheep.getParticle().setPosition(safePosition);
+
+                // Stop all movement.
                 sheep.getParticle().setLinearVelocity(
                     new Vector3(0, 0, 0)
                 );
@@ -202,10 +210,15 @@ public class SheepGameManager {
             if (vy < 0) vy = 0;
         }
 
-        // Bottom boundary.
-        if (y > sketch.height - radius) {
-            y = sketch.height - radius;
-            if (vy > 0) vy = 0;
+       // Bottom boundary.
+        double bottomMargin = 55.0;
+
+        if (y > sketch.height - bottomMargin) {
+            y = sketch.height - bottomMargin;
+
+            if (vy > 0) {
+                vy = 0;
+            }
         }
 
         sheep.getParticle().setPosition(
