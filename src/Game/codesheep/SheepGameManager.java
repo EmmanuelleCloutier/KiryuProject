@@ -123,6 +123,52 @@ public class SheepGameManager {
     }
 
 
+    private void resolveWindowCollision(Sheep sheep) {
+
+        double radius = 27.5; // Sheep sprite size / 2
+
+        Vector3 position = sheep.getPosition();
+        Vector3 velocity = sheep.getParticle().getLinearVelocity();
+
+        double x = position.x;
+        double y = position.y;
+
+        double vx = velocity.x;
+        double vy = velocity.y;
+
+        // Left boundary.
+        if (x < radius) {
+            x = radius;
+            if (vx < 0) vx = 0;
+        }
+
+        // Right boundary.
+        if (x > sketch.width - radius) {
+            x = sketch.width - radius;
+            if (vx > 0) vx = 0;
+        }
+
+        // Top boundary.
+        if (y < radius) {
+            y = radius;
+            if (vy < 0) vy = 0;
+        }
+
+        // Bottom boundary.
+        if (y > sketch.height - radius) {
+            y = sketch.height - radius;
+            if (vy > 0) vy = 0;
+        }
+
+        sheep.getParticle().setPosition(
+            new Vector3(x, y, position.z)
+        );
+
+        sheep.getParticle().setLinearVelocity(
+            new Vector3(vx, vy, velocity.z)
+        );
+    }
+
     
     private static class SheepConnection {
 
@@ -357,6 +403,11 @@ public class SheepGameManager {
 
                 obstacle.resolveCollision(sheep);
             }
+        }
+
+        // Keep sheep inside the window.
+        for (Sheep sheep : sheepList) {
+            resolveWindowCollision(sheep);
         }
 
         // 4. Slow down the sheep.
