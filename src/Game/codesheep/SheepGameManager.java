@@ -29,6 +29,12 @@ public class SheepGameManager {
     private static final int INITIAL_SHEEP_COUNT = 50;
     private static final float SHEEP_SPACING = 75f;
 
+    private final ArrayList<SheepObstacle> obstacles =
+    new ArrayList<>();
+
+    private static final int ROCK_COUNT = 12;
+    private static final int BUSH_COUNT = 18;
+
     public SheepGameManager(PApplet sketch) {
         this.sketch = sketch;
 
@@ -42,7 +48,80 @@ public class SheepGameManager {
 
         generateInitialHerd();
         createSheepSprings();
+        generateObstacles();
     }
+
+        
+    private void generateObstacles() {
+
+        int total = ROCK_COUNT + BUSH_COUNT;
+
+        for (int i = 0; i < total; i++) {
+
+            SheepObstacle.Type type = i < ROCK_COUNT
+                ? SheepObstacle.Type.ROCK
+                : SheepObstacle.Type.BUSH;
+
+            boolean placed = false;
+
+            // Limit attempts to avoid infinite loops.
+            for (int attempt = 0; attempt < 200 && !placed; attempt++) {
+
+                double margin = 60.0;
+
+                double x = margin
+                    + random.nextDouble() * (sketch.width - margin * 2);
+
+                double y = margin
+                    + random.nextDouble() * (sketch.height - margin * 2);
+
+                SheepObstacle candidate =
+                    new SheepObstacle(type, x, y);
+
+                boolean valid = true;
+
+                // Avoid spawning on sheep.
+                for (Sheep sheep : sheepList) {
+
+                    double distance = candidate.getPosition()
+                        .sub(sheep.getPosition())
+                        .getLength();
+
+                    if (distance < candidate.getRadius() + 65.0) {
+                        valid = false;
+                        break;
+                    }
+                }
+
+                // Avoid overlapping other obstacles.
+                if (valid) {
+
+                    for (SheepObstacle obstacle : obstacles) {
+
+                        double distance = candidate.getPosition()
+                            .sub(obstacle.getPosition())
+                            .getLength();
+
+                        double minimumDistance =
+                            candidate.getRadius()
+                            + obstacle.getRadius()
+                            + 35.0;
+
+                        if (distance < minimumDistance) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (valid) {
+                    obstacles.add(candidate);
+                    placed = true;
+                }
+            }
+        }
+    }
+
 
     
     private static class SheepConnection {
@@ -271,6 +350,15 @@ public class SheepGameManager {
         // 3. Update physics.
         world.UpdatePhysics(deltaTime);
 
+        // Resolve sheep-obstacle collisions.
+        for (SheepObstacle obstacle : obstacles) {
+
+            for (Sheep sheep : sheepList) {
+
+                obstacle.resolveCollision(sheep);
+            }
+        }
+
         // 4. Slow down the sheep.
         double damping = Math.exp(-2.0 * deltaTime);
 
@@ -282,23 +370,25 @@ public class SheepGameManager {
             );
         }
     }
-
-
-
-  
+   
     public void draw() {
 
         sketch.background(110, 155, 95);
 
-        // Draw the herd.
+        // Draw obstacles.
+        for (SheepObstacle obstacle : obstacles) {
+            obstacle.draw(spriteRenderer);
+        }
+
+        // Draw sheep.
         for (Sheep sheep : sheepList) {
             sheep.draw(spriteRenderer);
         }
 
-        // Draw the dog above the sheep.
+        // Draw dog.
         dog.draw(spriteRenderer);
 
-        // Display lost sheep counter.
+        // HUD.
         sketch.fill(255);
         sketch.textSize(22);
 
@@ -308,6 +398,7 @@ public class SheepGameManager {
             35
         );
     }
+
 
 
     public ArrayList<Sheep> getSheepList() {
