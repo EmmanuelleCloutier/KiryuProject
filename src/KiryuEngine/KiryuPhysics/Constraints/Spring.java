@@ -25,7 +25,7 @@ public class Spring extends Constraint {
 
     @Override
     public boolean isConstrained() {
-        // Springs are evaluated continuously.
+        //spring continuously apply force between connected bodies
         return true;
     }
 
@@ -34,11 +34,13 @@ public class Spring extends Constraint {
         RigidBody bodyA = first.getRigidBody();
         RigidBody bodyB = second.getRigidBody();
 
+        //calculate the distance between the two connected bodies
         Vector3 difference =
             bodyB.getPosition().sub(bodyA.getPosition());
 
         double distance = difference.getLength();
 
+        //avoid division by zero when both bodies share a position
         if (distance < 0.0001) {
             return;
         }
@@ -46,19 +48,21 @@ public class Spring extends Constraint {
         Vector3 direction =
             difference.scale(1.0 / distance);
 
-        // Hooke's law.
+        // Hooke's law : displacement from the spring resting lenght
         double displacement = distance - maxDistance;
 
-        // Relative velocity along the spring.
+        //calculate the relative velocity between both bodie 
         Vector3 relativeVelocity =
             bodyB.getLinearVelocity()
                 .sub(bodyA.getLinearVelocity());
 
+        //project the relative velocity onto the spring direction
         double velocityAlongSpring =
             relativeVelocity.x * direction.x
             + relativeVelocity.y * direction.y
             + relativeVelocity.z * direction.z;
 
+        //combine spring stiffness and damping forces
         double forceMagnitude =
             stiffness * displacement
             + damping * velocityAlongSpring;
@@ -67,14 +71,14 @@ public class Spring extends Constraint {
             direction.scale(forceMagnitude);
 
         
-        // Convert spring forces to accelerations.
+        //convert the spring into acceleration
         Vector3 accelerationA =
             springForce.scale(bodyA.getInverseMass());
 
         Vector3 accelerationB =
             springForce.scale(-bodyB.getInverseMass());
 
-        // Add spring acceleration to existing acceleration.
+        //apply equal and opposite contributions to the both bodies
         bodyA.setForce(
             bodyA.getForce().add(accelerationA)
         );

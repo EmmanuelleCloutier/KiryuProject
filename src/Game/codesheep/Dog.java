@@ -18,6 +18,7 @@ public class Dog {
     public Dog(PApplet sketch) {
         this.sketch = sketch;
 
+        //default position
         position = new Vector3(
             sketch.width / 2.0,
             sketch.height / 2.0 + 250,
@@ -27,7 +28,7 @@ public class Dog {
 
     public void update(float deltaTime) {
 
-        // The dog follows the mouse position.
+        //follow mouse
         position = new Vector3(
             sketch.mouseX,
             sketch.mouseY,

@@ -43,12 +43,12 @@ public class SheepGameManager {
 
         world = new World();
         spriteRenderer = new SpriteRenderer(sketch);
-        //springs = new ArrayList<>();
 
         sheepList = new ArrayList<>();
         random = new Random();
         dog = new Dog(sketch);
 
+        //create the sheep pen 
         sheepPen = new SheepPen(
             sketch,
             70f,
@@ -75,17 +75,17 @@ public class SheepGameManager {
 
             if (sheepPen.contains(sheep.getPosition())) {
 
-                // Assign a unique position inside the pen.
+                //assign unique resting space
                 Vector3 safePosition =
                     sheepPen.getSafePosition(safeSheepCount);
 
                 sheep.setSafe(true);
                 sheep.setLost(false);
 
-                // Move sheep to its assigned position.
+                //move the sheep to its resting position
                 sheep.getParticle().setPosition(safePosition);
 
-                // Stop all movement.
+                //stop movement 
                 sheep.getParticle().setLinearVelocity(
                     new Vector3(0, 0, 0)
                 );
@@ -113,7 +113,7 @@ public class SheepGameManager {
 
             boolean placed = false;
 
-            // Limit attempts to avoid infinite loops.
+            //limits placement 
             for (int attempt = 0; attempt < 200 && !placed; attempt++) {
 
                 double margin = 60.0;
@@ -129,6 +129,7 @@ public class SheepGameManager {
 
                 boolean valid = true;
 
+                //no obstacles outside the sheep pen
                 if (sheepPen.overlapsCircle(
                         candidate.getPosition(),
                         candidate.getRadius() + 20.0)) {
@@ -136,7 +137,7 @@ public class SheepGameManager {
                     valid = false;
                 }
 
-                // Avoid spawning on sheep.
+                //avoid spawning obstacles on the inital herd
                 for (Sheep sheep : sheepList) {
 
                     double distance = candidate.getPosition()
@@ -149,7 +150,7 @@ public class SheepGameManager {
                     }
                 }
 
-                // Avoid overlapping other obstacles.
+                //prevent obstacles from overlapping 
                 if (valid) {
 
                     for (SheepObstacle obstacle : obstacles) {
@@ -170,6 +171,7 @@ public class SheepGameManager {
                     }
                 }
 
+                //add obstacle only when position is valid
                 if (valid) {
                     obstacles.add(candidate);
                     placed = true;
@@ -221,6 +223,7 @@ public class SheepGameManager {
             }
         }
 
+        //apply the corrected position and velocity 
         sheep.getParticle().setPosition(
             new Vector3(x, y, position.z)
         );
@@ -230,7 +233,7 @@ public class SheepGameManager {
         );
     }
 
-    
+    //sotre the two sheep connected by spring 
     private static class SheepConnection {
 
         Sheep first;
@@ -265,7 +268,7 @@ public class SheepGameManager {
                 float y = centerY
                     + (row - (rows - 1) / 2f) * SHEEP_SPACING;
 
-                // Small random variation for a natural herd.
+                //variation randomness for curve sheep blob
                 x += random.nextFloat() * 10f - 5f;
                 y += random.nextFloat() * 10f - 5f;
 
@@ -285,6 +288,7 @@ public class SheepGameManager {
         boolean[] visited = new boolean[count];
         ArrayList<Integer> mainHerd = new ArrayList<>();
 
+        //find the groups of sheep connected by proximity
         for (int i = 0; i < count; i++) {
 
             if (visited[i] || sheepList.get(i).isSafe()) {
@@ -297,6 +301,7 @@ public class SheepGameManager {
             queue.add(i);
             visited[i] = true;
 
+            //explore nearby sheep using BFS (breadth first search)
             for (int q = 0; q < queue.size(); q++) {
 
                 int currentIndex = queue.get(q);
@@ -323,6 +328,7 @@ public class SheepGameManager {
                 }
             }
 
+            //the largest connected group is the herd
             if (group.size() > mainHerd.size()) {
                 mainHerd = group;
             }
@@ -334,6 +340,7 @@ public class SheepGameManager {
             belongsToMainHerd[index] = true;
         }
 
+        //mark sheep outisde of the main herd as lost
         for (int i = 0; i < count; i++) {
 
             Sheep sheep = sheepList.get(i);
@@ -343,9 +350,6 @@ public class SheepGameManager {
             }
         }
     }
-
-
-
     
     private void createSheepSprings() {
 
@@ -357,6 +361,7 @@ public class SheepGameManager {
         double stiffness = 4.0;
         double damping = 2.0;
 
+        //connect neighboring sheep to create the blob structure
         for (int row = 0; row < rows; row++) {
             for (int col = 0; col < columns; col++) {
 
@@ -409,18 +414,16 @@ public class SheepGameManager {
 
     public void update(float deltaTime) {
 
-        // Update dog position.
         dog.update(deltaTime);
 
-        
         impulseTimer += deltaTime;
 
-        // Apply random impulses every 0.4 seconds.
+        //randonm pulse 
         if (impulseTimer >= 0.4f) {
 
             impulseTimer = 0f;
 
-            // Move a few sheep at a time.
+            //select a few sheep to move randomly 
             for (int i = 0; i < 4; i++) {
 
                Sheep sheep = sheepList.get(
@@ -433,15 +436,14 @@ public class SheepGameManager {
             }
         }
 
-
-        // 1. Apply dog repulsion.
-        // This also resets the previous frame's acceleration.
+        //apply dog repulsion and reset acceleration when out of range
         for (Sheep sheep : sheepList) {
             sheep.applyDogRepulsion(dog.getPosition());
         }
 
-       updateLostSheep();
+       updateLostSheep(); //identrify sheep that have separated from the main herd
 
+       //apply spring force only between active sheep in the main herd
         for (SheepConnection connection : connections) {
 
             if (!connection.first.isLost()
@@ -453,10 +455,10 @@ public class SheepGameManager {
             }
         }
 
-        // 3. Update physics.
+        //update particule positions and velocities through the physic engine 
         world.UpdatePhysics(deltaTime);
 
-        // Resolve sheep-obstacle collisions.
+        //resolve collision between sheep and environmental obstacles
         for (SheepObstacle obstacle : obstacles) {
 
             for (Sheep sheep : sheepList) {
@@ -472,10 +474,7 @@ public class SheepGameManager {
             resolveWindowCollision(sheep);
         }
 
-        // 4. Slow down the sheep.
-        double damping = Math.exp(-2.0 * deltaTime);
-
-        // Keep rescued sheep stationary.
+        //keep rescued sheep stationary
         for (Sheep sheep : sheepList) {
 
             if (sheep.isSafe()) {
@@ -496,23 +495,20 @@ public class SheepGameManager {
 
         sketch.background(110, 155, 95);
 
-        // Draw the sheep pen.
         sheepPen.draw();
 
-        // Draw obstacles.
-        for (SheepObstacle obstacle : obstacles) {
+        for (SheepObstacle obstacle : obstacles) { //draw obstacle
             obstacle.draw(spriteRenderer);
         }
 
-        // Draw sheep.
-        for (Sheep sheep : sheepList) {
+        for (Sheep sheep : sheepList) { //draw sheep
             sheep.draw(spriteRenderer);
         }
 
-        // Draw dog.
+        //draw dog
         dog.draw(spriteRenderer);
 
-        // HUD: only rescued sheep.
+        //how much rescue sheep 
         sketch.pushStyle();
 
         sketch.fill(255);
@@ -527,7 +523,6 @@ public class SheepGameManager {
 
         sketch.popStyle();
     }
-
 
     public ArrayList<Sheep> getSheepList() {
         return sheepList;

@@ -15,6 +15,8 @@ public class Sheep {
         "Game/data/mouton.png";
 
     private static final float SIZE = 55;
+
+    //track si le mouton est lost ou est dans le pen 
     private boolean isSafe = false;
     private boolean isLost = false;
 
@@ -28,7 +30,7 @@ public class Sheep {
 
     public Sheep(World world, double x, double y) {
 
-        // Each sheep is represented by one physical particle.
+        //track whether the sheep
         particle = new Particle(
             world,
             1.0,
@@ -37,7 +39,7 @@ public class Sheep {
             new Vector3(0, 0, 0)
         );
 
-        // No movement or gravity for the initial test.
+        //disable gravity and initial acceleration
         particle.setAcceleration(new Vector3(0, 0, 0));
     }
 
@@ -64,14 +66,12 @@ public class Sheep {
     
     public void applyRandomImpulse(Random random) {
 
-        if (isSafe) {
+        if (isSafe) { //on retire les impulse le sheep est safe
         return;
         }   
 
-        // Random direction.
+        //generate a random direction and impulse 
         double angle = random.nextDouble() * Math.PI * 2.0;
-
-        // Small random velocity impulse.
         double strength = 20.0 + random.nextDouble() * 35.0;
 
         Vector3 impulse = new Vector3(
@@ -80,6 +80,7 @@ public class Sheep {
             0
         );
 
+        //add impulse to the current velocity
         particle.setLinearVelocity(
             particle.getLinearVelocity().add(impulse)
         );
@@ -102,7 +103,7 @@ public class Sheep {
 
         if (distance > 0 && distance < detectionRadius) {
 
-            // Stronger repulsion when the dog is closer.
+            //increase repulsion as the dos gets closer
             double intensity = 1.0 - (distance / detectionRadius);
 
             Vector3 acceleration = direction
@@ -112,7 +113,7 @@ public class Sheep {
             particle.setAcceleration(acceleration);
 
         } else {
-            particle.setAcceleration(new Vector3(0, 0, 0));
+            particle.setAcceleration(new Vector3(0, 0, 0)); //out of range 
         }
     }
 
