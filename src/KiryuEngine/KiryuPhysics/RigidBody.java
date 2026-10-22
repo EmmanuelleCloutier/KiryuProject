@@ -53,6 +53,7 @@ public class RigidBody {
     this.position = new Vector3(position);
     this.linearVelocity = new Vector3(linearVelocity);
     this.collider = new CollisionSphere(this.size,this);
+    this.accumulatedForce = new Vector3();
   }
 
   /**

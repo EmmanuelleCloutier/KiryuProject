@@ -38,6 +38,36 @@ public class Sheep {
         return particle.getPosition();
     }
 
+    public void testMethod() {
+    System.out.println("TEST SHEEP");
+    }
+    
+    public void applyDogRepulsion(Vector3 dogPosition) {
+
+        double detectionRadius = 150.0;
+        double repulsionStrength = 600.0;
+
+        Vector3 direction = particle.getPosition().sub(dogPosition);
+
+        double distance = direction.getLength();
+
+        if (distance > 0 && distance < detectionRadius) {
+
+            // Stronger repulsion when the dog is closer.
+            double intensity = 1.0 - (distance / detectionRadius);
+
+            Vector3 acceleration = direction
+                .scale(1.0 / distance)
+                .scale(repulsionStrength * intensity);
+
+            particle.setAcceleration(acceleration);
+
+        } else {
+            particle.setAcceleration(new Vector3(0, 0, 0));
+        }
+    }
+
+
     public void draw(SpriteRenderer renderer) {
         renderer.drawSprite(
             SPRITE_PATH,

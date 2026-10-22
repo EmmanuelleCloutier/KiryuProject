@@ -5,6 +5,9 @@ import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
 
+import KiryuEngine.KiryuPhysics.Constraints.Spring;
+import KiryuEngine.KiryuPhysics.Vector3;
+
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -17,6 +20,7 @@ public class SheepGameManager {
     private final ArrayList<Sheep> sheepList;
     private final Random random;
     private final Dog dog;
+    private final ArrayList<Spring> springs;
 
     private static final int INITIAL_SHEEP_COUNT = 20;
     private static final float SHEEP_SPACING = 75f;
@@ -26,12 +30,14 @@ public class SheepGameManager {
 
         world = new World();
         spriteRenderer = new SpriteRenderer(sketch);
+        springs = new ArrayList<>();
 
         sheepList = new ArrayList<>();
         random = new Random();
         dog = new Dog(sketch);
 
         generateInitialHerd();
+        createSheepSprings();
     }
 
     private void generateInitialHerd() {
@@ -61,9 +67,88 @@ public class SheepGameManager {
         }
     }
 
-    public void update(float deltaTime) {
-          dog.update(deltaTime);
+    
+    private void createSheepSprings() {
+
+        int columns = 5;
+        int rows = 4;
+
+        float restLength = SHEEP_SPACING;
+
+        double stiffness = 12.0;
+        double damping = 5.0;
+
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < columns; col++) {
+
+                int index = row * columns + col;
+
+                Sheep current = sheepList.get(index);
+
+                // Connect to the sheep on the right.
+                if (col < columns - 1) {
+
+                    Sheep right = sheepList.get(index + 1);
+
+                    springs.add(new Spring(
+                        current.getParticle().getCollider(),
+                        right.getParticle().getCollider(),
+                        restLength,
+                        stiffness,
+                        damping
+                    ));
+                }
+
+                // Connect to the sheep below.
+                if (row < rows - 1) {
+
+                    Sheep below =
+                        sheepList.get(index + columns);
+
+                    springs.add(new Spring(
+                        current.getParticle().getCollider(),
+                        below.getParticle().getCollider(),
+                        restLength,
+                        stiffness,
+                        damping
+                    ));
+                }
+            }
+        }
     }
+
+    public void update(float deltaTime) {
+
+        // Update dog position.
+        dog.update(deltaTime);
+
+        // 1. Apply dog repulsion.
+        // This also resets the previous frame's acceleration.
+        for (Sheep sheep : sheepList) {
+            sheep.applyDogRepulsion(dog.getPosition());
+        }
+
+        // 2. Apply spring forces.
+        for (Spring spring : springs) {
+            spring.applyForce();
+        }
+
+        // 3. Update physics.
+        world.UpdatePhysics(deltaTime);
+
+        // 4. Slow down the sheep.
+        double damping = Math.exp(-4.0 * deltaTime);
+
+        for (Sheep sheep : sheepList) {
+            sheep.getParticle().setLinearVelocity(
+                sheep.getParticle()
+                    .getLinearVelocity()
+                    .scale(damping)
+            );
+        }
+    }
+
+
 
     public void draw() {
 
