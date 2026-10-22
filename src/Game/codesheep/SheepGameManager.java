@@ -16,6 +16,7 @@ public class SheepGameManager {
 
     private final ArrayList<Sheep> sheepList;
     private final Random random;
+    private final Dog dog;
 
     private static final int INITIAL_SHEEP_COUNT = 20;
     private static final float SHEEP_SPACING = 75f;
@@ -28,6 +29,7 @@ public class SheepGameManager {
 
         sheepList = new ArrayList<>();
         random = new Random();
+        dog = new Dog(sketch);
 
         generateInitialHerd();
     }
@@ -60,16 +62,21 @@ public class SheepGameManager {
     }
 
     public void update(float deltaTime) {
-        // Physics and herd movement will be added later.
+          dog.update(deltaTime);
     }
 
     public void draw() {
-        sketch.background(110, 155, 95);
 
-        for (Sheep sheep : sheepList) {
-            sheep.draw(spriteRenderer);
-        }
+    sketch.background(110, 155, 95);
+
+    // Draw the herd.
+    for (Sheep sheep : sheepList) {
+        sheep.draw(spriteRenderer);
     }
+
+    // Draw the dog above the sheep.
+    dog.draw(spriteRenderer);
+}
 
     public ArrayList<Sheep> getSheepList() {
         return sheepList;
