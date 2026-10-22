@@ -15,6 +15,7 @@ public class Sheep {
         "Game/data/mouton.png";
 
     private static final float SIZE = 55;
+    private boolean isLost = false;
 
     public Sheep(World world, double x, double y) {
 
@@ -29,6 +30,14 @@ public class Sheep {
 
         // No movement or gravity for the initial test.
         particle.setAcceleration(new Vector3(0, 0, 0));
+    }
+
+    public boolean isLost() {
+    return isLost;
+    }
+
+    public void setLost(boolean lost) {
+        this.isLost = lost;
     }
 
     public Particle getParticle() {

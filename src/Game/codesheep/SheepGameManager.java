@@ -23,7 +23,10 @@ public class SheepGameManager {
     private final ArrayList<Spring> springs;
     private float impulseTimer = 0f;
 
-    private static final int INITIAL_SHEEP_COUNT = 20;
+    private static final double LOST_DISTANCE = 180.0;
+    private static final double REJOIN_DISTANCE = 100.0;
+
+    private static final int INITIAL_SHEEP_COUNT = 50;
     private static final float SHEEP_SPACING = 75f;
 
     public SheepGameManager(PApplet sketch) {
@@ -40,6 +43,24 @@ public class SheepGameManager {
         generateInitialHerd();
         createSheepSprings();
     }
+
+    
+    private static class SheepConnection {
+
+        Sheep first;
+        Sheep second;
+        Spring spring;
+
+        SheepConnection(Sheep first, Sheep second, Spring spring) {
+            this.first = first;
+            this.second = second;
+            this.spring = spring;
+        }
+    }
+
+    private final ArrayList<SheepConnection> connections =
+        new ArrayList<>();
+
 
     private void generateInitialHerd() {
 
@@ -69,6 +90,47 @@ public class SheepGameManager {
     }
 
     
+    private void updateLostSheep() {
+
+        double centerX = 0;
+        double centerY = 0;
+        int activeCount = 0;
+
+        // Calculate the center of the active herd.
+        for (Sheep sheep : sheepList) {
+
+            if (!sheep.isLost()) {
+                centerX += sheep.getPosition().x;
+                centerY += sheep.getPosition().y;
+                activeCount++;
+            }
+        }
+
+        if (activeCount == 0) {
+            return;
+        }
+
+        centerX /= activeCount;
+        centerY /= activeCount;
+
+        for (Sheep sheep : sheepList) {
+
+            double dx = sheep.getPosition().x - centerX;
+            double dy = sheep.getPosition().y - centerY;
+
+            double distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (!sheep.isLost() && distance > LOST_DISTANCE) {
+                sheep.setLost(true);
+            }
+            else if (sheep.isLost() && distance < REJOIN_DISTANCE) {
+                sheep.setLost(false);
+            }
+        }
+    }
+
+
+    
     private void createSheepSprings() {
 
         int columns = 5;
@@ -91,13 +153,19 @@ public class SheepGameManager {
 
                     Sheep right = sheepList.get(index + 1);
 
-                    springs.add(new Spring(
+                   
+                    Spring spring = new Spring(
                         current.getParticle().getCollider(),
                         right.getParticle().getCollider(),
                         restLength,
                         stiffness,
                         damping
-                    ));
+                    );
+
+                    connections.add(
+                        new SheepConnection(current, right, spring)
+                    );
+
                 }
 
                 // Connect to the sheep below.
@@ -149,9 +217,15 @@ public class SheepGameManager {
             sheep.applyDogRepulsion(dog.getPosition());
         }
 
-        // 2. Apply spring forces.
-        for (Spring spring : springs) {
-            spring.applyForce();
+       updateLostSheep();
+
+        for (SheepConnection connection : connections) {
+
+            if (!connection.first.isLost()
+                    && !connection.second.isLost()) {
+
+                connection.spring.applyForce();
+            }
         }
 
         // 3. Update physics.
