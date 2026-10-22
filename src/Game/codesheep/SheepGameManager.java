@@ -22,7 +22,7 @@ public class SheepGameManager {
     private final Dog dog;
     //private final ArrayList<Spring> springs;
     private float impulseTimer = 0f;
-    private int lostSheepCount = 0;
+
 
     private static final double HERD_CONNECTION_DISTANCE = 105.0;
 
@@ -34,6 +34,9 @@ public class SheepGameManager {
 
     private static final int ROCK_COUNT = 12;
     private static final int BUSH_COUNT = 18;
+    
+    private final SheepPen sheepPen;
+    private int safeSheepCount = 0;
 
     public SheepGameManager(PApplet sketch) {
         this.sketch = sketch;
@@ -46,10 +49,48 @@ public class SheepGameManager {
         random = new Random();
         dog = new Dog(sketch);
 
+        sheepPen = new SheepPen(
+            sketch,
+            sketch.width - 300,
+            40,
+            260,
+            200
+        );
+
         generateInitialHerd();
         createSheepSprings();
         generateObstacles();
+        
     }
+
+    
+    private void updateSheepPen() {
+
+        for (Sheep sheep : sheepList) {
+
+            // Already saved sheep should not be counted twice.
+            if (sheep.isSafe()) {
+                continue;
+            }
+
+            if (sheepPen.contains(sheep.getPosition())) {
+
+                sheep.setSafe(true);
+                sheep.setLost(false);
+
+                sheep.getParticle().setLinearVelocity(
+                    new Vector3(0, 0, 0)
+                );
+
+                sheep.getParticle().setAcceleration(
+                    new Vector3(0, 0, 0)
+                );
+
+                safeSheepCount++;
+            }
+        }
+    }
+
 
         
     private void generateObstacles() {
@@ -79,6 +120,13 @@ public class SheepGameManager {
                     new SheepObstacle(type, x, y);
 
                 boolean valid = true;
+
+                if (sheepPen.overlapsCircle(
+                        candidate.getPosition(),
+                        candidate.getRadius() + 20.0)) {
+
+                    valid = false;
+                }
 
                 // Avoid spawning on sheep.
                 for (Sheep sheep : sheepList) {
@@ -216,18 +264,17 @@ public class SheepGameManager {
 
     
    
+
     private void updateLostSheep() {
 
         int count = sheepList.size();
 
         boolean[] visited = new boolean[count];
-
         ArrayList<Integer> mainHerd = new ArrayList<>();
 
-        // Find all groups of nearby sheep.
         for (int i = 0; i < count; i++) {
 
-            if (visited[i]) {
+            if (visited[i] || sheepList.get(i).isSafe()) {
                 continue;
             }
 
@@ -237,7 +284,6 @@ public class SheepGameManager {
             queue.add(i);
             visited[i] = true;
 
-            // Explore all sheep connected by proximity.
             for (int q = 0; q < queue.size(); q++) {
 
                 int currentIndex = queue.get(q);
@@ -247,7 +293,7 @@ public class SheepGameManager {
 
                 for (int j = 0; j < count; j++) {
 
-                    if (visited[j]) {
+                    if (visited[j] || sheepList.get(j).isSafe()) {
                         continue;
                     }
 
@@ -258,20 +304,17 @@ public class SheepGameManager {
                         .getLength();
 
                     if (distance <= HERD_CONNECTION_DISTANCE) {
-
                         visited[j] = true;
                         queue.add(j);
                     }
                 }
             }
 
-            // Keep the largest connected group.
             if (group.size() > mainHerd.size()) {
                 mainHerd = group;
             }
         }
 
-        // Mark sheep outside the main herd as lost.
         boolean[] belongsToMainHerd = new boolean[count];
 
         for (int index : mainHerd) {
@@ -282,10 +325,10 @@ public class SheepGameManager {
 
             Sheep sheep = sheepList.get(i);
 
-            sheep.setLost(!belongsToMainHerd[i]);
+            if (!sheep.isSafe()) {
+                sheep.setLost(!belongsToMainHerd[i]);
+            }
         }
-
-        lostSheepCount = count - mainHerd.size();
     }
 
 
@@ -367,11 +410,13 @@ public class SheepGameManager {
             // Move a few sheep at a time.
             for (int i = 0; i < 4; i++) {
 
-                Sheep sheep = sheepList.get(
+               Sheep sheep = sheepList.get(
                     random.nextInt(sheepList.size())
                 );
 
-                sheep.applyRandomImpulse(random);
+                if (!sheep.isSafe()) {
+                    sheep.applyRandomImpulse(random);
+                }
             }
         }
 
@@ -387,7 +432,9 @@ public class SheepGameManager {
         for (SheepConnection connection : connections) {
 
             if (!connection.first.isLost()
-                    && !connection.second.isLost()) {
+                    && !connection.second.isLost()
+                    && !connection.first.isSafe()
+                    && !connection.second.isSafe()) {
 
                 connection.spring.applyForce();
             }
@@ -405,6 +452,8 @@ public class SheepGameManager {
             }
         }
 
+        updateSheepPen();
+
         // Keep sheep inside the window.
         for (Sheep sheep : sheepList) {
             resolveWindowCollision(sheep);
@@ -413,18 +462,29 @@ public class SheepGameManager {
         // 4. Slow down the sheep.
         double damping = Math.exp(-2.0 * deltaTime);
 
+        // Keep rescued sheep stationary.
         for (Sheep sheep : sheepList) {
-            sheep.getParticle().setLinearVelocity(
-                sheep.getParticle()
-                    .getLinearVelocity()
-                    .scale(damping)
-            );
+
+            if (sheep.isSafe()) {
+
+                sheep.getParticle().setAcceleration(
+                    new Vector3(0, 0, 0)
+                );
+
+                sheep.getParticle().setLinearVelocity(
+                    new Vector3(0, 0, 0)
+                );
+            }
         }
     }
    
+
     public void draw() {
 
         sketch.background(110, 155, 95);
+
+        // Draw the sheep pen.
+        sheepPen.draw();
 
         // Draw obstacles.
         for (SheepObstacle obstacle : obstacles) {
@@ -439,17 +499,21 @@ public class SheepGameManager {
         // Draw dog.
         dog.draw(spriteRenderer);
 
-        // HUD.
+        // HUD: only rescued sheep.
+        sketch.pushStyle();
+
         sketch.fill(255);
-        sketch.textSize(22);
+        sketch.textSize(24);
 
         sketch.text(
-            "Lost sheep: " + lostSheepCount,
+            "Sheep Safe: " + safeSheepCount
+                + " / " + sheepList.size(),
             20,
             35
         );
-    }
 
+        sketch.popStyle();
+    }
 
 
     public ArrayList<Sheep> getSheepList() {

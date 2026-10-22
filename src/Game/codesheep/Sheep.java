@@ -15,7 +15,16 @@ public class Sheep {
         "Game/data/mouton.png";
 
     private static final float SIZE = 55;
+    private boolean isSafe = false;
     private boolean isLost = false;
+
+    public boolean isSafe() {
+        return isSafe;
+    }
+
+    public void setSafe(boolean safe) {
+        this.isSafe = safe;
+    }
 
     public Sheep(World world, double x, double y) {
 
@@ -55,6 +64,10 @@ public class Sheep {
     
     public void applyRandomImpulse(Random random) {
 
+        if (isSafe) {
+        return;
+        }   
+
         // Random direction.
         double angle = random.nextDouble() * Math.PI * 2.0;
 
@@ -74,6 +87,11 @@ public class Sheep {
 
     
     public void applyDogRepulsion(Vector3 dogPosition) {
+
+        if (isSafe) {
+            particle.setAcceleration(new Vector3(0, 0, 0));
+            return;
+        }
 
         double detectionRadius = 150.0;
         double repulsionStrength = 600.0;
