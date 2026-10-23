@@ -2,42 +2,43 @@ package KiryuEngine.KiryuPhysics;
 
 import KiryuEngine.KiryuPhysics.Collision.Contact;
 import KiryuEngine.KiryuPhysics.Constraints.Constraint;
-import KiryuEngine.KiryuPhysics.Forces.ForceGenerator;
+import KiryuEngine.KiryuPhysics.Forces.FrictionGenerator;
+import KiryuEngine.KiryuPhysics.Forces.GravityGenerator;
 
 import java.util.ArrayList;
 
 public class World {
 
   private final ArrayList<RigidBody> rigidBodies;
-  private ArrayList<String> resultingCollisions;
-  private ArrayList<String> resultingConstraints;
-  private final ArrayList<ForceGenerator> forceGenerators;
+  private final GravityGenerator gravityGenerator;
+  private final FrictionGenerator frictionGenerator;
   private final ArrayList<Constraint> constraints;
 
 
   public World(){
     this.rigidBodies = new ArrayList<>();
-    this.forceGenerators = new ArrayList<>();
-    constraints = new ArrayList<>();
-  }
-
-  public World(ArrayList<ForceGenerator> forceGenerators){
-    this.rigidBodies = new ArrayList<>();
-    this.forceGenerators = forceGenerators;
     this.constraints = new ArrayList<>();
+    this.frictionGenerator = new FrictionGenerator();
+    this.gravityGenerator = new GravityGenerator();
   }
 
   public void UpdatePhysics(float deltaTime){
 
     for (RigidBody rb : rigidBodies) {
 
-      accumulateForces(rb);
+      gravityGenerator.applyForce(rb);
 
+      if (rb.isColliding()){
+        for (Contact contact: rb.getContacts()
+             ) {
+          frictionGenerator.applyForce(rb);
+        }
+      }
     }
 
     for (Constraint cons: constraints) {
       if(cons.isConstrained()){
-        applyConstraints(deltaTime,cons);
+        applyConstraints(cons);
       }
     }
 
@@ -47,25 +48,9 @@ public class World {
     ResolvePhysics(deltaTime);
   }
 
-  private void accumulateForces(RigidBody rigidBody){
-
-    Vector3 resultingForce = new Vector3();
-    resultingForce.set(rigidBody.getForce());
-
-    // this is partially wrong since there might be friction applied
-    // to unwanted rigid-bodies
-
-//    for (ForceGenerator fg: forceGenerators
-//         ) {
-//      fg.applyForce(resultingForce);
-//    }
-
-    rigidBody.setAccumulatedForce(resultingForce);
-  }
-
   private void resolveCollisions(){}
 
-  private void applyConstraints(float deltaTime, Constraint constraint){
+  private void applyConstraints(Constraint constraint){
 
   }
 

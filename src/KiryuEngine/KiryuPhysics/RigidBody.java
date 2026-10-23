@@ -14,10 +14,9 @@ public class RigidBody {
   private final double inverseMass;
   private final double size;
 
-  private final double damping = 1.f;
-
-  private final double staticFrictionCoefficient = 0.5f;
-  private final double kineticFrictionCoefficient = 0.5f;
+  private double damping = 1.f;
+  private double staticFrictionCoefficient = 0.5f;
+  private double kineticFrictionCoefficient = 0.5f;
 
   private Vector3 force;
   private Vector3 accumulatedForce;
@@ -185,6 +184,10 @@ public class RigidBody {
    */
   public void addForce(Vector3 addedForce){
     this.force.add(addedForce);
+  }
+
+  public boolean isColliding(){
+    return !contacts.isEmpty();
   }
 
 }
