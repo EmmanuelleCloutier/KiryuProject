@@ -196,7 +196,10 @@ public class Vector3 {
      * @return Nouveau vecteur.
      */
     public Vector3 reverse() {
-        return this.scale(-1);
+        double x = this.x * -1;
+        double y = this.y * -1;
+        double z = this.z * -1;
+        return new Vector3(x, y, z);
     }
 
     /**

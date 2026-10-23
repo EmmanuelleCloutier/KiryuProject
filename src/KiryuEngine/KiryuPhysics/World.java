@@ -1,5 +1,6 @@
 package KiryuEngine.KiryuPhysics;
 
+import KiryuEngine.KiryuPhysics.Collision.Contact;
 import KiryuEngine.KiryuPhysics.Constraints.Constraint;
 import KiryuEngine.KiryuPhysics.Forces.ForceGenerator;
 
@@ -40,6 +41,9 @@ public class World {
       }
     }
 
+    checkCollisions();
+    resolveCollisions();
+
     ResolvePhysics(deltaTime);
   }
 
@@ -59,7 +63,7 @@ public class World {
     rigidBody.setAccumulatedForce(resultingForce);
   }
 
-  private void applyCollisions(float deltaTime, RigidBody rigidBody){}
+  private void resolveCollisions(){}
 
   private void applyConstraints(float deltaTime, Constraint constraint){
 
@@ -84,4 +88,29 @@ public class World {
 
 
 
+  public void checkCollisions(){
+
+    // right now this O(n^2), which is kinda bad
+    // we need to change this for a quad tree at some point
+
+    for (int i = 0; i < rigidBodies.size() - 1 ; i++) {
+      for (int j = i + 1; j < rigidBodies.size(); j++) {
+
+        RigidBody first = rigidBodies.get(i);
+        RigidBody second = rigidBodies.get(j);
+
+        if (first.getPosition().distanceSquared(second.getPosition()) <=
+            first.getCollider().getSizeSquared()
+        + second.getCollider().getSizeSquared()
+        ){
+          first.addContact(
+              new Contact(
+                  first.getCollider(),
+                  second.getCollider()
+              )
+          );
+        }
+      }
+    }
+  }
 }

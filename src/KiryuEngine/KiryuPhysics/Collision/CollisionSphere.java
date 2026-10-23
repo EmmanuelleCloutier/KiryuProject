@@ -27,5 +27,10 @@ public class CollisionSphere extends Collider {
     @Override
     public double getSize() { return rayon; }
 
+    @Override
+    public double getSizeSquared() {
+        return rayon * rayon;
+    }
+
 
 }
