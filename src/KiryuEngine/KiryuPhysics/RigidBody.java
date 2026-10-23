@@ -14,7 +14,9 @@ public class RigidBody {
   private final double inverseMass;
   private final double size;
 
-  private final double damping = 1.f;
+  private double damping = 1.f;
+  private double staticFrictionCoefficient = 0.5f;
+  private double kineticFrictionCoefficient = 0.5f;
 
   private Vector3 force;
   private Vector3 accumulatedForce;
@@ -31,7 +33,7 @@ public class RigidBody {
         new Vector3(),
         new Vector3()
     );
-}
+  }
 
   public RigidBody(
       double mass,
@@ -53,6 +55,10 @@ public class RigidBody {
   }
 
   /**
+   * GETTERS
+   */
+//region
+  /**
    * @return the mass of the RigidBody
    */
   public double getMass() {
@@ -67,31 +73,12 @@ public class RigidBody {
     return inverseMass;
   }
 
-
   /**
    * @return RigidBody's force
    */
   public Vector3 getForce() {
     return force;
   }
-
-
-  /**
-   * @param force sets the RigidBody's force
-   */
-  public void setForce(Vector3 force) {
-    this.force = force;
-  }
-
-
-  /**
-   *
-    * @param addedForce add this force to the rigidBody's current force
-   */
-  public void addForce(Vector3 addedForce){
-    this.force.add(addedForce);
-  }
-
 
   /**
    * @return RigidBody's accumulatedForce
@@ -100,16 +87,6 @@ public class RigidBody {
     return accumulatedForce;
   }
 
-
-  /**
-   * @param force sets the RigidBody's accumulatedForce
-   */
-  public void setAccumulatedForce(Vector3 force) {
-    this.accumulatedForce = force;
-  }
-
-
-
   /**
    * @return RigidBody's position
    */
@@ -117,30 +94,12 @@ public class RigidBody {
     return position;
   }
 
-
-  /**
-   * @param position sets the RigidBody's position
-   */
-  public void setPosition(Vector3 position) {
-    this.position = position;
-  }
-
-
   /**
    * @return RigidBody's linear velocity
    */
   public Vector3 getLinearVelocity() {
     return linearVelocity;
   }
-
-
-  /**
-   * @param linearVelocity sets the RigidBody's velocity
-   */
-  public void setLinearVelocity(Vector3 linearVelocity) {
-    this.linearVelocity = linearVelocity;
-  }
-
 
   /**
    * @return damping coefficient
@@ -153,13 +112,59 @@ public class RigidBody {
     return direction;
   }
 
-  public void setDirection(Vector3 direction) {
-    this.direction = direction;
-  }
-
   public Collider getCollider() {
     return collider;
   }
+
+  public double getStaticFrictionCoefficient() {
+    return staticFrictionCoefficient;
+  }
+
+  public double getKineticFrictionCoefficient() {
+    return kineticFrictionCoefficient;
+  }
+//endregion
+
+  /**
+   * SETTERS
+   */
+//region
+  /**
+   * @param force sets the RigidBody's force
+   */
+  public void setForce(Vector3 force) {
+    this.force = force;
+  }
+
+  /**
+   * @param force sets the RigidBody's accumulatedForce
+   */
+  public void setAccumulatedForce(Vector3 force) {
+    this.accumulatedForce = force;
+  }
+
+  /**
+   * @param position sets the RigidBody's position
+   */
+  public void setPosition(Vector3 position) {
+    this.position = position;
+  }
+
+  /**
+   * @param linearVelocity sets the RigidBody's velocity
+   */
+  public void setLinearVelocity(Vector3 linearVelocity) {
+    this.linearVelocity = linearVelocity;
+  }
+
+
+  public void setDirection(Vector3 direction) {
+    this.direction = direction;
+  }
+//endregion
+
+
+  public void onCollision(){}
 
   public ArrayList<Contact> getContacts() {
     return contacts;
@@ -171,6 +176,18 @@ public class RigidBody {
 
   public void clearContacts(){
     this.contacts.clear();
+  }
+
+  /**
+   *
+   * @param addedForce add this force to the rigidBody's current force
+   */
+  public void addForce(Vector3 addedForce){
+    this.force.add(addedForce);
+  }
+
+  public boolean isColliding(){
+    return !contacts.isEmpty();
   }
 
 }
