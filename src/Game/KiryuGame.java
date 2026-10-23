@@ -1,130 +1,130 @@
+
 package Game;
 
-import Game.code.GameManager;
+import Game.Levels.Level_1;
+import Game.Levels.Level_2;
+import Game.UI.MainMenu;
+
 import KiryuEngine.KiryuCore.KiryuTime;
-import KiryuEngine.KiryuPhysics.World;
 import processing.core.PApplet;
+
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
-
 public class KiryuGame extends PApplet {
 
-  GameManager gameManager;
-  World world;
+    private enum GameState {
+        MENU,
+        LEVEL_1,
+        LEVEL_2
+    }
 
+    private GameState currentState = GameState.MENU;
 
-  public static void main(String[] args) {
-    // Tells Processing to run this specific class
-    PApplet.main("Game.KiryuGame");
-  }
+    private MainMenu mainMenu;
+    private Level_1 level1;
+    private Level_2 level2;
 
-  //pour switch between les images
-  @Override
-  public void keyPressed() {
-    gameManager.setProjectileType(key);
-  }
+    public static void main(String[] args) {
+        PApplet.main("Game.KiryuGame");
+    }
 
-  @Override
-  public void settings() {
-    //size(1920, 1080); //changement de la windows pour qu'on voit actuellement les choix des projectiles
+    @Override
+    public void settings() {
+        Dimension screenSize =
+            Toolkit.getDefaultToolkit().getScreenSize();
 
-    // Récupération de la taille de l'écran
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    int width = screenSize.width;
-    int height = screenSize.height;
-    size(width, height);
-  }
+        size(screenSize.width, screenSize.height);
+    }
 
-  @Override
-  public void setup() {
-    frameRate(100000);
-    loadImage("Game/data/background.png");
+    @Override
+    public void setup() {
+        frameRate(60);
 
-    //delta time
-    KiryuTime.init();
+        KiryuTime.init();
 
-    world = new World();
-    gameManager = new GameManager(this,world);
-  }
+        mainMenu = new MainMenu(this);
+    }
 
+    @Override
+    public void draw() {
+        KiryuTime.update();
 
-  @Override
-  public void draw() {
-    KiryuTime.update();
+        float deltaTime = KiryuTime.getDeltaTime();
 
+        switch (currentState) {
 
-    //UPDATE GAME LOOP ORDER
-    //GET INPUTS
-    //UPDATE PHYSICS
-    //DRAW
+            case MENU:
+                mainMenu.draw();
+                break;
 
+            case LEVEL_1:
+                level1.update(deltaTime);
+                level1.draw();
+                break;
 
-    gameManager.update(KiryuTime.getDeltaTime());
+            case LEVEL_2:
+                level2.update(deltaTime);
+                level2.draw();
+                break;
+        }
+    }
 
-    gameManager.draw();
+    @Override
+    public void mousePressed() {
 
-//
-//    // While the player is aiming
-//    if (isAiming) {
-//
-//      //recupere la position actuelle de la mouse
-//        Vector3 mousePosition = new Vector3(
-//            mouseX,
-//            mouseY,
-//            0
-//        );
-//
-//        //calcule la vitesse de lancement selon la distance, entre la position de depart et la sourie
-//        launchVelocity = mousePosition
-//            .sub(projectileStartPosition)
-//            .scale(2.0);
-//
-//
-//        trajectoryRenderer.drawCurvedTrajectory(
-//            projectileStartPosition,
-//            launchVelocity,
-//            Force.GRAVITY
-//        );
-//
-//
-//    }
+        switch (currentState) {
 
-}
+            case MENU:
+                int choice = mainMenu.mousePressed(mouseX, mouseY);
 
+                if (choice == 1) {
+                    level1 = new Level_1(this);
+                    currentState = GameState.LEVEL_1;
+                }
 
-  //quand le player clique ca fait aparaitre un projectile sur le mouse position
-  @Override
-  public void mousePressed() {
+                else if (choice == 2) {
+                    level2 = new Level_2(this);
+                    currentState = GameState.LEVEL_2;
+                }
 
-    gameManager.shoot();
-//
-//    //commence une nouvelle visee seulement si le joueur est pas en train de viser
-//      if (!isAiming) {
-//          projectileStartPosition = new Vector3(
-//              mouseX,
-//              mouseY,
-//              0
-//          );
-//
-//
-//          isAiming = true;
-//      }
-  }
+                else if (choice == 3) {
+                    exit();
+                }
+                break;
 
-  //se fait call quand on relache la mouse
-  @Override
-  public void mouseReleased() {
+            case LEVEL_1:
+                level1.mousePressed();
+                break;
 
-//      if (isAiming) {
-//
-//        gameManager.projectileSystem.addProjectileAtPosition(
-//            gameManager.headUpDisplay.getSelectedProjectile(),
-//            projectileStartPosition,
-//            launchVelocity
-//        );
-//          isAiming = false;
-//      }
-  }
+            case LEVEL_2:
+                // Future mouse inputs
+                break;
+        }
+    }
 
+    @Override
+    public void keyPressed() {
+
+        // ESC pour revenir au menu
+        if (key == ESC) {
+            key = 0;
+            currentState = GameState.MENU;
+            return;
+        }
+
+        switch (currentState) {
+
+            case LEVEL_1:
+                level1.keyPressed(key);
+                break;
+
+            case LEVEL_2:
+                // Future keyboard inputs
+                break;
+
+            default:
+                break;
+        }
+    }
 }
