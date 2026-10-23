@@ -9,9 +9,9 @@ public class FrictionGenerator implements ForceGenerator {
     public double staticFrictionCoefficient;
     public double kineticFrictionCoefficient;
 
-    public FrictionGenerator(double staticFrictionCoefficient, double cineticFrictionCoefficient) {
+    public FrictionGenerator(double staticFrictionCoefficient, double kineticFrictionCoefficient) {
         this.staticFrictionCoefficient = staticFrictionCoefficient;
-        this.kineticFrictionCoefficient = cineticFrictionCoefficient;
+        this.kineticFrictionCoefficient = kineticFrictionCoefficient;
     }
 
     public void applyForce(Vector3 applyForceTo) {
@@ -22,10 +22,16 @@ public class FrictionGenerator implements ForceGenerator {
 
     private void applyStaticFriction(Vector3 applyForceTo) {
         //Formule utilisée : F = u * N, avec N = m x g => a = u x g
-        applyForceTo.add(GRAVITY.scale(staticFrictionCoefficient));
+        applyForceTo.add(
+            GRAVITY.scale(staticFrictionCoefficient)
+        );
     }
 
     private void applyKineticFriction(Vector3 applyForceTo) {
-            applyForceTo.reverse().scale(kineticFrictionCoefficient);
+        applyForceTo.add(
+            applyForceTo
+                .reverse()
+                .scale(kineticFrictionCoefficient)
+        );
     }
 }

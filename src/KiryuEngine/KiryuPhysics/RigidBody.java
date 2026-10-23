@@ -2,6 +2,9 @@ package KiryuEngine.KiryuPhysics;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
 import KiryuEngine.KiryuPhysics.Collision.CollisionSphere;
+import KiryuEngine.KiryuPhysics.Collision.Contact;
+
+import java.util.ArrayList;
 
 public class RigidBody {
 
@@ -19,6 +22,8 @@ public class RigidBody {
   private Vector3 linearVelocity;
   private Vector3 direction;
 
+  private ArrayList<Contact> contacts;
+
   public RigidBody(double mass, double size) {
     this(
         mass,
@@ -28,20 +33,10 @@ public class RigidBody {
     );
 }
 
-  /* 
   public RigidBody(
       double mass,
-      double size
-  ) {
-    this.mass = mass;
-    this.inverseMass = 1/mass;
-    this.size = size;
-  }*/
-
-
-  public RigidBody(
-      double mass,
-      double size, Vector3 position,
+      double size,
+      Vector3 position,
       Vector3 linearVelocity
   ) {
 
@@ -54,6 +49,7 @@ public class RigidBody {
     this.linearVelocity = new Vector3(linearVelocity);
     this.collider = new CollisionSphere(this.size,this);
     this.accumulatedForce = new Vector3();
+    this.contacts = new ArrayList<>();
   }
 
   /**
@@ -81,10 +77,19 @@ public class RigidBody {
 
 
   /**
-   * @param force sets the RigidBody's acceleration
+   * @param force sets the RigidBody's force
    */
   public void setForce(Vector3 force) {
     this.force = force;
+  }
+
+
+  /**
+   *
+    * @param addedForce add this force to the rigidBody's current force
+   */
+  public void addForce(Vector3 addedForce){
+    this.force.add(addedForce);
   }
 
 
@@ -156,8 +161,16 @@ public class RigidBody {
     return collider;
   }
 
+  public ArrayList<Contact> getContacts() {
+    return contacts;
+  }
 
+  public boolean addContact(Contact contact){
+    return this.contacts.add(contact);
+  }
 
-  public void onCollision(){}
+  public void clearContacts(){
+    this.contacts.clear();
+  }
 
 }

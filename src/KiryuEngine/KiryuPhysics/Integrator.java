@@ -26,7 +26,7 @@ public class Integrator {
                 )
                 .add(
                     rigidbody
-                        .getForce()
+                        .getAccumulatedForce()
                         .scale(deltaTime)
                 );
 

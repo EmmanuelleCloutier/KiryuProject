@@ -1,5 +1,6 @@
 package KiryuEngine.KiryuPhysics;
 
+import KiryuEngine.KiryuPhysics.Constraints.Constraint;
 import KiryuEngine.KiryuPhysics.Forces.ForceGenerator;
 
 import java.util.ArrayList;
@@ -10,24 +11,33 @@ public class World {
   private ArrayList<String> resultingCollisions;
   private ArrayList<String> resultingConstraints;
   private final ArrayList<ForceGenerator> forceGenerators;
+  private final ArrayList<Constraint> constraints;
 
 
   public World(){
     this.rigidBodies = new ArrayList<>();
     this.forceGenerators = new ArrayList<>();
+    constraints = new ArrayList<>();
   }
 
   public World(ArrayList<ForceGenerator> forceGenerators){
     this.rigidBodies = new ArrayList<>();
     this.forceGenerators = forceGenerators;
+    this.constraints = new ArrayList<>();
   }
 
   public void UpdatePhysics(float deltaTime){
 
-    for (RigidBody rigidBody : rigidBodies) {
+    for (RigidBody rb : rigidBodies) {
 
-      accumulateForces(rigidBody);
+      accumulateForces(rb);
 
+    }
+
+    for (Constraint cons: constraints) {
+      if(cons.isConstrained()){
+        applyConstraints(deltaTime,cons);
+      }
     }
 
     ResolvePhysics(deltaTime);
@@ -51,13 +61,15 @@ public class World {
 
   private void applyCollisions(float deltaTime, RigidBody rigidBody){}
 
-  private void applyConstraints(float deltaTime, RigidBody rigidBody){}
+  private void applyConstraints(float deltaTime, Constraint constraint){
+
+  }
 
   private void ResolvePhysics(float deltaTime){
 
-    for (RigidBody rigidbody : rigidBodies
+    for (RigidBody rb : rigidBodies
          ) {
-      Integrator.integrate(rigidbody,deltaTime);
+      Integrator.integrate(rb,deltaTime);
     }
 
   }
