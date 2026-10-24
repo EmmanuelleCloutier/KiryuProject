@@ -15,6 +15,18 @@ public class World {
   private final ArrayList<Constraint> constraints;
 
 
+  private boolean bAllowGravity = true;
+
+
+  public boolean isGravityAllowed() {
+    return bAllowGravity;
+  }
+
+  public void setGravity(boolean bAllowGravity) {
+    this.bAllowGravity = bAllowGravity;
+  }
+
+
   public World(){
     this.rigidBodies = new ArrayList<>();
     this.constraints = new ArrayList<>();
@@ -26,7 +38,11 @@ public class World {
 
     for (RigidBody rb : rigidBodies) {
 
-      gravityGenerator.applyForce(rb);
+      if (rb.isStatic()) continue;
+
+      if (bAllowGravity) {
+        gravityGenerator.applyForce(rb);
+      }
 
       if (rb.isColliding()){
         for (Contact contact: rb.getContacts()
@@ -38,7 +54,7 @@ public class World {
 
     for (Constraint cons: constraints) {
       if(cons.isConstrained()){
-        applyConstraints(cons);
+        cons.applyConstraint();
       }
     }
 
@@ -50,9 +66,6 @@ public class World {
 
   private void resolveCollisions(){}
 
-  private void applyConstraints(Constraint constraint){
-
-  }
 
   private void ResolvePhysics(float deltaTime){
 
@@ -69,6 +82,14 @@ public class World {
 
   public boolean removeRigidBody(RigidBody rigidBody){
     return rigidBodies.remove(rigidBody);
+  }
+
+  public boolean addConstraint(Constraint constraint){
+    return constraints.add(constraint);
+  }
+
+  public boolean removeConstraint(Constraint constraint){
+    return constraints.remove(constraint);
   }
 
 

@@ -42,6 +42,8 @@ public class SheepGameManager {
         this.sketch = sketch;
 
         world = new World();
+        world.setGravity(false);
+
         spriteRenderer = new SpriteRenderer(sketch);
 
         sheepList = new ArrayList<>();
@@ -348,6 +350,8 @@ public class SheepGameManager {
             if (!sheep.isSafe()) {
                 sheep.setLost(!belongsToMainHerd[i]);
             }
+
+
         }
     }
     
@@ -383,6 +387,8 @@ public class SheepGameManager {
                         damping
                     );
 
+                    this.world.addConstraint(spring);
+
                     connections.add(
                         new SheepConnection(current, right, spring)
                     );
@@ -402,6 +408,8 @@ public class SheepGameManager {
                         stiffness,
                         damping
                     );
+
+                    this.world.addConstraint(spring);
 
                     connections.add(
                         new SheepConnection(current, below, spring)
@@ -451,7 +459,7 @@ public class SheepGameManager {
                     && !connection.first.isSafe()
                     && !connection.second.isSafe()) {
 
-                connection.spring.applyForce();
+                connection.spring.applyConstraint();
             }
         }
 

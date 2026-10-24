@@ -20,6 +20,10 @@ public class Sheep {
     private boolean isSafe = false;
     private boolean isLost = false;
 
+    private double detectionRadius = 150.0;
+    private double repulsionStrength = 600.0;
+
+
     public boolean isSafe() {
         return isSafe;
     }
@@ -38,9 +42,6 @@ public class Sheep {
             new Vector3(x, y, 0),
             new Vector3(0, 0, 0)
         );
-
-        //disable gravity and initial acceleration
-        particle.setAcceleration(new Vector3(0, 0, 0));
     }
 
     public boolean isLost() {
@@ -74,28 +75,24 @@ public class Sheep {
         double angle = random.nextDouble() * Math.PI * 2.0;
         double strength = 20.0 + random.nextDouble() * 35.0;
 
-        Vector3 impulse = new Vector3(
-            Math.cos(angle) * strength,
-            Math.sin(angle) * strength,
+        Vector3 impulseDirection = new Vector3(
+            Math.cos(angle),
+            Math.sin(angle),
             0
         );
 
-        //add impulse to the current velocity
-        particle.setLinearVelocity(
-            particle.getLinearVelocity().add(impulse)
-        );
+        particle.getRigidbody().addImpulse(impulseDirection,strength);
+
     }
 
     
     public void applyDogRepulsion(Vector3 dogPosition) {
 
         if (isSafe) {
-            particle.setAcceleration(new Vector3(0, 0, 0));
+            particle.getRigidbody().setIsStatic(true);
             return;
         }
 
-        double detectionRadius = 150.0;
-        double repulsionStrength = 600.0;
 
         Vector3 direction = particle.getPosition().sub(dogPosition);
 
@@ -103,14 +100,12 @@ public class Sheep {
 
         if (distance > 0 && distance < detectionRadius) {
 
-            //increase repulsion as the dos gets closer
+            //increase repulsion as the dog gets closer
             double intensity = 1.0 - (distance / detectionRadius);
 
-            Vector3 acceleration = direction
-                .scale(1.0 / distance)
-                .scale(repulsionStrength * intensity);
+            double strength = (1.0f / distance) * (repulsionStrength * intensity);
 
-            particle.setAcceleration(acceleration);
+            particle.getRigidbody().addImpulse(direction,strength);
 
         } else {
             particle.setAcceleration(new Vector3(0, 0, 0)); //out of range 

@@ -133,10 +133,6 @@ public class Vector3 {
      * @return Soi, avec une longueur de 1.
      */
     public Vector3 normalize() {
-        //les multiplications sont plus rapides que les divisions
-        //j'ai optimiser un peu le calcul de la normalisation afin
-        //d'avoir le moins de division possible sachant qu'on risque
-        //de beaucoup utiliser cette fonction
 
         double lenSq = getLengthSquared();
 
@@ -157,10 +153,6 @@ public class Vector3 {
      * @return Soi, avec une longueur de 1.
      */
     public static Vector3 getVectorNormal(Vector3 vector) {
-        //les multiplications sont plus rapides que les divisions
-        //j'ai optimiser un peu le calcul de la normalisation afin
-        //d'avoir le moins de division possible sachant qu'on risque
-        //de beaucoup utiliser cette fonction
 
         double lenSq = vector.getLengthSquared();
 
@@ -185,10 +177,10 @@ public class Vector3 {
      * @return Nouveau vecteur.
      */
     public Vector3 scale(double val) {
-        double x = val * this.x;
-        double y = val * this.y;
-        double z = val * this.z;
-        return new Vector3(x, y, z);
+         this.x *= val;
+         this.y *= val;
+         this.z *= val;
+         return this;
     }
 
     /**
@@ -196,10 +188,10 @@ public class Vector3 {
      * @return Nouveau vecteur.
      */
     public Vector3 reverse() {
-        double x = this.x * -1;
-        double y = this.y * -1;
-        double z = this.z * -1;
-        return new Vector3(x, y, z);
+        this.x *= -1;
+        this.y *= -1;
+        this.z *= -1;
+        return this;
     }
 
     /**
@@ -208,10 +200,10 @@ public class Vector3 {
      * @return Vecteur <code>v = a + b</code>, nouveau vecteur.
      */
     public Vector3 add(Vector3 other) {
-        double x = this.x + other.x;
-        double y = this.y + other.y;
-        double z = this.z + other.z;
-        return new Vector3(x, y, z);
+        this.x += other.x;
+        this.y += other.y;
+        this.z += other.z;
+        return this;
     }
 
     /**
@@ -220,10 +212,10 @@ public class Vector3 {
      * @return Vecteur <code>v = a - b</code>, nouveau vecteur.
      */
     public Vector3 sub(Vector3 other) {
-        double x = this.x - other.x;
-        double y = this.y - other.y;
-        double z = this.z - other.z;
-        return new Vector3(x, y, z);
+        this.x -= other.x;
+        this.y -= other.y;
+        this.z -= other.z;
+        return this;
     }
 
     /**
@@ -232,10 +224,10 @@ public class Vector3 {
      * @return Vecteur <code>v = a * b</code>, nouveau vecteur.
      */
     public Vector3 mul(Vector3 other) {
-        double x = this.x * other.x;
-        double y = this.y * other.y;
-        double z = this.z * other.z;
-        return new Vector3(x, y, z);
+        this.x *= other.x;
+        this.y *= other.y;
+        this.z *= other.z;
+        return this;
     }
 
 

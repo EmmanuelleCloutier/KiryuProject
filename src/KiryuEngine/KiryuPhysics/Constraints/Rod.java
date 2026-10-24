@@ -18,7 +18,10 @@ public class Rod extends Constraint {
             ) != maxDistance;
     }
 
+    @Override
+    public void applyConstraint() {
 
+    }
 
 
 }
