@@ -16,4 +16,9 @@ public class Cable extends Constraint {
                 second.getRigidBody().getPosition()
             ) > maxDistance;
     }
+
+    @Override
+    public void applyConstraint() {
+
+    }
 }

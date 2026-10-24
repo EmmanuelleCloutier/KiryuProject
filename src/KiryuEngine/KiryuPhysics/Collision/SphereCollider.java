@@ -2,11 +2,11 @@ package KiryuEngine.KiryuPhysics.Collision;
 
 import KiryuEngine.KiryuPhysics.RigidBody;
 
-public class CollisionSphere extends Collider {
+public class SphereCollider extends Collider {
 
     private double rayon;
 
-    public CollisionSphere(double rayon, RigidBody rigidbody) {
+    public SphereCollider(double rayon, RigidBody rigidbody) {
         this.rayon = rayon;
         this.rigidBody = rigidbody;
     }

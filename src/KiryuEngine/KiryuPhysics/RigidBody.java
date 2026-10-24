@@ -1,7 +1,7 @@
 package KiryuEngine.KiryuPhysics;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
-import KiryuEngine.KiryuPhysics.Collision.CollisionSphere;
+import KiryuEngine.KiryuPhysics.Collision.SphereCollider;
 import KiryuEngine.KiryuPhysics.Collision.Contact;
 
 import java.util.ArrayList;
@@ -17,6 +17,8 @@ public class RigidBody {
   private double damping = 1.f;
   private double staticFrictionCoefficient = 0.5f;
   private double kineticFrictionCoefficient = 0.5f;
+
+  private boolean bIsStatic = false;
 
   private Vector3 force;
   private Vector3 accumulatedForce;
@@ -49,7 +51,7 @@ public class RigidBody {
     this.force = new Vector3();
     this.position = new Vector3(position);
     this.linearVelocity = new Vector3(linearVelocity);
-    this.collider = new CollisionSphere(this.size,this);
+    this.collider = new SphereCollider(this.size,this);
     this.accumulatedForce = new Vector3();
     this.contacts = new ArrayList<>();
   }
@@ -123,7 +125,12 @@ public class RigidBody {
   public double getKineticFrictionCoefficient() {
     return kineticFrictionCoefficient;
   }
-//endregion
+
+  public boolean isStatic() {
+    return bIsStatic;
+  }
+
+  //endregion
 
   /**
    * SETTERS
@@ -161,7 +168,12 @@ public class RigidBody {
   public void setDirection(Vector3 direction) {
     this.direction = direction;
   }
-//endregion
+
+  public void setIsStatic(boolean bIsStatic) {
+    this.bIsStatic = bIsStatic;
+  }
+
+  //endregion
 
 
   public void onCollision(){}
@@ -184,6 +196,25 @@ public class RigidBody {
    */
   public void addForce(Vector3 addedForce){
     this.force.add(addedForce);
+  }
+
+
+  public void addImpulse(Vector3 impulseDirection, double impulseStrength){
+
+    this.accumulatedForce.add(impulseDirection.scale(impulseStrength));
+
+  }
+
+  public void addImpulse(double impulseStrength){
+
+    Vector3 impulse = new Vector3(
+        this.direction.x * impulseStrength,
+        this.direction.y * impulseStrength,
+        this.direction.z * impulseStrength
+    );
+
+    this.accumulatedForce.add(impulse);
+
   }
 
   public boolean isColliding(){

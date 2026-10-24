@@ -29,7 +29,8 @@ public class Spring extends Constraint {
         return true;
     }
 
-    public void applyForce() {
+    @Override
+    public void applyConstraint() {
 
         RigidBody bodyA = first.getRigidBody();
         RigidBody bodyB = second.getRigidBody();
@@ -79,13 +80,9 @@ public class Spring extends Constraint {
             springForce.scale(-bodyB.getInverseMass());
 
         //apply equal and opposite contributions to the both bodies
-        bodyA.setForce(
-            bodyA.getForce().add(accelerationA)
-        );
 
-        bodyB.setForce(
-            bodyB.getForce().add(accelerationB)
-        );
+        bodyA.getAccumulatedForce().add(accelerationA);
+        bodyB.getAccumulatedForce().add(accelerationB);
 
     }
 }

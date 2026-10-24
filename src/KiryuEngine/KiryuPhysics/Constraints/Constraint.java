@@ -18,6 +18,8 @@ public abstract class Constraint {
 
     public abstract boolean isConstrained();
 
+    public abstract void applyConstraint();
+
     public Contact getContact() {
         return new Contact(first, second);
     }
