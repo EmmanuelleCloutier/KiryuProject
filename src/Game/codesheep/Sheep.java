@@ -59,11 +59,6 @@ public class Sheep {
     public Vector3 getPosition() {
         return particle.getPosition();
     }
-
-    public void testMethod() {
-    System.out.println("TEST SHEEP");
-    }
-
     
     public void applyRandomImpulse(Random random) {
 
@@ -84,7 +79,6 @@ public class Sheep {
         particle.getRigidbody().addImpulse(impulseDirection,strength);
 
     }
-
     
     public void applyDogRepulsion(Vector3 dogPosition) {
 
@@ -111,7 +105,6 @@ public class Sheep {
             particle.setAcceleration(new Vector3(0, 0, 0)); //out of range 
         }
     }
-
 
     public void draw(SpriteRenderer renderer) {
         renderer.drawSprite(
