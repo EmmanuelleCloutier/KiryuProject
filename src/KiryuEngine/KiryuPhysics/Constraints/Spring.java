@@ -37,7 +37,7 @@ public class Spring extends Constraint {
 
         //calculate the distance between the two connected bodies
         Vector3 difference =
-            bodyB.getPosition().sub(bodyA.getPosition());
+            new Vector3(bodyB.getPosition()).sub(bodyA.getPosition());
 
         double distance = difference.getLength();
 
@@ -47,14 +47,14 @@ public class Spring extends Constraint {
         }
 
         Vector3 direction =
-            difference.scale(1.0 / distance);
+            new Vector3(difference).scale(1.0 / distance);
 
         // Hooke's law : displacement from the spring resting lenght
         double displacement = distance - maxDistance;
 
         //calculate the relative velocity between both bodie 
         Vector3 relativeVelocity =
-            bodyB.getLinearVelocity()
+            new Vector3(bodyB.getLinearVelocity())
                 .sub(bodyA.getLinearVelocity());
 
         //project the relative velocity onto the spring direction
@@ -69,15 +69,15 @@ public class Spring extends Constraint {
             + damping * velocityAlongSpring;
 
         Vector3 springForce =
-            direction.scale(forceMagnitude);
+            new Vector3(direction).scale(forceMagnitude);
 
         
         //convert the spring into acceleration
         Vector3 accelerationA =
-            springForce.scale(bodyA.getInverseMass());
+            new Vector3(springForce).scale(bodyA.getInverseMass());
 
         Vector3 accelerationB =
-            springForce.scale(-bodyB.getInverseMass());
+            new Vector3(springForce).scale(-bodyB.getInverseMass());
 
         //apply equal and opposite contributions to the both bodies
 

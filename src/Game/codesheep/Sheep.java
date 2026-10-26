@@ -90,7 +90,7 @@ public class Sheep {
         }
 
 
-        Vector3 direction = particle.getPosition().sub(dogPosition);
+        Vector3 direction = new Vector3(particle.getPosition()).sub(dogPosition);
 
         double distance = direction.getLength();
 
