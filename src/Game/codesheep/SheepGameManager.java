@@ -26,9 +26,6 @@ public class SheepGameManager {
 
     private float impulseTimer = 0f;
 
-    private HashMap<Sheep, Constraint> sheepConstraintHashMap = new HashMap<>();
-
-
     private static final double HERD_CONNECTION_DISTANCE = 105.0;
 
     private static final int INITIAL_SHEEP_COUNT = 50;
@@ -106,11 +103,6 @@ public class SheepGameManager {
                     new Vector3(0, 0, 0)
                 );
 
-                Constraint constraintToRemove =
-                    this.sheepConstraintHashMap.remove(sheep);
-
-                this.world.removeConstraint(constraintToRemove);
-
                 safeSheepCount++;
             }
         }
@@ -142,7 +134,7 @@ public class SheepGameManager {
                     + random.nextDouble() * (sketch.height - margin * 2);
 
                 SheepObstacle candidate =
-                    new SheepObstacle(type, x, y);
+                    new SheepObstacle(this.world,type, x, y);
 
                 boolean valid = true;
 
@@ -157,7 +149,7 @@ public class SheepGameManager {
                 //avoid spawning obstacles on the inital herd
                 for (Sheep sheep : sheepList) {
 
-                    double distance = candidate.getPosition()
+                    double distance = new Vector3(candidate.getPosition())
                         .sub(sheep.getPosition())
                         .getLength();
 
@@ -172,7 +164,7 @@ public class SheepGameManager {
 
                     for (SheepObstacle obstacle : obstacles) {
 
-                        double distance = candidate.getPosition()
+                        double distance = new Vector3(candidate.getPosition())
                             .sub(obstacle.getPosition())
                             .getLength();
 
@@ -250,23 +242,6 @@ public class SheepGameManager {
         );
     }
 
-    //sotre the two sheep connected by spring 
-    private static class SheepConnection {
-
-        Sheep first;
-        Sheep second;
-        Spring spring;
-
-        SheepConnection(Sheep first, Sheep second, Spring spring) {
-            this.first = first;
-            this.second = second;
-            this.spring = spring;
-        }
-    }
-
-    private final ArrayList<SheepConnection> connections =
-        new ArrayList<>();
-
 
     private void generateInitialHerd() {
 
@@ -295,8 +270,6 @@ public class SheepGameManager {
         }
     }
 
-    
-   
 
     private void updateLostSheep() {
 
@@ -357,37 +330,14 @@ public class SheepGameManager {
             belongsToMainHerd[index] = true;
         }
 
-        //mark sheep outisde of the main herd as lost
+
         for (int i = 0; i < count; i++) {
 
             Sheep sheep = sheepList.get(i);
 
             if (!sheep.isSafe()) {
+                //mark sheep outside the main herd as lost
                 sheep.setLost(!belongsToMainHerd[i]);
-
-                Constraint constraintToRemove =
-                    this.sheepConstraintHashMap.remove(sheep);
-
-                this.world.removeConstraint(constraintToRemove);
-                //if they are not lost but isn't constrained to the blob
-                // we add it
-            } else if(!this.sheepConstraintHashMap.containsKey(sheep)){
-
-                Sheep randomSheep = sheepList.get(
-                    mainHerd.get(random.nextInt(mainHerd.size()-1))
-                );
-                Spring spring = new Spring(
-                    sheep.getParticle().getCollider(),
-                    randomSheep.getParticle().getCollider(),
-                    restLength,
-                    stiffness,
-                    damping
-                );
-
-                this.sheepConstraintHashMap.put(sheep,spring);
-
-                this.world.addConstraint(spring);
-
             }
         }
     }
@@ -421,8 +371,6 @@ public class SheepGameManager {
 
                     this.world.addConstraint(spring);
 
-                    this.sheepConstraintHashMap.put(current,spring);
-
                 }
 
                 // Connect to the sheep below.
@@ -440,8 +388,6 @@ public class SheepGameManager {
                     );
 
                     this.world.addConstraint(spring);
-
-                    this.sheepConstraintHashMap.put(current,spring);
                 }
 
             }
@@ -481,15 +427,6 @@ public class SheepGameManager {
 
         //update particule positions and velocities through the physic engine 
         world.UpdatePhysics(deltaTime);
-
-        //resolve collision between sheep and environmental obstacles
-        for (SheepObstacle obstacle : obstacles) {
-
-            for (Sheep sheep : sheepList) {
-
-                obstacle.resolveCollision(sheep);
-            }
-        }
 
         updateSheepPen();
 

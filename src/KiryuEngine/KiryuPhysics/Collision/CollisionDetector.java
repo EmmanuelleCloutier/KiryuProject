@@ -3,6 +3,7 @@ package KiryuEngine.KiryuPhysics.Collision;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 
+@Deprecated
 public class CollisionDetector {
 
 

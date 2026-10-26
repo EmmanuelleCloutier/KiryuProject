@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class RigidBody {
 
-  private Collider collider;
+  private SphereCollider collider;
 
   private final double mass;
   private final double inverseMass;

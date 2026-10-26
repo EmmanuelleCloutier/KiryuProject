@@ -1,7 +1,9 @@
 
 package Game.codesheep;
 
+import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
 
 public class SheepObstacle {
@@ -12,8 +14,7 @@ public class SheepObstacle {
     }
 
     private final Type type;
-    private final Vector3 position;
-    private final double radius;
+    private final RigidBody rigidBody;
 
     private static final String ROCK_SPRITE =
         "Game/data/rocher.png";
@@ -21,74 +22,28 @@ public class SheepObstacle {
     private static final String BUSH_SPRITE =
         "Game/data/buisson.png";
 
-    public SheepObstacle(Type type, double x, double y) {
+    public SheepObstacle(World world, Type type, double x, double y) {
 
         this.type = type;
-        this.position = new Vector3(x, y, 0);
+        Vector3 position = new Vector3(x, y, 0);
 
         //use a different collision radius for each obstacle type
-        this.radius = type == Type.ROCK ? 38.0 : 32.0;
+        double radius = type == Type.ROCK ? 38f : 32f;
+
+        this.rigidBody = new RigidBody(100,radius);
+        this.rigidBody.setPosition(position);
+        this.rigidBody.setIsStatic(true);
+
+        world.addRigidBody(this.rigidBody);
+
     }
 
     public Vector3 getPosition() {
-        return position;
+        return this.rigidBody.getPosition();
     }
 
     public double getRadius() {
-        return radius;
-    }
-
-    public void resolveCollision(Sheep sheep) {
-
-        Vector3 sheepPosition = sheep.getPosition();
-
-        //calculate the distance between the sheep and the obstacle 
-        Vector3 difference = sheepPosition.sub(position);
-        double distance = difference.getLength();
-
-        //no collision if the sheep is outside the obstacle radius
-        double sheepRadius = 27.5;
-        double minimumDistance = radius + sheepRadius;
-
-        if (distance >= minimumDistance) {
-            return;
-        }
-
-        //no /0
-        Vector3 normal;
-
-        //calculate the collision direction 
-        if (distance > 0.0001) {
-            normal = difference.scale(1.0 / distance);
-        } else {
-            normal = new Vector3(1, 0, 0);
-        }
-
-        //move the sheep outside the obstacle to prevent overlap
-        Vector3 correctedPosition = position.add(
-            normal.scale(minimumDistance)
-        );
-
-        sheep.getParticle().setPosition(correctedPosition);
-
-        Vector3 velocity = sheep.getParticle().getLinearVelocity();
-
-        //project the sheep velocity onto the collision normal
-        double velocityAlongNormal =
-            velocity.x * normal.x +
-            velocity.y * normal.y;
-
-        //remove only the velocity directed toward the obstacle 
-        if (velocityAlongNormal < 0) {
-
-            Vector3 correctedVelocity = velocity.sub(
-                normal.scale(velocityAlongNormal)
-            );
-
-            sheep.getParticle().setLinearVelocity(
-                correctedVelocity
-            );
-        }
+        return this.rigidBody.getCollider().getSize();
     }
 
     public void draw(SpriteRenderer renderer) {
@@ -102,7 +57,7 @@ public class SheepObstacle {
 
         renderer.drawSprite(
             spritePath,
-            position,
+            this.getPosition(),
             size,
             size
         );

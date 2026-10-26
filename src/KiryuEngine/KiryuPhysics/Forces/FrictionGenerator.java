@@ -33,7 +33,7 @@ public class FrictionGenerator implements ForceGenerator {
         double kineticFrictionCoefficient
     ) {
         applyForceTo.add(
-            applyForceTo
+            new Vector3(applyForceTo)
                 .reverse()
                 .scale(kineticFrictionCoefficient)
         );

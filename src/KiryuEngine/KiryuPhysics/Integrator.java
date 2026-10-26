@@ -15,46 +15,39 @@ public class Integrator {
 
         // v1 = ((damping ^ dt) * v0) + (a * dt)
 
-        Vector3 newVelocity =
-            rigidbody
-                .getLinearVelocity()
-                .scale(
-                    Math.pow(
-                        rigidbody.getDamping(),
-                        deltaTime
-                    )
-                )
-                .add(
-                    rigidbody
-                        .getAccumulatedForce()
-                        .scale(deltaTime)
-                );
+      Vector3 newVelocity = new Vector3(rigidbody.getLinearVelocity())
+          .scale(
+              Math.pow(
+                  rigidbody.getDamping(),
+                  deltaTime
+              )
+          )
+          .add(new Vector3(rigidbody.getAccumulatedForce())
+              .scale(deltaTime)
+          );
 
 
-        rigidbody.setLinearVelocity(
-            newVelocity
-        );
+      rigidbody.setLinearVelocity(
+          newVelocity
+      );
 
-        Vector3 newDirection = Vector3.getVectorNormal(
-            rigidbody.getLinearVelocity()
-        );
+      Vector3 newDirection = Vector3.getVectorNormal(
+          rigidbody.getLinearVelocity()
+      );
 
-        rigidbody.setDirection(newDirection);
+      rigidbody.setDirection(newDirection);
 
-        // p1 = p0 + (v1 * dt)
+      // p1 = p0 + (v1 * dt)
 
-        Vector3 newPosition =
-            rigidbody
-                .getPosition()
-                .add(
-                    newVelocity.scale(deltaTime)
-                );
+      Vector3 newPosition = new Vector3(rigidbody.getPosition())
+          .add(
+              newVelocity.scale(deltaTime)
+          );
 
+      rigidbody.setPosition(
+          newPosition
+      );
 
-        rigidbody.setPosition(
-            newPosition
-        );
-
-
+      rigidbody.getAccumulatedForce().clear();
     }
 }
