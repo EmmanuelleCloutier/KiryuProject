@@ -271,4 +271,12 @@ public class Vector3 {
     public boolean isCollinear(Vector3 other) {
         return this.crossProduct(other).equals(Vector3.ZERO_VECTOR);
     }
+
+
+    public void clear(){
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+    }
+
 }

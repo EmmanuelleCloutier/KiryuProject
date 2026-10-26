@@ -11,10 +11,6 @@ public class SphereCollider extends Collider {
         this.rigidBody = rigidbody;
     }
 
-    public double getRayon() {
-        return rayon;
-    }
-
     public void setRayon(double rayon) {
         this.rayon = rayon;
     }

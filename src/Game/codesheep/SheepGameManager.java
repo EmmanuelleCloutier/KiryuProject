@@ -250,23 +250,6 @@ public class SheepGameManager {
         );
     }
 
-    //sotre the two sheep connected by spring 
-    private static class SheepConnection {
-
-        Sheep first;
-        Sheep second;
-        Spring spring;
-
-        SheepConnection(Sheep first, Sheep second, Spring spring) {
-            this.first = first;
-            this.second = second;
-            this.spring = spring;
-        }
-    }
-
-    private final ArrayList<SheepConnection> connections =
-        new ArrayList<>();
-
 
     private void generateInitialHerd() {
 
@@ -295,8 +278,6 @@ public class SheepGameManager {
         }
     }
 
-    
-   
 
     private void updateLostSheep() {
 
@@ -357,25 +338,36 @@ public class SheepGameManager {
             belongsToMainHerd[index] = true;
         }
 
-        //mark sheep outisde of the main herd as lost
+
         for (int i = 0; i < count; i++) {
 
             Sheep sheep = sheepList.get(i);
 
             if (!sheep.isSafe()) {
+                //mark sheep outside the main herd as lost
                 sheep.setLost(!belongsToMainHerd[i]);
 
                 Constraint constraintToRemove =
                     this.sheepConstraintHashMap.remove(sheep);
 
                 this.world.removeConstraint(constraintToRemove);
+
+            } else if(!this.sheepConstraintHashMap.containsKey(sheep) &&
+                        belongsToMainHerd.length > 1){
                 //if they are not lost but isn't constrained to the blob
                 // we add it
-            } else if(!this.sheepConstraintHashMap.containsKey(sheep)){
 
                 Sheep randomSheep = sheepList.get(
                     mainHerd.get(random.nextInt(mainHerd.size()-1))
                 );
+
+                // if somehow we picked the same sheep choose a new one
+                if (sheep == randomSheep){
+                    randomSheep = sheepList.get(
+                        mainHerd.get(random.nextInt(mainHerd.size()-1))
+                    );
+                }
+
                 Spring spring = new Spring(
                     sheep.getParticle().getCollider(),
                     randomSheep.getParticle().getCollider(),
@@ -481,15 +473,6 @@ public class SheepGameManager {
 
         //update particule positions and velocities through the physic engine 
         world.UpdatePhysics(deltaTime);
-
-        //resolve collision between sheep and environmental obstacles
-        for (SheepObstacle obstacle : obstacles) {
-
-            for (Sheep sheep : sheepList) {
-
-                obstacle.resolveCollision(sheep);
-            }
-        }
 
         updateSheepPen();
 
