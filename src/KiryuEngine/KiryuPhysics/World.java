@@ -131,10 +131,16 @@ public class World {
         // but we can have contacts with static rigidBodies
         RigidBody second = rigidBodies.get(j);
 
-        if (first.getPosition().distanceSquared(second.getPosition()) <=
-            first.getCollider().getSizeSquared()
-        + second.getCollider().getSizeSquared()
-        ){
+        if (first.getCollider().isDeactivated() ||
+            second.getCollider().isDeactivated()){
+          continue;
+        }
+
+        double distSq = first.getPosition().distanceSquared(second.getPosition());
+        double sizeSum = first.getCollider().getSize() + second.getCollider().getSize();
+        double sizeSumSq = sizeSum * sizeSum;
+
+        if ( distSq <= sizeSumSq){
           first.addContact(
               new Contact(
                   first.getCollider(),
@@ -148,68 +154,69 @@ public class World {
 
   private void resolveCollisions(RigidBody rigidBody){
 
-//    if (rigidBody.getContacts().isEmpty()) return;
-//
-//
-//    Vector3 position = rigidBody.getPosition();
-//    Vector3 velocity = rigidBody.getLinearVelocity();
-//
-//    Vector3 correctedPosition = new Vector3(position);
-//    Vector3 correctedVelocity = new Vector3(velocity);
-//
-//
-//    double colliderSize = rigidBody.getCollider().getSize();
-//
-//    for (Contact contact: rigidBody.getContacts()
-//         ) {
-//
-//      double minimumDistance = colliderSize + contact.getOther().getSize();
-//
-//      Vector3 difference = new Vector3(correctedPosition).sub(
-//          contact.getOther()
-//              .getRigidBody()
-//              .getPosition()
-//      );
-//
-//      double distance = difference.getLength();
-//
-//      if (distance >= minimumDistance) {
-//        continue;
-//      }
-//
-//      Vector3 normal = new Vector3(difference);
-//
-//      if (distance > 0.0001f) {
-//        normal.scale(1.0 / distance);
-//      } else {
-//        normal.set(1, 0, 0);
-//      }
-//
-//      double velocityAlongNormal =
-//          velocity.x * normal.x +
-//              velocity.y * normal.y;
-//
-//
-//      if (velocityAlongNormal < 0) {
-//
-//        correctedVelocity.sub(
-//            new Vector3(normal).scale(velocityAlongNormal)
-//        );
-//      }
-//
-//      correctedPosition.add(
-//          new Vector3(normal).scale(minimumDistance)
-//      );
-//
-//    }
-//
-//    rigidBody.setPosition(correctedPosition);
-//
-//    rigidBody.setLinearVelocity(
-//        correctedVelocity
-//    );
-//
-//    rigidBody.getContacts().clear();
+    if (rigidBody.getContacts().isEmpty()) return;
+
+    for (Contact contact: rigidBody.getContacts()
+         ) {
+
+      Vector3 correctedPosition = new Vector3();
+      Vector3 correctedVelocity = new Vector3();
+
+      double minimumDistance = rigidBody.getCollider().getSize()/2 + contact.getOther().getSize()/2;
+
+      Vector3 difference = new Vector3(rigidBody.getPosition()).sub(
+          contact.getOther()
+              .getRigidBody()
+              .getPosition()
+      );
+
+
+      double distance = difference.getLength();
+
+
+      if (distance >= minimumDistance) {
+        continue;
+      }
+
+
+      Vector3 normal;
+
+      if (distance > 0.00000001f) {
+        normal = difference.scale(1.0 / distance);
+      } else {
+        normal = new Vector3(0, 0, 0);
+      }
+
+      correctedPosition.add(
+          new Vector3(rigidBody.getPosition())
+              .add(new Vector3(normal).scale(minimumDistance))
+      );
+
+      rigidBody.setPosition(correctedPosition);
+
+      Vector3 velocity = rigidBody.getLinearVelocity();
+
+      double velocityAlongNormal =
+          velocity.x * normal.x +
+              velocity.y * normal.y;
+
+
+      if (velocityAlongNormal < 0) {
+
+        correctedVelocity.set(
+            new Vector3(velocity)
+                .sub(new Vector3(normal).scale(velocityAlongNormal))
+        );
+
+        rigidBody.setLinearVelocity(
+            correctedVelocity
+        );
+      }
+
+    }
+
+
+    rigidBody.getContacts().clear();
 
   }
 

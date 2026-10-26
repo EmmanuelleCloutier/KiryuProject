@@ -20,8 +20,8 @@ public class Sheep {
     private boolean isSafe = false;
     private boolean isLost = false;
 
-    private double detectionRadius = 150.0;
-    private double repulsionStrength = 600.0;
+    private double detectionRadius = 5000.0;
+    private double repulsionStrength = 15000.0;
 
 
     public boolean isSafe() {

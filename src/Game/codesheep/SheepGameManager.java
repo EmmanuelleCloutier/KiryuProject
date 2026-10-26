@@ -90,6 +90,7 @@ public class SheepGameManager {
                 sheep.setSafe(true);
                 sheep.setLost(false);
                 sheep.getParticle().getRigidbody().setIsStatic(true);
+                sheep.getParticle().getCollider().setDeactivated(true);
 
                 //move the sheep to its resting position
                 sheep.getParticle().setPosition(safePosition);
@@ -307,7 +308,7 @@ public class SheepGameManager {
 
                     Sheep other = sheepList.get(j);
 
-                    double distance = current.getPosition()
+                    double distance = new Vector3(current.getPosition())
                         .sub(other.getPosition())
                         .getLength();
 
