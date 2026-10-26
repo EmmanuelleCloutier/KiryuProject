@@ -42,6 +42,8 @@ public class Sheep {
             new Vector3(x, y, 0),
             new Vector3(0, 0, 0)
         );
+
+        world.addRigidBody(this.particle.getRigidbody());
     }
 
     public boolean isLost() {

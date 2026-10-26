@@ -142,7 +142,7 @@ public class SheepGameManager {
                     + random.nextDouble() * (sketch.height - margin * 2);
 
                 SheepObstacle candidate =
-                    new SheepObstacle(type, x, y);
+                    new SheepObstacle(this.world,type, x, y);
 
                 boolean valid = true;
 

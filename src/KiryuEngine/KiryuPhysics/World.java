@@ -36,6 +36,8 @@ public class World {
 
   public void UpdatePhysics(float deltaTime){
 
+    if (rigidBodies.isEmpty()) return;
+
     for (RigidBody rb : rigidBodies) {
 
       if (rb.isStatic()) continue;
@@ -45,6 +47,8 @@ public class World {
       }
 
       if (rb.isColliding()){
+        if (rb.getContacts().isEmpty()) continue;
+
         for (Contact contact: rb.getContacts()
              ) {
           frictionGenerator.applyForce(rb);
@@ -52,9 +56,11 @@ public class World {
       }
     }
 
-    for (Constraint cons: constraints) {
-      if(cons.isConstrained()){
-        cons.applyConstraint();
+    if (!constraints.isEmpty()) {
+      for (Constraint cons : constraints) {
+        if (cons.isConstrained()) {
+          cons.applyConstraint();
+        }
       }
     }
 
@@ -125,6 +131,9 @@ public class World {
   }
 
   private void resolveCollisions(RigidBody rigidBody){
+
+    if (rigidBody.getContacts().isEmpty()) return;
+
 
     Vector3 position = rigidBody.getPosition();
     Vector3 velocity = rigidBody.getLinearVelocity();

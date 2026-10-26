@@ -3,6 +3,7 @@ package Game.codesheep;
 
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
 
 public class SheepObstacle {
@@ -21,7 +22,7 @@ public class SheepObstacle {
     private static final String BUSH_SPRITE =
         "Game/data/buisson.png";
 
-    public SheepObstacle(Type type, double x, double y) {
+    public SheepObstacle(World world, Type type, double x, double y) {
 
         this.type = type;
         Vector3 position = new Vector3(x, y, 0);
@@ -32,6 +33,8 @@ public class SheepObstacle {
         this.rigidBody = new RigidBody(100,radius);
         this.rigidBody.setPosition(position);
         this.rigidBody.setIsStatic(true);
+
+        world.addRigidBody(this.rigidBody);
 
     }
 
