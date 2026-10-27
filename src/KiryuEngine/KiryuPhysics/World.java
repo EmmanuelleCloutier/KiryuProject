@@ -1,5 +1,6 @@
 package KiryuEngine.KiryuPhysics;
 
+import KiryuEngine.KiryuPhysics.Collision.Collider;
 import KiryuEngine.KiryuPhysics.Collision.Contact;
 import KiryuEngine.KiryuPhysics.Constraints.Constraint;
 import KiryuEngine.KiryuPhysics.Forces.FrictionGenerator;
@@ -152,6 +153,13 @@ public class World {
     return constraints.remove(constraint);
   }
 
+  public boolean removeConstraint(Collider collider){
+
+    return constraints.removeIf(constraint ->
+        constraint.getFirst() == collider ||
+            constraint.getSecond() == collider
+    );
+  }
 
   public void checkCollisions(){
 

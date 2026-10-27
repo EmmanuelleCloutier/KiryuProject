@@ -95,6 +95,8 @@ public class SheepGameManager {
                 //move the sheep to its resting position
                 sheep.getRigidBody().setPosition(safePosition);
 
+
+
                 //stop movement 
                 sheep.getRigidBody().setLinearVelocity(
                     Vector3.ZERO_VECTOR.copy()
@@ -103,6 +105,8 @@ public class SheepGameManager {
                 sheep.getRigidBody().setForce(
                     Vector3.ZERO_VECTOR.copy()
                 );
+
+                world.removeConstraint(sheep.getRigidBody().getCollider());
 
                 safeSheepCount++;
             }
