@@ -44,7 +44,7 @@ public class Cannon {
     this.position = position;
     this.trajectoryRenderer = new TrajectoryRenderer(sketch);
     this.projectileStartPosition = position;
-    this.launchVelocity = Vector3.ZERO_VECTOR;
+    this.launchVelocity = Vector3.ZERO_VECTOR.copy();
 
     blastSound = new KiryuSound(sketch,"cannonblast.wav");
 
@@ -52,7 +52,7 @@ public class Cannon {
 
   public void shoot(){
     blastSound.play();
-    blastSound.setVolume(0.25f);
+    blastSound.setVolume(0.05f);
     blastAnimation.playAnimation();
   }
 
@@ -79,21 +79,21 @@ public class Cannon {
 
     this.blastAnimation.draw(this.sketch,projectileStartPosition);
 
-    launchVelocity = new Vector3(this.sketch.mouseX,this.sketch.mouseY,0)
+    this.launchVelocity = new Vector3(this.sketch.mouseX,this.sketch.mouseY,0)
         .sub(projectileStartPosition)
         .scale(selectedProjectileType.speed);
 
 
     if (selectedProjectileType == ProjectileType.LASER){
-      trajectoryRenderer.drawStraightTrajectory(
+      this.trajectoryRenderer.drawStraightTrajectory(
           projectileStartPosition,
-          launchVelocity
+          this.launchVelocity
       );
     }
     else {
       trajectoryRenderer.drawCurvedTrajectory(
           projectileStartPosition,
-          launchVelocity,
+          this.launchVelocity,
           Force.GRAVITY
       );
     }

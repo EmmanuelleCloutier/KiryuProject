@@ -6,9 +6,8 @@ public class BoxCollider extends Collider{
 
   private double size;
 
-  public BoxCollider(double size, RigidBody rigidbody) {
+  public BoxCollider(double size) {
     this.size = size;
-    this.rigidBody = rigidbody;
   }
 
   public void setSize(double size) {
@@ -16,16 +15,13 @@ public class BoxCollider extends Collider{
   }
 
   @Override
-  public void onCollision(Collider other) {
-    this.getRigidBody().onCollision();
-  }
-
-  @Override
   public double getSize() { return size; }
 
   @Override
-  public double getSizeSquared() {
-    return size * size;
+  public void linkRigidBody(RigidBody rigidbody) {
+    if (this.rigidBody != null) return;
+
+    this.rigidBody = rigidbody;
   }
 
 }

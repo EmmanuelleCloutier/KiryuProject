@@ -1,24 +1,25 @@
 package KiryuEngine.KiryuPhysics;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
-import KiryuEngine.KiryuPhysics.Collision.SphereCollider;
 import KiryuEngine.KiryuPhysics.Collision.Contact;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class RigidBody {
 
-  private SphereCollider collider;
+  private final Collider collider;
 
   private final double mass;
   private final double inverseMass;
-  private final double size;
 
   private double damping = 1.f;
   private double staticFrictionCoefficient = 0.5f;
   private double kineticFrictionCoefficient = 0.5f;
 
   private boolean bIsStatic = false;
+  private boolean bAffectedByGravity = true;
+  private boolean markForDestruction = false;
 
   private Vector3 force;
   private Vector3 accumulatedForce;
@@ -26,34 +27,36 @@ public class RigidBody {
   private Vector3 linearVelocity;
   private Vector3 direction;
 
-  private ArrayList<Contact> contacts;
+  private final ArrayList<Contact> contacts;
 
-  public RigidBody(double mass, double size) {
+  private Consumer<RigidBody> collisionListener;
+
+  public RigidBody(double mass, Collider collider) {
     this(
         mass,
-        size,
         new Vector3(),
-        new Vector3()
+        new Vector3(),
+        collider
     );
   }
 
   public RigidBody(
       double mass,
-      double size,
       Vector3 position,
-      Vector3 linearVelocity
+      Vector3 linearVelocity,
+      Collider collider
   ) {
 
     this.mass = mass;
-    this.size = size;
     this.inverseMass = 1 / this.mass;
 
-    this.force = new Vector3();
+    this.force = Vector3.ZERO_VECTOR.copy();
     this.position = new Vector3(position);
     this.linearVelocity = new Vector3(linearVelocity);
-    this.collider = new SphereCollider(this.size,this);
-    this.accumulatedForce = new Vector3();
+    this.accumulatedForce = Vector3.ZERO_VECTOR.copy();
     this.contacts = new ArrayList<>();
+    this.collider = collider;
+    collider.linkRigidBody(this);
   }
 
   /**
@@ -130,6 +133,18 @@ public class RigidBody {
     return bIsStatic;
   }
 
+  public ArrayList<Contact> getContacts() {
+    return contacts;
+  }
+
+  public boolean isAffectedByGravity() {
+    return bAffectedByGravity;
+  }
+
+  public boolean isMarkForDestruction() {
+    return markForDestruction;
+  }
+
   //endregion
 
   /**
@@ -173,14 +188,18 @@ public class RigidBody {
     this.bIsStatic = bIsStatic;
   }
 
+
+  public void setAffectedByGravity(boolean bAffectedByGravity) {
+    this.bAffectedByGravity = bAffectedByGravity;
+  }
+
+  public void setMarkForDestruction(boolean markForDestruction) {
+    this.markForDestruction = markForDestruction;
+  }
+
+
   //endregion
 
-
-  public void onCollision(){}
-
-  public ArrayList<Contact> getContacts() {
-    return contacts;
-  }
 
   public boolean addContact(Contact contact){
     return this.contacts.add(contact);
@@ -201,7 +220,10 @@ public class RigidBody {
 
   public void addImpulse(Vector3 impulseDirection, double impulseStrength){
 
-    this.force.add(impulseDirection.scale(impulseStrength));
+    this.linearVelocity.add(
+        impulseDirection.scale(impulseStrength)
+            .scale(this.inverseMass)
+    );
 
   }
 
@@ -213,12 +235,24 @@ public class RigidBody {
         this.direction.z * impulseStrength
     );
 
-    this.force.add(impulse);
+    this.linearVelocity.add(impulse.scale(this.inverseMass));
 
   }
 
   public boolean isColliding(){
     return !contacts.isEmpty();
   }
+
+
+  public void setCollisionListener(Consumer<RigidBody> listener) {
+    this.collisionListener = listener;
+  }
+
+  public void onCollision(RigidBody other) {
+    if (collisionListener != null) {
+      collisionListener.accept(other);
+    }
+  }
+
 
 }

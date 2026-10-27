@@ -6,9 +6,8 @@ public class SphereCollider extends Collider {
 
     private double rayon;
 
-    public SphereCollider(double rayon, RigidBody rigidbody) {
+    public SphereCollider(double rayon) {
         this.rayon = rayon;
-        this.rigidBody = rigidbody;
     }
 
     public void setRayon(double rayon) {
@@ -16,17 +15,13 @@ public class SphereCollider extends Collider {
     }
 
     @Override
-    public void onCollision(Collider other) {
-        this.getRigidBody().onCollision();
-    }
-
-    @Override
     public double getSize() { return rayon; }
 
     @Override
-    public double getSizeSquared() {
-        return rayon * rayon;
-    }
+    public void linkRigidBody(RigidBody rigidbody) {
+        if (this.rigidBody != null) return;
 
+        this.rigidBody = rigidbody;
+    }
 
 }

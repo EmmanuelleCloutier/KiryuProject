@@ -3,7 +3,6 @@ package KiryuEngine.KiryuPhysics.Forces;
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.Vector3;
 
-import static KiryuEngine.KiryuPhysics.Forces.Force.GRAVITY;
 
 public class FrictionGenerator implements ForceGenerator {
 
@@ -13,9 +12,11 @@ public class FrictionGenerator implements ForceGenerator {
 
     public void applyForce(RigidBody rigidBody) {
         Vector3 force = rigidBody.getAccumulatedForce();
-        if (force.equals(Vector3.ZERO_VECTOR))
+        if (rigidBody.getLinearVelocity().equals(Vector3.ZERO_VECTOR.copy()))
             applyStaticFriction(force, rigidBody.getStaticFrictionCoefficient());
         else applyKineticFriction(force, rigidBody.getKineticFrictionCoefficient());
+
+        rigidBody.getAccumulatedForce().add(force);
     }
 
     private void applyStaticFriction(
@@ -24,7 +25,9 @@ public class FrictionGenerator implements ForceGenerator {
     ) {
         //Formule utilisée : F = u * N, avec N = m x g => a = u x g
         applyForceTo.add(
-            GRAVITY.scale(staticFrictionCoefficient)
+            new Vector3(applyForceTo)
+                .reverse()
+                .scale(staticFrictionCoefficient)
         );
     }
 

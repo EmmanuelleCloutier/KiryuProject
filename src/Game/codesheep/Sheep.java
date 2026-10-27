@@ -1,7 +1,9 @@
 
 package Game.codesheep;
 
+import KiryuEngine.KiryuPhysics.Collision.SphereCollider;
 import KiryuEngine.KiryuPhysics.Particle;
+import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.Vector3;
 import java.util.Random;
 import KiryuEngine.KiryuPhysics.World;
@@ -9,19 +11,20 @@ import KiryuEngine.KiryuRendering.SpriteRenderer;
 
 public class Sheep {
 
-    private final Particle particle;
+    private final RigidBody rigidBody;
 
     private static final String SPRITE_PATH =
         "Game/data/mouton.png";
 
     private static final float SIZE = 55;
+    private static final double mass = 1.f;
 
     //track si le mouton est lost ou est dans le pen 
     private boolean isSafe = false;
     private boolean isLost = false;
 
-    private double detectionRadius = 150.0;
-    private double repulsionStrength = 600.0;
+    private double detectionRadius = 225.0;
+    private double repulsionStrength = 200.0;
 
 
     public boolean isSafe() {
@@ -34,16 +37,14 @@ public class Sheep {
 
     public Sheep(World world, double x, double y) {
 
-        //track whether the sheep
-        particle = new Particle(
-            world,
-            1.0,
-            SIZE / 2.0,
+        this.rigidBody = new RigidBody(
+            mass,
             new Vector3(x, y, 0),
-            new Vector3(0, 0, 0)
+            Vector3.ZERO_VECTOR.copy(),
+            new SphereCollider(SIZE/2)
         );
 
-        world.addRigidBody(this.particle.getRigidbody());
+        world.addRigidBody(this.rigidBody);
     }
 
     public boolean isLost() {
@@ -54,23 +55,23 @@ public class Sheep {
         this.isLost = lost;
     }
 
-    public Particle getParticle() {
-        return particle;
+    public RigidBody getRigidBody() {
+        return this.rigidBody;
     }
 
     public Vector3 getPosition() {
-        return particle.getPosition();
+        return this.rigidBody.getPosition();
     }
     
     public void applyRandomImpulse(Random random) {
 
         if (isSafe) { //on retire les impulse le sheep est safe
-        return;
+            return;
         }   
 
         //generate a random direction and impulse 
         double angle = random.nextDouble() * Math.PI * 2.0;
-        double strength = 20.0 + random.nextDouble() * 35.0;
+        double strength = 20f + random.nextDouble() * 35.0;
 
         Vector3 impulseDirection = new Vector3(
             Math.cos(angle),
@@ -78,19 +79,21 @@ public class Sheep {
             0
         );
 
-        particle.getRigidbody().addImpulse(impulseDirection,strength);
+        this.rigidBody.addImpulse(impulseDirection,strength);
+
 
     }
     
     public void applyDogRepulsion(Vector3 dogPosition) {
 
         if (isSafe) {
-            particle.getRigidbody().setIsStatic(true);
+           this.rigidBody.setIsStatic(true);
             return;
         }
 
 
-        Vector3 direction = new Vector3(particle.getPosition()).sub(dogPosition);
+        Vector3 direction =
+            new Vector3(this.rigidBody.getPosition()).sub(dogPosition);
 
         double distance = direction.getLength();
 
@@ -101,17 +104,15 @@ public class Sheep {
 
             double strength = (1.0f / distance) * (repulsionStrength * intensity);
 
-            particle.getRigidbody().addImpulse(direction,strength);
+            this.rigidBody.addImpulse(direction,strength);
 
-        } else {
-            particle.setAcceleration(new Vector3(0, 0, 0)); //out of range 
         }
     }
 
     public void draw(SpriteRenderer renderer) {
         renderer.drawSprite(
             SPRITE_PATH,
-            particle.getPosition(),
+            rigidBody.getPosition(),
             SIZE,
             SIZE
         );

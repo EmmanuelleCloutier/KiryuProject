@@ -71,8 +71,8 @@ public enum ProjectileType {
     /**
      * BALL DEFAULTS
      */
-    public static final double DEFAULT_BALL_SPEED = 5f;
-    public static final double DEFAULT_BALL_MASS = 2.f;
+    public static final double DEFAULT_BALL_SPEED = 1.5f;
+    public static final double DEFAULT_BALL_MASS = 1.f;
     public static final float DEFAULT_BALL_SPRITE_HEIGHT = 50.f;
     public static final float DEFAULT_BALL_SPRITE_WIDTH = 66.f;
     public static final String DEFAULT_BALL_SPRITE_PATH = "Game/data/ball.png";

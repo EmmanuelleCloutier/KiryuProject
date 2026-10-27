@@ -1,5 +1,6 @@
 package KiryuEngine.KiryuPhysics;
 
+import KiryuEngine.KiryuPhysics.Collision.Collider;
 import KiryuEngine.KiryuPhysics.Collision.Contact;
 import KiryuEngine.KiryuPhysics.Constraints.Constraint;
 import KiryuEngine.KiryuPhysics.Forces.FrictionGenerator;
@@ -41,21 +42,41 @@ public class World {
     if (rigidBodies.isEmpty()) return;
 
     for (RigidBody rb : rigidBodies) {
+//      System.out.println(
+//          "START " + rb +
+//              " | Static: " + rb.isStatic() +
+//              " | Force: " + rb.getAccumulatedForce()
+//      );
 
-      if (rb.isStatic()) continue;
+      if (rb.isStatic()) {
+        continue;
+      }
 
       if (bAllowGravity) {
         gravityGenerator.applyForce(rb);
       }
 
-      if (rb.isColliding()){
-        if (rb.getContacts().isEmpty()) continue;
+//      System.out.println(
+//          "AFTER GRAVITY " + rb +
+//              " | Force: " + rb.getAccumulatedForce()
+//      );
 
-        for (Contact contact: rb.getContacts()
-             ) {
+      if (rb.isColliding() && !rb.getContacts().isEmpty()) {
+        for (Contact contact : rb.getContacts()) {
           frictionGenerator.applyForce(rb);
         }
       }
+
+//      System.out.println(
+//          "AFTER FRICTION " + rb +
+//              " | Force: " + rb.getAccumulatedForce()
+//      );
+
+//      System.out.println(
+//          rb + " | Static: " + rb.isStatic()
+//              + " | Force: " + rb.getAccumulatedForce()
+//      );
+      //System.out.println("After collision detection: " + rb.getAccumulatedForce());
     }
 
     if (!constraints.isEmpty()) {
@@ -75,6 +96,8 @@ public class World {
 
     checkCollisions();
 
+
+
     ResolvePhysics(deltaTime);
   }
 
@@ -86,7 +109,8 @@ public class World {
          ) {
       if (rb.isStatic()) continue;
 
-      Integrator.integrate(rb,deltaTime);
+      Integrator.integrate(rb, deltaTime);
+
       resolveCollisions(rb);
     }
 
@@ -96,6 +120,7 @@ public class World {
     }
     constraintsToRemove.clear();
 
+    rigidBodies.removeIf(RigidBody::isMarkForDestruction);
   }
 
 
@@ -115,32 +140,56 @@ public class World {
     return constraints.remove(constraint);
   }
 
+  public boolean removeConstraint(Collider collider){
+
+    return constraints.removeIf(constraint ->
+        constraint.getFirst() == collider ||
+            constraint.getSecond() == collider
+    );
+  }
 
   public void checkCollisions(){
+
 
     // right now this O(n^2), which is kinda bad
     // we need to change this for a quad tree at some point
 
     for (int i = 0; i < rigidBodies.size() - 1 ; i++) {
       for (int j = i + 1; j < rigidBodies.size(); j++) {
-
         RigidBody first = rigidBodies.get(i);
-        // don't need to register contacts for static rigidBodies
-        if (first.isStatic()) continue;
-
-        // but we can have contacts with static rigidBodies
         RigidBody second = rigidBodies.get(j);
 
-        if (first.getPosition().distanceSquared(second.getPosition()) <=
-            first.getCollider().getSizeSquared()
-        + second.getCollider().getSizeSquared()
-        ){
-          first.addContact(
-              new Contact(
-                  first.getCollider(),
-                  second.getCollider()
-              )
-          );
+        // Static bodies cannot move, so they don't need to collide with each other.
+        if (first.isStatic() && second.isStatic()) {
+          continue;
+        }
+
+        if (first.getCollider().isDeactivated()
+            || second.getCollider().isDeactivated()) {
+          continue;
+        }
+
+        double distanceSquared =
+            first.getPosition().distanceSquared(second.getPosition());
+
+        double radiusSum =
+            first.getCollider().getSize()
+                + second.getCollider().getSize();
+
+        if (distanceSquared <= radiusSum * radiusSum) {
+
+          // Store the contact on each non-static body.
+          if (!first.isStatic()) {
+            first.addContact(
+                new Contact(first.getCollider(), second.getCollider())
+            );
+          }
+
+          if (!second.isStatic()) {
+            second.addContact(
+                new Contact(second.getCollider(), first.getCollider())
+            );
+          }
         }
       }
     }
@@ -148,69 +197,67 @@ public class World {
 
   private void resolveCollisions(RigidBody rigidBody){
 
-//    if (rigidBody.getContacts().isEmpty()) return;
-//
-//
-//    Vector3 position = rigidBody.getPosition();
-//    Vector3 velocity = rigidBody.getLinearVelocity();
-//
-//    Vector3 correctedPosition = new Vector3(position);
-//    Vector3 correctedVelocity = new Vector3(velocity);
-//
-//
-//    double colliderSize = rigidBody.getCollider().getSize();
-//
-//    for (Contact contact: rigidBody.getContacts()
-//         ) {
-//
-//      double minimumDistance = colliderSize + contact.getOther().getSize();
-//
-//      Vector3 difference = new Vector3(correctedPosition).sub(
-//          contact.getOther()
-//              .getRigidBody()
-//              .getPosition()
-//      );
-//
-//      double distance = difference.getLength();
-//
-//      if (distance >= minimumDistance) {
-//        continue;
-//      }
-//
-//      Vector3 normal = new Vector3(difference);
-//
-//      if (distance > 0.0001f) {
-//        normal.scale(1.0 / distance);
-//      } else {
-//        normal.set(1, 0, 0);
-//      }
-//
-//      double velocityAlongNormal =
-//          velocity.x * normal.x +
-//              velocity.y * normal.y;
-//
-//
-//      if (velocityAlongNormal < 0) {
-//
-//        correctedVelocity.sub(
-//            new Vector3(normal).scale(velocityAlongNormal)
-//        );
-//      }
-//
-//      correctedPosition.add(
-//          new Vector3(normal).scale(minimumDistance)
-//      );
-//
-//    }
-//
-//    rigidBody.setPosition(correctedPosition);
-//
-//    rigidBody.setLinearVelocity(
-//        correctedVelocity
-//    );
-//
-//    rigidBody.getContacts().clear();
+    if (rigidBody.getContacts().isEmpty()) return;
 
+    Vector3 totalPositionCorrection = new Vector3(0, 0, 0);
+    Vector3 velocity = new Vector3(rigidBody.getLinearVelocity());
+    int collisionCount = 0;
+
+    // Tuning parameters to stop jitter
+    double percent = 0.2; // Positional correction percentage (Baumgarte Stabilization)
+    double slop = 0.1;    // Penetration allowance to prevent micro-oscillations
+
+    for (Contact contact : rigidBody.getContacts()) {
+
+
+
+      double minimumDistance = rigidBody.getCollider().getSize() + contact.getOther().getSize();
+
+      Vector3 difference = new Vector3(rigidBody.getPosition()).sub(
+          contact.getOther().getRigidBody().getPosition()
+      );
+
+      double distance = difference.getLength();
+
+      if (distance >= minimumDistance) {
+        continue;
+      }
+
+      rigidBody.onCollision(contact.getOther().getRigidBody());
+
+      Vector3 normal;
+      if (distance < 0.00000001f) {
+        continue;
+      }
+
+      normal = new Vector3(difference).scale(1.0 / distance).normalize();
+
+      // 1. Calculate penetration depth
+      double penetration = minimumDistance - distance;
+
+      // 2. Accumulate positional correction using a slop threshold
+      if (penetration > slop) {
+        Vector3 correction = new Vector3(normal).scale((penetration - slop) * percent);
+        totalPositionCorrection.add(correction);
+        collisionCount++;
+      }
+
+      // 3. Accumulate velocity adjustments against the original/accumulated frame velocity
+      double velocityAlongNormal = velocity.dotProduct(normal);
+
+      if (velocityAlongNormal < 0) {
+        velocity.sub(new Vector3(normal).scale(velocityAlongNormal));
+      }
+    }
+
+    // 4. Apply the averaged/blended changes once at the end of the frame
+    if (collisionCount > 0) {
+      Vector3 finalPosition = new Vector3(rigidBody.getPosition()).add(totalPositionCorrection);
+      rigidBody.setPosition(finalPosition);
+    }
+
+    rigidBody.setLinearVelocity(velocity);
+    rigidBody.clearContacts();
   }
 
 }

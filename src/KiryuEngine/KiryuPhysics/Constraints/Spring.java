@@ -58,10 +58,7 @@ public class Spring extends Constraint {
                 .sub(bodyA.getLinearVelocity());
 
         //project the relative velocity onto the spring direction
-        double velocityAlongSpring =
-            relativeVelocity.x * direction.x
-            + relativeVelocity.y * direction.y
-            + relativeVelocity.z * direction.z;
+        double velocityAlongSpring = relativeVelocity.dotProduct(direction);
 
         //combine spring stiffness and damping forces
         double forceMagnitude =
