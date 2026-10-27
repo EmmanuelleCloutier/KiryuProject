@@ -36,12 +36,11 @@ public class GameManager {
 
     //cree le system de projectile
     this.projectileSystem = new ProjectileSystem(
-        this.world,
         new ProjectileRenderer(sketch)
     );
 
     //construction du manager de blocs
-    this.blockManager = new BlockManager(sketch);
+    this.blockManager = new BlockManager(sketch, this.world);
 
 
     //generation de structure
@@ -64,8 +63,9 @@ public class GameManager {
 
   public void update(float deltaTime){
 
-    this.projectileSystem.update(deltaTime);
-    detectCollisions();
+    this.world.UpdatePhysics(deltaTime);
+    //this.projectileSystem.update(deltaTime);
+    //detectCollisions();
 
     blockManager.generateRandomStructure(
         sketch.width * 0.75f,
@@ -87,42 +87,42 @@ public class GameManager {
     this.cannon.draw();
     this.projectileSystem.drawProjectiles();
   }
-
+@Deprecated
   private void detectCollisions(){
-    if (this.projectileSystem.getProjectiles().isEmpty()) return;
-
-    for (int i = this.projectileSystem.getProjectiles().size() - 1; i >= 0; --i) {
-      Particle particle = this.projectileSystem.getProjectiles().get(i);
-
-      Vector3 position = particle.getPosition();
-      ProjectileType type = projectileSystem.getProjectileType(particle);
-
-      boolean hitBlock =
-          blockManager.checkProjectileCollision(
-              particle,
-              type.sprite.width,
-              type.sprite.height
-          );
-
-
-      if (hitBlock) {
-        projectileSystem.removeProjectile(particle);
-        continue;
-      }
-
-
-      //verification si le projectile est out
-      if (
-          position.x < 0 ||
-              position.x > this.sketch.width ||
-              position.y < 0 ||
-              position.y > gameBottom
-      ) {
-
-        projectileSystem.removeProjectile(particle);
-
-      }
-    }
+//    if (this.projectileSystem.getProjectiles().isEmpty()) return;
+//
+//    for (int i = this.projectileSystem.getProjectiles().size() - 1; i >= 0; --i) {
+//      Particle particle = this.projectileSystem.getProjectiles().get(i);
+//
+//      Vector3 position = particle.getPosition();
+//      ProjectileType type = projectileSystem.getProjectileType(particle);
+//
+//      boolean hitBlock =
+//          blockManager.checkProjectileCollision(
+//              particle,
+//              type.sprite.width,
+//              type.sprite.height
+//          );
+//
+//
+//      if (hitBlock) {
+//        projectileSystem.removeProjectile(particle);
+//        continue;
+//      }
+//
+//
+//      //verification si le projectile est out
+//      if (
+//          position.x < 0 ||
+//              position.x > this.sketch.width ||
+//              position.y < 0 ||
+//              position.y > gameBottom
+//      ) {
+//
+//        projectileSystem.removeProjectile(particle);
+//
+//      }
+//    }
   }
 
   public void setProjectileType(char key){
@@ -155,6 +155,7 @@ public class GameManager {
   public void shoot(){
     cannon.shoot();
     this.projectileSystem.addProjectileAtPosition(
+        this.world,
         this.headUpDisplay.getSelectedProjectile(),
         cannon.getProjectileStartPosition(),
         cannon.getLaunchVelocity()

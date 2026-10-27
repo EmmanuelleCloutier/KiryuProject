@@ -40,7 +40,7 @@ public class Sheep {
         this.rigidBody = new RigidBody(
             mass,
             new Vector3(x, y, 0),
-            new Vector3(0,0,0),
+            Vector3.ZERO_VECTOR.copy(),
             new SphereCollider(SIZE/2)
         );
 

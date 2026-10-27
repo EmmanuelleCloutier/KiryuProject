@@ -4,7 +4,8 @@ import static java.lang.Math.sqrt;
 
 public class Vector3 {
     public static final Vector3 ZERO_VECTOR = new Vector3(0,0,0);
-    public static final Vector3 UNIT_VECTOR = new Vector3(1,1,1);
+    public static final Vector3 ONES_VECTOR = new Vector3(1,1,1);
+    public static final Vector3 UNIT_VECTOR = new Vector3(1/sqrt(3),1/sqrt(3),1/sqrt(3));
     public static final Vector3 UP_VECTOR = new Vector3(0,1,0);
     public static final Vector3 DOWN_VECTOR = new Vector3(0,-1,0);
     public static final Vector3 RIGHT_VECTOR = new Vector3(1,0,0);
@@ -33,6 +34,10 @@ public class Vector3 {
         this.x = vecteur.x;
         this.y = vecteur.y;
         this.z = vecteur.z;
+    }
+
+    public Vector3 copy(){
+        return new Vector3(this.x,this.y,this.z);
     }
 
     /**
@@ -137,7 +142,7 @@ public class Vector3 {
         double lenSq = getLengthSquared();
 
         if (lenSq == 0.0f) {
-            return Vector3.ZERO_VECTOR;
+            return Vector3.ZERO_VECTOR.copy();
         }
 
         double invLen = 1.0f / Math.sqrt(lenSq);
@@ -157,7 +162,7 @@ public class Vector3 {
         double lenSq = vector.getLengthSquared();
 
         if (lenSq == 0.0f) {
-            return Vector3.ZERO_VECTOR;
+            return Vector3.ZERO_VECTOR.copy();
         }
 
         Vector3 normalizedVector = new Vector3();

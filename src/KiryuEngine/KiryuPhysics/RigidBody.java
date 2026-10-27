@@ -17,6 +17,7 @@ public class RigidBody {
   private double kineticFrictionCoefficient = 0.5f;
 
   private boolean bIsStatic = false;
+  private boolean bAffectedByGravity = true;
 
   private Vector3 force;
   private Vector3 accumulatedForce;
@@ -45,10 +46,10 @@ public class RigidBody {
     this.mass = mass;
     this.inverseMass = 1 / this.mass;
 
-    this.force = Vector3.ZERO_VECTOR;
+    this.force = Vector3.ZERO_VECTOR.copy();
     this.position = new Vector3(position);
     this.linearVelocity = new Vector3(linearVelocity);
-    this.accumulatedForce = Vector3.ZERO_VECTOR;
+    this.accumulatedForce = Vector3.ZERO_VECTOR.copy();
     this.contacts = new ArrayList<>();
     this.collider = collider;
     collider.linkRigidBody(this);
@@ -132,6 +133,11 @@ public class RigidBody {
     return contacts;
   }
 
+  public boolean isAffectedByGravity() {
+    return bAffectedByGravity;
+  }
+
+
   //endregion
 
   /**
@@ -174,6 +180,12 @@ public class RigidBody {
   public void setIsStatic(boolean bIsStatic) {
     this.bIsStatic = bIsStatic;
   }
+
+
+  public void setAffectedByGravity(boolean bAffectedByGravity) {
+    this.bAffectedByGravity = bAffectedByGravity;
+  }
+
 
   //endregion
 

@@ -16,46 +16,45 @@ import java.util.ArrayList;
 public class ProjectileSystem {
 
 
-  private final ArrayList<Particle> projectiles;
+  private final ArrayList<Projectile> projectiles;
+
   private final ArrayList<ProjectileType> projectileTypes;
 
-
   private final ProjectileRenderer projectileRenderer;
-  private final World world;
 
   /**
    *
    * @param projectileRenderer the projectile renderer
    */
-  public ProjectileSystem(World world, ProjectileRenderer projectileRenderer){
+  public ProjectileSystem(ProjectileRenderer projectileRenderer){
     this.projectileRenderer = projectileRenderer;
     this.projectiles = new ArrayList<>();
     this.projectileTypes = new ArrayList<>();
-    this.world = world;
   }
 
   /**
    * just a basic movement method, this will be change later after we
    * created the euler integration
    */
+  @Deprecated
   public void update(float deltaTime) {
-    if (this.projectiles.isEmpty()) return;
-
-    for (int i = this.projectiles.size() - 1; i >= 0; i--) {
-
-      Particle particle = this.projectiles.get(i);
-
-      if (this.projectileTypes.get(i) != ProjectileType.LASER){
-        //appliquer la gravite a la particule
-        Force.applyGravity(particle);
-      }
-
-      //mettre a jouer la vitesse et la position de la particule
-      Integrator.integrate(
-          particle.getRigidbody(),
-          deltaTime
-      );
-    }
+//    if (this.projectiles.isEmpty()) return;
+//
+//    for (int i = this.projectiles.size() - 1; i >= 0; i--) {
+//
+//      Particle particle = this.projectiles.get(i);
+//
+//      if (this.projectileTypes.get(i) != ProjectileType.LASER){
+//        //appliquer la gravite a la particule
+//        Force.applyGravity(particle);
+//      }
+//
+//      //mettre a jouer la vitesse et la position de la particule
+//      Integrator.integrate(
+//          particle.getRigidbody(),
+//          deltaTime
+//      );
+//    }
   }
 
   /**
@@ -84,36 +83,43 @@ public class ProjectileSystem {
    * @param type the type of projectile to instantiate
    * @return true if the data was all added with no error (safety measure)
    */
-  public boolean addProjectile(ProjectileType type) {
+  public boolean addProjectile(World world,ProjectileType type) {
 
-    return (
-        this.projectiles.add(new Particle(this.world,type.mass, 50.f)) &&
-            this.projectileTypes.add(type)
+    return addProjectileAtPosition(
+        world,
+        type,
+        Vector3.ZERO_VECTOR.copy(),
+        Vector3.ZERO_VECTOR.copy()
     );
   }
 
-  public boolean addProjectileAtPosition(ProjectileType type,Vector3 position, Vector3 velocity) {
+  public boolean addProjectileAtPosition(
+      World world,
+      ProjectileType type,
+      Vector3 position,
+      Vector3 velocity
+  ) {
 
     return (this.projectiles.add(
-        new Particle(
-            this.world,
-            type.mass,
-            50.f,
+        new Projectile(
+            world,
+            type,
             position,
-            velocity)
+            velocity
+        )
     )
         && this.projectileTypes.add(type)
     );
   }
 
   /**
-   * @param particle remove a projectile
+   * @param projectile remove a projectile
    * @return true if the data was all removed with no error (safety measure)
    */
-  public boolean removeProjectile(Particle particle) {
+  public boolean removeProjectile(Projectile projectile) {
     if (this.projectiles.isEmpty()) return false;
 
-    int index = this.projectiles.indexOf(particle);
+    int index = this.projectiles.indexOf(projectile);
     return (
         this.projectiles.remove(index) != null
             && this.projectileTypes.remove(index) != null
@@ -129,10 +135,11 @@ public class ProjectileSystem {
    * @param newVelocity the new velocity of the projectile (velocity is not speed)
    * @return true if the data was modified successfully (safety measure)
    */
+  @Deprecated
   public boolean setProjectileVelocity(int index, Vector3 newVelocity){
     if (index > projectiles.size()) return false;
 
-    this.projectiles.get(index).setLinearVelocity(newVelocity);
+    //this.projectiles.get(index).setLinearVelocity(newVelocity);
     return true;
   }
 
@@ -142,10 +149,11 @@ public class ProjectileSystem {
    * @param newDirection the new direction of the projectile
    * @return true if the data was modified successfully (safety measure)
    */
+  @Deprecated
   public boolean setProjectileDirection(int index, Vector3 newDirection){
     if (index > projectiles.size()) return false;
 
-    this.projectiles.get(index).setDirection(newDirection);
+    //this.projectiles.get(index).setDirection(newDirection);
     return true;
   }
 
@@ -158,10 +166,11 @@ public class ProjectileSystem {
    * @param newPosition the new direction of the projectile
    * @return true if the data was modified successfully (safety measure)
    */
+  @Deprecated
   public boolean setProjectilePosition(int index, Vector3 newPosition){
     if (index > projectiles.size())return false;
 
-    this.projectiles.get(index).setPosition(newPosition);
+    //this.projectiles.get(index).setPosition(newPosition);
     return true;
   }
 
@@ -189,7 +198,7 @@ public class ProjectileSystem {
     return this.projectiles.get(index).getDirection();
   }
 
-  public ArrayList<Particle> getProjectiles() {
+  public ArrayList<Projectile> getProjectiles() {
     return projectiles;
   }
 

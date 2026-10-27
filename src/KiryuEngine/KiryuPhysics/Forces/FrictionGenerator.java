@@ -12,11 +12,11 @@ public class FrictionGenerator implements ForceGenerator {
 
     public void applyForce(RigidBody rigidBody) {
         Vector3 force = rigidBody.getAccumulatedForce();
-        if (rigidBody.getLinearVelocity().equals(Vector3.ZERO_VECTOR))
+        if (rigidBody.getLinearVelocity().equals(Vector3.ZERO_VECTOR.copy()))
             applyStaticFriction(force, rigidBody.getStaticFrictionCoefficient());
         else applyKineticFriction(force, rigidBody.getKineticFrictionCoefficient());
 
-        rigidBody.getAccumulatedForce().set(force);
+        rigidBody.getAccumulatedForce().add(force);
     }
 
     private void applyStaticFriction(

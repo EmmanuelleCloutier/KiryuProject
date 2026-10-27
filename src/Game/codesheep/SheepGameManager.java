@@ -97,11 +97,11 @@ public class SheepGameManager {
 
                 //stop movement 
                 sheep.getRigidBody().setLinearVelocity(
-                    new Vector3(0, 0, 0)
+                    Vector3.ZERO_VECTOR.copy()
                 );
 
                 sheep.getRigidBody().setForce(
-                    new Vector3(0, 0, 0)
+                    Vector3.ZERO_VECTOR.copy()
                 );
 
                 safeSheepCount++;

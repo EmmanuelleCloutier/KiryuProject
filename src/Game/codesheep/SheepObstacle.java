@@ -33,7 +33,7 @@ public class SheepObstacle {
         this.rigidBody = new RigidBody(
             100,
             new Vector3(x, y, 0),
-            Vector3.ZERO_VECTOR,
+            Vector3.ZERO_VECTOR.copy(),
             new SphereCollider(radius)
         );
 

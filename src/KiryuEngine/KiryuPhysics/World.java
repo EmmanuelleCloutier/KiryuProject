@@ -41,21 +41,41 @@ public class World {
     if (rigidBodies.isEmpty()) return;
 
     for (RigidBody rb : rigidBodies) {
+//      System.out.println(
+//          "START " + rb +
+//              " | Static: " + rb.isStatic() +
+//              " | Force: " + rb.getAccumulatedForce()
+//      );
 
-      if (rb.isStatic()) continue;
+      if (rb.isStatic()) {
+        continue;
+      }
 
       if (bAllowGravity) {
         gravityGenerator.applyForce(rb);
       }
 
-      if (rb.isColliding()){
-        if (rb.getContacts().isEmpty()) continue;
+//      System.out.println(
+//          "AFTER GRAVITY " + rb +
+//              " | Force: " + rb.getAccumulatedForce()
+//      );
 
-        for (Contact contact: rb.getContacts()
-             ) {
+      if (rb.isColliding() && !rb.getContacts().isEmpty()) {
+        for (Contact contact : rb.getContacts()) {
           frictionGenerator.applyForce(rb);
         }
       }
+
+//      System.out.println(
+//          "AFTER FRICTION " + rb +
+//              " | Force: " + rb.getAccumulatedForce()
+//      );
+
+//      System.out.println(
+//          rb + " | Static: " + rb.isStatic()
+//              + " | Force: " + rb.getAccumulatedForce()
+//      );
+      //System.out.println("After collision detection: " + rb.getAccumulatedForce());
     }
 
     if (!constraints.isEmpty()) {
@@ -75,6 +95,8 @@ public class World {
 
     checkCollisions();
 
+
+
     ResolvePhysics(deltaTime);
   }
 
@@ -85,8 +107,23 @@ public class World {
     for (RigidBody rb : rigidBodies
          ) {
       if (rb.isStatic()) continue;
+//      System.out.println(
+//          "BEFORE " + rb +
+//              " | Pos: " + rb.getPosition() +
+//              " | Vel: " + rb.getLinearVelocity() +
+//              " | Force: " + rb.getAccumulatedForce()
+//      );
 
-      Integrator.integrate(rb,deltaTime);
+      //System.out.println("Before integration: " + rb.getAccumulatedForce());
+      Integrator.integrate(rb, deltaTime);
+
+//      System.out.println(
+//          "AFTER  " + rb +
+//              " | Pos: " + rb.getPosition() +
+//              " | Vel: " + rb.getLinearVelocity()
+//      );
+
+
       resolveCollisions(rb);
     }
 
@@ -165,6 +202,9 @@ public class World {
     double slop = 0.1;    // Penetration allowance to prevent micro-oscillations
 
     for (Contact contact : rigidBody.getContacts()) {
+
+      rigidBody.onCollision();
+
       double minimumDistance = rigidBody.getCollider().getSize() + contact.getOther().getSize();
 
       Vector3 difference = new Vector3(rigidBody.getPosition()).sub(

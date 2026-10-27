@@ -2,6 +2,7 @@ package Game.code.bloc;
 import KiryuEngine.KiryuCore.KiryuSound;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.Animation;
 import KiryuEngine.KiryuRendering.Sprite;
 import processing.core.PApplet;
@@ -21,6 +22,7 @@ public class BlockManager {
     private final Random random = new Random();
 
     private final PApplet sketch;
+    private final World world;
     private final Sprite blockSprite;
     private final Animation destroyAnimation;
     private final KiryuSound destroySound;
@@ -30,8 +32,9 @@ public class BlockManager {
     private volatile List<StructureGenerator.BlockData> generatedStructure;
 
 
-    public BlockManager(PApplet sketch){
+    public BlockManager(PApplet sketch, World world){
         this.sketch = sketch;
+        this.world = world;
         this.blockRenderer = new BlockRenderer(sketch);
         this.structureGenerator = new StructureGenerator();
 
@@ -81,6 +84,7 @@ public class BlockManager {
 
             nextStructure.add(
                 new Block(
+                    this.world,
                     new Vector3(
                         data.x(),
                         data.y(),
