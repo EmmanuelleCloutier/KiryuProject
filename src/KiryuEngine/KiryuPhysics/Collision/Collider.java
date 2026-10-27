@@ -13,8 +13,6 @@ public abstract class Collider {
 
     public abstract double getSize();
 
-    public abstract double getSizeSquared();
-
     public RigidBody getRigidBody(){
         return this.rigidBody;
     }

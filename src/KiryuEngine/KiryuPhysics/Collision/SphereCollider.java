@@ -23,10 +23,4 @@ public class SphereCollider extends Collider {
     @Override
     public double getSize() { return rayon; }
 
-    @Override
-    public double getSizeSquared() {
-        return rayon * rayon;
-    }
-
-
 }

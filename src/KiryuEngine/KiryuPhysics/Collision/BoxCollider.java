@@ -23,9 +23,4 @@ public class BoxCollider extends Collider{
   @Override
   public double getSize() { return size; }
 
-  @Override
-  public double getSizeSquared() {
-    return size * size;
-  }
-
 }

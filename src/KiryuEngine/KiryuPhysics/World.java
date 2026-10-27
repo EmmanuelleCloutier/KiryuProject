@@ -156,68 +156,60 @@ public class World {
 
     if (rigidBody.getContacts().isEmpty()) return;
 
-    for (Contact contact: rigidBody.getContacts()
-         ) {
+    Vector3 totalPositionCorrection = new Vector3(0, 0, 0);
+    Vector3 velocity = new Vector3(rigidBody.getLinearVelocity());
+    int collisionCount = 0;
 
-      Vector3 correctedPosition = new Vector3();
-      Vector3 correctedVelocity = new Vector3();
+    // Tuning parameters to stop jitter
+    double percent = 0.2; // Positional correction percentage (Baumgarte Stabilization)
+    double slop = 0.1;    // Penetration allowance to prevent micro-oscillations
 
-      double minimumDistance = rigidBody.getCollider().getSize()/2 + contact.getOther().getSize()/2;
+    for (Contact contact : rigidBody.getContacts()) {
+      double minimumDistance = rigidBody.getCollider().getSize() + contact.getOther().getSize();
 
       Vector3 difference = new Vector3(rigidBody.getPosition()).sub(
-          contact.getOther()
-              .getRigidBody()
-              .getPosition()
+          contact.getOther().getRigidBody().getPosition()
       );
 
-
       double distance = difference.getLength();
-
 
       if (distance >= minimumDistance) {
         continue;
       }
 
-
       Vector3 normal;
-
-      if (distance > 0.00000001f) {
-        normal = difference.scale(1.0 / distance);
-      } else {
-        normal = new Vector3(0, 0, 0);
+      if (distance < 0.00000001f) {
+        continue;
       }
 
-      correctedPosition.add(
-          new Vector3(rigidBody.getPosition())
-              .add(new Vector3(normal).scale(minimumDistance))
-      );
+      normal = new Vector3(difference).scale(1.0 / distance).normalize();
 
-      rigidBody.setPosition(correctedPosition);
+      // 1. Calculate penetration depth
+      double penetration = minimumDistance - distance;
 
-      Vector3 velocity = rigidBody.getLinearVelocity();
+      // 2. Accumulate positional correction using a slop threshold
+      if (penetration > slop) {
+        Vector3 correction = new Vector3(normal).scale((penetration - slop) * percent);
+        totalPositionCorrection.add(correction);
+        collisionCount++;
+      }
 
-      double velocityAlongNormal =
-          velocity.x * normal.x +
-              velocity.y * normal.y;
-
+      // 3. Accumulate velocity adjustments against the original/accumulated frame velocity
+      double velocityAlongNormal = velocity.dotProduct(normal);
 
       if (velocityAlongNormal < 0) {
-
-        correctedVelocity.set(
-            new Vector3(velocity)
-                .sub(new Vector3(normal).scale(velocityAlongNormal))
-        );
-
-        rigidBody.setLinearVelocity(
-            correctedVelocity
-        );
+        velocity.sub(new Vector3(normal).scale(velocityAlongNormal));
       }
-
     }
 
+    // 4. Apply the averaged/blended changes once at the end of the frame
+    if (collisionCount > 0) {
+      Vector3 finalPosition = new Vector3(rigidBody.getPosition()).add(totalPositionCorrection);
+      rigidBody.setPosition(finalPosition);
+    }
 
+    rigidBody.setLinearVelocity(velocity);
     rigidBody.getContacts().clear();
-
   }
 
 }

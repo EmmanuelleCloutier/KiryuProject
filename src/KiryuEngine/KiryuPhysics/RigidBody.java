@@ -201,7 +201,10 @@ public class RigidBody {
 
   public void addImpulse(Vector3 impulseDirection, double impulseStrength){
 
-    this.accumulatedForce.add(impulseDirection.scale(impulseStrength));
+    this.linearVelocity.add(
+        impulseDirection.scale(impulseStrength)
+            .scale(this.inverseMass)
+    );
 
   }
 
@@ -213,7 +216,7 @@ public class RigidBody {
         this.direction.z * impulseStrength
     );
 
-    this.accumulatedForce.add(impulse);
+    this.linearVelocity.add(impulse.scale(this.inverseMass));
 
   }
 

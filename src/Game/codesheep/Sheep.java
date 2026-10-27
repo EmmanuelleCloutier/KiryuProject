@@ -20,8 +20,8 @@ public class Sheep {
     private boolean isSafe = false;
     private boolean isLost = false;
 
-    private double detectionRadius = 5000.0;
-    private double repulsionStrength = 15000.0;
+    private double detectionRadius = 300.0;
+    private double repulsionStrength = 600.0;
 
 
     public boolean isSafe() {
@@ -70,7 +70,7 @@ public class Sheep {
 
         //generate a random direction and impulse 
         double angle = random.nextDouble() * Math.PI * 2.0;
-        double strength = 20.0 + random.nextDouble() * 35.0;
+        double strength = 20f + random.nextDouble() * 35.0;
 
         Vector3 impulseDirection = new Vector3(
             Math.cos(angle),
@@ -103,8 +103,6 @@ public class Sheep {
 
             particle.getRigidbody().addImpulse(direction,strength);
 
-        } else {
-            particle.setAcceleration(new Vector3(0, 0, 0)); //out of range 
         }
     }
 
