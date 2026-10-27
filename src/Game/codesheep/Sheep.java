@@ -23,8 +23,8 @@ public class Sheep {
     private boolean isSafe = false;
     private boolean isLost = false;
 
-    private double detectionRadius = 200.0;
-    private double repulsionStrength = 300.0;
+    private double detectionRadius = 225.0;
+    private double repulsionStrength = 200.0;
 
 
     public boolean isSafe() {
@@ -71,7 +71,7 @@ public class Sheep {
 
         //generate a random direction and impulse 
         double angle = random.nextDouble() * Math.PI * 2.0;
-        double strength = 400f + random.nextDouble() * 35.0;
+        double strength = 20f + random.nextDouble() * 35.0;
 
         Vector3 impulseDirection = new Vector3(
             Math.cos(angle),
