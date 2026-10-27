@@ -4,12 +4,12 @@ import KiryuEngine.KiryuPhysics.Collision.Collider;
 
 public class Particle {
 
-  private final RigidBody rigidbody;
+  //private final RigidBody rigidbody;
 
 //constructeur qui cre une particule seulement avec une masse (tout est 0,0,0)
     public Particle(World world, double mass, double size) {
-        this.rigidbody = new RigidBody(mass,size);
-        world.addRigidBody(this.rigidbody);
+//        this.rigidbody = new RigidBody(mass,size);
+//        world.addRigidBody(this.rigidbody);
     }
 
     
@@ -25,17 +25,18 @@ public class Particle {
         Vector3 linearVelocity
     ) {
 
-        this.rigidbody = new RigidBody(mass,size);
-        this.rigidbody.setPosition(position);
-        this.rigidbody.setLinearVelocity(linearVelocity);
-        world.addRigidBody(this.rigidbody);
+//        this.rigidbody = new RigidBody(mass,size);
+//        this.rigidbody.setPosition(position);
+//        this.rigidbody.setLinearVelocity(linearVelocity);
+//        world.addRigidBody(this.rigidbody);
     }
 
     /**
      * @return the mass of the particle
      */
     public double getMass() {
-        return rigidbody.getMass();
+        //return rigidbody.getMass();
+        return 0.f;
     }
 
 
@@ -43,7 +44,8 @@ public class Particle {
      * @return 1 / mass of the particle
      */
     public double getInverseMass() {
-        return rigidbody.getInverseMass();
+        //return rigidbody.getInverseMass();
+        return 0.f;
     }
 
 
@@ -51,7 +53,8 @@ public class Particle {
      * @return particle's acceleration
      */
     public Vector3 getAcceleration() {
-        return rigidbody.getForce();
+        //return rigidbody.getForce();
+        return null;
     }
 
 
@@ -59,7 +62,7 @@ public class Particle {
      * @param acceleration sets the particle's acceleration
      */
     public void setAcceleration(Vector3 acceleration) {
-        this.rigidbody.setForce(acceleration);
+        //this.rigidbody.setForce(acceleration);
     }
 
 
@@ -67,7 +70,8 @@ public class Particle {
      * @return particle's position
      */
     public Vector3 getPosition() {
-        return rigidbody.getPosition();
+        //return rigidbody.getPosition();
+        return null;
     }
 
 
@@ -75,7 +79,7 @@ public class Particle {
      * @param position sets the particle's position
      */
     public void setPosition(Vector3 position) {
-        this.rigidbody.setPosition(position);
+       // this.rigidbody.setPosition(position);
     }
 
 
@@ -83,7 +87,8 @@ public class Particle {
      * @return particle's linear velocity
      */
     public Vector3 getLinearVelocity() {
-        return rigidbody.getLinearVelocity();
+        //return rigidbody.getLinearVelocity();
+        return null;
     }
 
 
@@ -91,7 +96,7 @@ public class Particle {
      * @param linearVelocity sets the particle's velocity
      */
     public void setLinearVelocity(Vector3 linearVelocity) {
-        this.rigidbody.setLinearVelocity(linearVelocity);
+        //this.rigidbody.setLinearVelocity(linearVelocity);
     }
 
 
@@ -99,22 +104,26 @@ public class Particle {
      * @return damping coefficient
      */
     public double getDamping() {
-        return rigidbody.getDamping();
+        //return rigidbody.getDamping();
+        return 0.f;
     }
 
     public Vector3 getDirection() {
-        return rigidbody.getDirection();
+        //return rigidbody.getDirection();
+        return null;
     }
 
     public void setDirection(Vector3 direction) {
-        this.rigidbody.setDirection(direction);
+        //this.rigidbody.setDirection(direction);
     }
 
     public Collider getCollider() {
-        return rigidbody.getCollider();
+        //return rigidbody.getCollider();
+        return null;
     }
 
     public RigidBody getRigidbody() {
-        return rigidbody;
+        //return rigidbody;
+        return null;
     }
 }

@@ -1,18 +1,16 @@
 package KiryuEngine.KiryuPhysics;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
-import KiryuEngine.KiryuPhysics.Collision.SphereCollider;
 import KiryuEngine.KiryuPhysics.Collision.Contact;
 
 import java.util.ArrayList;
 
 public class RigidBody {
 
-  private SphereCollider collider;
+  private final Collider collider;
 
   private final double mass;
   private final double inverseMass;
-  private final double size;
 
   private double damping = 1.f;
   private double staticFrictionCoefficient = 0.5f;
@@ -26,34 +24,34 @@ public class RigidBody {
   private Vector3 linearVelocity;
   private Vector3 direction;
 
-  private ArrayList<Contact> contacts;
+  private final ArrayList<Contact> contacts;
 
-  public RigidBody(double mass, double size) {
+  public RigidBody(double mass, Collider collider) {
     this(
         mass,
-        size,
         new Vector3(),
-        new Vector3()
+        new Vector3(),
+        collider
     );
   }
 
   public RigidBody(
       double mass,
-      double size,
       Vector3 position,
-      Vector3 linearVelocity
+      Vector3 linearVelocity,
+      Collider collider
   ) {
 
     this.mass = mass;
-    this.size = size;
     this.inverseMass = 1 / this.mass;
 
-    this.force = new Vector3();
+    this.force = Vector3.ZERO_VECTOR;
     this.position = new Vector3(position);
     this.linearVelocity = new Vector3(linearVelocity);
-    this.collider = new SphereCollider(this.size,this);
-    this.accumulatedForce = new Vector3();
+    this.accumulatedForce = Vector3.ZERO_VECTOR;
     this.contacts = new ArrayList<>();
+    this.collider = collider;
+    collider.linkRigidBody(this);
   }
 
   /**
@@ -130,6 +128,10 @@ public class RigidBody {
     return bIsStatic;
   }
 
+  public ArrayList<Contact> getContacts() {
+    return contacts;
+  }
+
   //endregion
 
   /**
@@ -176,12 +178,6 @@ public class RigidBody {
   //endregion
 
 
-  public void onCollision(){}
-
-  public ArrayList<Contact> getContacts() {
-    return contacts;
-  }
-
   public boolean addContact(Contact contact){
     return this.contacts.add(contact);
   }
@@ -223,5 +219,8 @@ public class RigidBody {
   public boolean isColliding(){
     return !contacts.isEmpty();
   }
+
+  public void onCollision(){}
+
 
 }

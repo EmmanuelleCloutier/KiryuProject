@@ -23,4 +23,11 @@ public class BoxCollider extends Collider{
   @Override
   public double getSize() { return size; }
 
+  @Override
+  public void linkRigidBody(RigidBody rigidbody) {
+    if (this.rigidBody != null) return;
+
+    this.rigidBody = rigidbody;
+  }
+
 }

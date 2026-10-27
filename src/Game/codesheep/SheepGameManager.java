@@ -89,18 +89,18 @@ public class SheepGameManager {
 
                 sheep.setSafe(true);
                 sheep.setLost(false);
-                sheep.getParticle().getRigidbody().setIsStatic(true);
-                sheep.getParticle().getCollider().setDeactivated(true);
+                sheep.getRigidBody().setIsStatic(true);
+                sheep.getRigidBody().getCollider().setDeactivated(true);
 
                 //move the sheep to its resting position
-                sheep.getParticle().setPosition(safePosition);
+                sheep.getRigidBody().setPosition(safePosition);
 
                 //stop movement 
-                sheep.getParticle().setLinearVelocity(
+                sheep.getRigidBody().setLinearVelocity(
                     new Vector3(0, 0, 0)
                 );
 
-                sheep.getParticle().setAcceleration(
+                sheep.getRigidBody().setForce(
                     new Vector3(0, 0, 0)
                 );
 
@@ -196,7 +196,7 @@ public class SheepGameManager {
         double radius = 27.5; // Sheep sprite size / 2
 
         Vector3 position = sheep.getPosition();
-        Vector3 velocity = sheep.getParticle().getLinearVelocity();
+        Vector3 velocity = sheep.getRigidBody().getLinearVelocity();
 
         double x = position.x;
         double y = position.y;
@@ -234,11 +234,11 @@ public class SheepGameManager {
         }
 
         //apply the corrected position and velocity 
-        sheep.getParticle().setPosition(
+        sheep.getRigidBody().setPosition(
             new Vector3(x, y, position.z)
         );
 
-        sheep.getParticle().setLinearVelocity(
+        sheep.getRigidBody().setLinearVelocity(
             new Vector3(vx, vy, velocity.z)
         );
     }
@@ -363,8 +363,8 @@ public class SheepGameManager {
 
                    
                     Spring spring = new Spring(
-                        current.getParticle().getCollider(),
-                        right.getParticle().getCollider(),
+                        current.getRigidBody().getCollider(),
+                        right.getRigidBody().getCollider(),
                         restLength,
                         stiffness,
                         damping
@@ -381,8 +381,8 @@ public class SheepGameManager {
                     Sheep below = sheepList.get(index + columns);
 
                     Spring spring = new Spring(
-                        current.getParticle().getCollider(),
-                        below.getParticle().getCollider(),
+                        current.getRigidBody().getCollider(),
+                        below.getRigidBody().getCollider(),
                         restLength,
                         stiffness,
                         damping

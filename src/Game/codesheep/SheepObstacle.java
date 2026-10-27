@@ -1,6 +1,7 @@
 
 package Game.codesheep;
 
+import KiryuEngine.KiryuPhysics.Collision.SphereCollider;
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuPhysics.World;
@@ -25,13 +26,18 @@ public class SheepObstacle {
     public SheepObstacle(World world, Type type, double x, double y) {
 
         this.type = type;
-        Vector3 position = new Vector3(x, y, 0);
 
         //use a different collision radius for each obstacle type
         double radius = type == Type.ROCK ? 38f : 32f;
 
-        this.rigidBody = new RigidBody(100,radius);
-        this.rigidBody.setPosition(position);
+        this.rigidBody = new RigidBody(
+            100,
+            new Vector3(x, y, 0),
+            Vector3.ZERO_VECTOR,
+            new SphereCollider(radius)
+        );
+
+        this.rigidBody.setPosition(new Vector3(x,y,0));
         this.rigidBody.setIsStatic(true);
 
         world.addRigidBody(this.rigidBody);

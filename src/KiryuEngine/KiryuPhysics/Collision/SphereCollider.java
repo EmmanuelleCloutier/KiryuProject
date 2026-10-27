@@ -6,9 +6,8 @@ public class SphereCollider extends Collider {
 
     private double rayon;
 
-    public SphereCollider(double rayon, RigidBody rigidbody) {
+    public SphereCollider(double rayon) {
         this.rayon = rayon;
-        this.rigidBody = rigidbody;
     }
 
     public void setRayon(double rayon) {
@@ -22,5 +21,12 @@ public class SphereCollider extends Collider {
 
     @Override
     public double getSize() { return rayon; }
+
+    @Override
+    public void linkRigidBody(RigidBody rigidbody) {
+        if (this.rigidBody != null) return;
+
+        this.rigidBody = rigidbody;
+    }
 
 }

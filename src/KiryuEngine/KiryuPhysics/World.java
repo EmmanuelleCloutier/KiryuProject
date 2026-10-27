@@ -209,7 +209,7 @@ public class World {
     }
 
     rigidBody.setLinearVelocity(velocity);
-    rigidBody.getContacts().clear();
+    rigidBody.clearContacts();
   }
 
 }
