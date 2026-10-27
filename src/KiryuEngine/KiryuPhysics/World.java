@@ -108,22 +108,8 @@ public class World {
     for (RigidBody rb : rigidBodies
          ) {
       if (rb.isStatic()) continue;
-//      System.out.println(
-//          "BEFORE " + rb +
-//              " | Pos: " + rb.getPosition() +
-//              " | Vel: " + rb.getLinearVelocity() +
-//              " | Force: " + rb.getAccumulatedForce()
-//      );
 
-      //System.out.println("Before integration: " + rb.getAccumulatedForce());
       Integrator.integrate(rb, deltaTime);
-
-//      System.out.println(
-//          "AFTER  " + rb +
-//              " | Pos: " + rb.getPosition() +
-//              " | Vel: " + rb.getLinearVelocity()
-//      );
-
 
       resolveCollisions(rb);
     }
@@ -134,6 +120,7 @@ public class World {
     }
     constraintsToRemove.clear();
 
+    rigidBodies.removeIf(RigidBody::isMarkForDestruction);
   }
 
 
@@ -163,35 +150,46 @@ public class World {
 
   public void checkCollisions(){
 
+
     // right now this O(n^2), which is kinda bad
     // we need to change this for a quad tree at some point
 
     for (int i = 0; i < rigidBodies.size() - 1 ; i++) {
       for (int j = i + 1; j < rigidBodies.size(); j++) {
-
         RigidBody first = rigidBodies.get(i);
-        // don't need to register contacts for static rigidBodies
-        if (first.isStatic()) continue;
-
-        // but we can have contacts with static rigidBodies
         RigidBody second = rigidBodies.get(j);
 
-        if (first.getCollider().isDeactivated() ||
-            second.getCollider().isDeactivated()){
+        // Static bodies cannot move, so they don't need to collide with each other.
+        if (first.isStatic() && second.isStatic()) {
           continue;
         }
 
-        double distSq = first.getPosition().distanceSquared(second.getPosition());
-        double sizeSum = first.getCollider().getSize() + second.getCollider().getSize();
-        double sizeSumSq = sizeSum * sizeSum;
+        if (first.getCollider().isDeactivated()
+            || second.getCollider().isDeactivated()) {
+          continue;
+        }
 
-        if ( distSq <= sizeSumSq){
-          first.addContact(
-              new Contact(
-                  first.getCollider(),
-                  second.getCollider()
-              )
-          );
+        double distanceSquared =
+            first.getPosition().distanceSquared(second.getPosition());
+
+        double radiusSum =
+            first.getCollider().getSize()
+                + second.getCollider().getSize();
+
+        if (distanceSquared <= radiusSum * radiusSum) {
+
+          // Store the contact on each non-static body.
+          if (!first.isStatic()) {
+            first.addContact(
+                new Contact(first.getCollider(), second.getCollider())
+            );
+          }
+
+          if (!second.isStatic()) {
+            second.addContact(
+                new Contact(second.getCollider(), first.getCollider())
+            );
+          }
         }
       }
     }
@@ -211,7 +209,7 @@ public class World {
 
     for (Contact contact : rigidBody.getContacts()) {
 
-      rigidBody.onCollision();
+
 
       double minimumDistance = rigidBody.getCollider().getSize() + contact.getOther().getSize();
 
@@ -224,6 +222,8 @@ public class World {
       if (distance >= minimumDistance) {
         continue;
       }
+
+      rigidBody.onCollision(contact.getOther().getRigidBody());
 
       Vector3 normal;
       if (distance < 0.00000001f) {

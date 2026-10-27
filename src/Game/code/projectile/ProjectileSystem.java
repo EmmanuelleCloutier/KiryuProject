@@ -1,7 +1,5 @@
 package Game.code.projectile;
 
-import KiryuEngine.KiryuPhysics.Forces.Force;
-import KiryuEngine.KiryuPhysics.Integrator;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuPhysics.World;
@@ -18,18 +16,17 @@ public class ProjectileSystem {
 
   private final ArrayList<Projectile> projectiles;
 
-  private final ArrayList<ProjectileType> projectileTypes;
-
   private final ProjectileRenderer projectileRenderer;
+  private final World world;
 
   /**
    *
    * @param projectileRenderer the projectile renderer
    */
-  public ProjectileSystem(ProjectileRenderer projectileRenderer){
+  public ProjectileSystem(World world,ProjectileRenderer projectileRenderer){
+    this.world = world;
     this.projectileRenderer = projectileRenderer;
     this.projectiles = new ArrayList<>();
-    this.projectileTypes = new ArrayList<>();
   }
 
   /**
@@ -65,17 +62,26 @@ public class ProjectileSystem {
 
     if (this.projectiles.isEmpty()) return;
 
-    ArrayList<Vector3>positions = new ArrayList<>();
-    ArrayList<Vector3>directions = new ArrayList<>();
+//    ArrayList<Vector3>positions = new ArrayList<>();
+//    ArrayList<Vector3>directions = new ArrayList<>();
+//
+//
+//    for (int i = 0; i < this.projectiles.size(); i++){
+//
+//      positions.add(i,projectiles.get(i).getPosition());
+//      directions.add(i,projectiles.get(i).getDirection());
+//
+//
+//    }
 
-
-    for (int i = 0; i < this.projectiles.size(); i++){
-
-      positions.add(i,projectiles.get(i).getPosition());
-      directions.add(i,projectiles.get(i).getDirection());
+    for (Projectile projectile: projectiles
+         ) {
+      this.projectileRenderer.drawSprite(
+          projectile.getType().sprite,
+          projectile.getPosition(),
+          projectile.getDirection()
+      );
     }
-
-    this.projectileRenderer.drawProjectileSprites(projectileTypes,positions,directions);
 
   }
 
@@ -100,17 +106,21 @@ public class ProjectileSystem {
       Vector3 velocity
   ) {
 
-    return (this.projectiles.add(
+    return this.projectiles.add(
         new Projectile(
             world,
+            this,
             type,
             position,
             velocity
         )
-    )
-        && this.projectileTypes.add(type)
     );
   }
+
+  public void destroyProjectile(Projectile projectile){
+    this.world.removeRigidBody(projectile.getRigidBody());
+  }
+
 
   /**
    * @param projectile remove a projectile
@@ -120,10 +130,8 @@ public class ProjectileSystem {
     if (this.projectiles.isEmpty()) return false;
 
     int index = this.projectiles.indexOf(projectile);
-    return (
-        this.projectiles.remove(index) != null
-            && this.projectileTypes.remove(index) != null
-    );
+
+    return this.projectiles.remove(index) != null;
 
   }
 
@@ -202,9 +210,11 @@ public class ProjectileSystem {
     return projectiles;
   }
 
+  @Deprecated
   public ProjectileType getProjectileType(Particle particle){
     int index  = projectiles.indexOf(particle);
-    return projectileTypes.get(index);
+    //return projectileTypes.get(index);
+    return null;
   }
 
 }

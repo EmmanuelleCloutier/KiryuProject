@@ -85,6 +85,7 @@ public class BlockManager {
             nextStructure.add(
                 new Block(
                     this.world,
+                    this,
                     new Vector3(
                         data.x(),
                         data.y(),
@@ -198,6 +199,11 @@ public class BlockManager {
         }
 
         return false;
+    }
+
+    public void destroyBlock(Block block){
+        this.destroyAnimationPositions.put(block.getDestroyAnimation(),block.getPosition());
+        this.world.removeRigidBody(block.getRigidBody());
     }
 
     public boolean areAllBlocksDestroyed() {

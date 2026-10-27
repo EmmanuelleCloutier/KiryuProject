@@ -9,10 +9,16 @@ public class Projectile {
 
   private final RigidBody rigidBody;
 
+  private final ProjectileType type;
 
-  public Projectile(World world, ProjectileType type){
+  private final ProjectileSystem projectileSystem;
+
+  private boolean destroyed = false;
+
+  public Projectile(World world,ProjectileSystem projectileSystem, ProjectileType type){
     this(
         world,
+        projectileSystem,
         type,
         Vector3.ZERO_VECTOR.copy(),
         Vector3.ZERO_VECTOR.copy()
@@ -21,16 +27,21 @@ public class Projectile {
 
   public Projectile(
       World world,
+      ProjectileSystem projectileSystem,
       ProjectileType type,
       Vector3 position,
       Vector3 velocity
   ){
+    this.projectileSystem = projectileSystem;
+    this.type = type;
+
     this.rigidBody = new RigidBody(
         type.mass,
         position,
         velocity,
         new SphereCollider(50.f)
     );
+    this.rigidBody.setCollisionListener(this::onCollision);
 
     if (type == ProjectileType.LASER){
       this.rigidBody.setAffectedByGravity(false);
@@ -51,6 +62,27 @@ public class Projectile {
 
   public Vector3 getLinearVelocity(){
     return this.rigidBody.getLinearVelocity();
+  }
+
+  public ProjectileType getType() {
+    return type;
+  }
+
+  public RigidBody getRigidBody() {
+    return rigidBody;
+  }
+
+
+  private void onCollision(RigidBody other) {
+    if (!destroyed) {
+      destroyed = true;
+      other.onCollision(this.rigidBody);
+      this.rigidBody.setMarkForDestruction(true);
+    }
+  }
+
+  public boolean isDestroyed() {
+    return destroyed;
   }
 
 }

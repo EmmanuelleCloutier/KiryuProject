@@ -4,6 +4,7 @@ import KiryuEngine.KiryuPhysics.Collision.Collider;
 import KiryuEngine.KiryuPhysics.Collision.Contact;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class RigidBody {
 
@@ -18,6 +19,7 @@ public class RigidBody {
 
   private boolean bIsStatic = false;
   private boolean bAffectedByGravity = true;
+  private boolean markForDestruction = false;
 
   private Vector3 force;
   private Vector3 accumulatedForce;
@@ -26,6 +28,8 @@ public class RigidBody {
   private Vector3 direction;
 
   private final ArrayList<Contact> contacts;
+
+  private Consumer<RigidBody> collisionListener;
 
   public RigidBody(double mass, Collider collider) {
     this(
@@ -137,6 +141,9 @@ public class RigidBody {
     return bAffectedByGravity;
   }
 
+  public boolean isMarkForDestruction() {
+    return markForDestruction;
+  }
 
   //endregion
 
@@ -186,6 +193,10 @@ public class RigidBody {
     this.bAffectedByGravity = bAffectedByGravity;
   }
 
+  public void setMarkForDestruction(boolean markForDestruction) {
+    this.markForDestruction = markForDestruction;
+  }
+
 
   //endregion
 
@@ -232,7 +243,16 @@ public class RigidBody {
     return !contacts.isEmpty();
   }
 
-  public void onCollision(){}
+
+  public void setCollisionListener(Consumer<RigidBody> listener) {
+    this.collisionListener = listener;
+  }
+
+  public void onCollision(RigidBody other) {
+    if (collisionListener != null) {
+      collisionListener.accept(other);
+    }
+  }
 
 
 }

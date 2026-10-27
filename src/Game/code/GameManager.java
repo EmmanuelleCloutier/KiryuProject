@@ -1,7 +1,9 @@
 package Game.code;
 
+import Game.code.bloc.Block;
 import Game.code.bloc.BlockManager;
 import Game.code.cannon.Cannon;
+import Game.code.projectile.Projectile;
 import Game.code.projectile.ProjectileRenderer;
 import Game.code.projectile.ProjectileSystem;
 import Game.code.projectile.ProjectileType;
@@ -36,6 +38,7 @@ public class GameManager {
 
     //cree le system de projectile
     this.projectileSystem = new ProjectileSystem(
+        this.world,
         new ProjectileRenderer(sketch)
     );
 
@@ -77,6 +80,9 @@ public class GameManager {
       if (blockManager.areAllBlocksDestroyed()) {
         blockManager.loadNextStructure();
     }
+
+      projectileSystem.getProjectiles().removeIf(Projectile::isDestroyed);
+      blockManager.getCurrentStructure().removeIf(Block::isDestroyed);
   }
 
   public void draw(){
@@ -87,6 +93,7 @@ public class GameManager {
     this.cannon.draw();
     this.projectileSystem.drawProjectiles();
   }
+
 @Deprecated
   private void detectCollisions(){
 //    if (this.projectileSystem.getProjectiles().isEmpty()) return;

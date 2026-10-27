@@ -15,11 +15,6 @@ public class BoxCollider extends Collider{
   }
 
   @Override
-  public void onCollision(Collider other) {
-    this.getRigidBody().onCollision();
-  }
-
-  @Override
   public double getSize() { return size; }
 
   @Override

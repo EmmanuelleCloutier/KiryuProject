@@ -6,10 +6,8 @@ public abstract class Collider {
 
     protected RigidBody rigidBody = null;
 
-
     protected boolean bIsDeactivated = false;
 
-    public abstract void onCollision(Collider other);
 
     public abstract double getSize();
 
