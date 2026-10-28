@@ -1,8 +1,6 @@
 
 package Game.codesheep;
 
-import KiryuEngine.KiryuPhysics.Collision.Collider;
-import KiryuEngine.KiryuPhysics.Constraints.Constraint;
 import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
@@ -11,7 +9,6 @@ import KiryuEngine.KiryuPhysics.Constraints.Spring;
 import KiryuEngine.KiryuPhysics.Vector3;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 public class SheepGameManager {

@@ -1,7 +1,7 @@
 
 package Game.codesheep;
 
-import KiryuEngine.KiryuPhysics.Collision.SphereCollider;
+import KiryuEngine.KiryuPhysics.Collision.SphereCollider2D;
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuPhysics.World;
@@ -34,7 +34,7 @@ public class SheepObstacle {
             100,
             new Vector3(x, y, 0),
             Vector3.ZERO_VECTOR.copy(),
-            new SphereCollider(radius)
+            new SphereCollider2D(radius)
         );
 
         this.rigidBody.setPosition(new Vector3(x,y,0));

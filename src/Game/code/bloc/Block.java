@@ -1,5 +1,5 @@
 package Game.code.bloc;
-import KiryuEngine.KiryuPhysics.Collision.BoxCollider;
+import KiryuEngine.KiryuPhysics.Collision.BoxCollider2D;
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuPhysics.World;
@@ -34,7 +34,7 @@ public class Block {
             mass,
             position,
             Vector3.ZERO_VECTOR.copy(),
-            new BoxCollider(25)
+            new BoxCollider2D(25)
         );
         this.rigidBody.setCollisionListener(this::onCollision);
         this.rigidBody.setIsStatic(true);

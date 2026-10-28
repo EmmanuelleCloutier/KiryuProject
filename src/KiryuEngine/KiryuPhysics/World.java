@@ -42,11 +42,6 @@ public class World {
     if (rigidBodies.isEmpty()) return;
 
     for (RigidBody rb : rigidBodies) {
-//      System.out.println(
-//          "START " + rb +
-//              " | Static: " + rb.isStatic() +
-//              " | Force: " + rb.getAccumulatedForce()
-//      );
 
       if (rb.isStatic()) {
         continue;
@@ -56,27 +51,11 @@ public class World {
         gravityGenerator.applyForce(rb);
       }
 
-//      System.out.println(
-//          "AFTER GRAVITY " + rb +
-//              " | Force: " + rb.getAccumulatedForce()
-//      );
-
       if (rb.isColliding() && !rb.getContacts().isEmpty()) {
         for (Contact contact : rb.getContacts()) {
           frictionGenerator.applyForce(rb);
         }
       }
-
-//      System.out.println(
-//          "AFTER FRICTION " + rb +
-//              " | Force: " + rb.getAccumulatedForce()
-//      );
-
-//      System.out.println(
-//          rb + " | Static: " + rb.isStatic()
-//              + " | Force: " + rb.getAccumulatedForce()
-//      );
-      //System.out.println("After collision detection: " + rb.getAccumulatedForce());
     }
 
     if (!constraints.isEmpty()) {
