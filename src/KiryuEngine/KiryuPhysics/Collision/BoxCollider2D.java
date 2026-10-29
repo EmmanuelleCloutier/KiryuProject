@@ -2,11 +2,11 @@ package KiryuEngine.KiryuPhysics.Collision;
 
 import KiryuEngine.KiryuPhysics.RigidBody;
 
-public class BoxCollider extends Collider{
+public class BoxCollider2D extends Collider {
 
   private double size;
 
-  public BoxCollider(double size) {
+  public BoxCollider2D(double size) {
     this.size = size;
   }
 

@@ -13,19 +13,12 @@ public class Integrator {
         float deltaTime
     ) {
 
-//      System.out.println(
-//          "INTEGRATE " + rigidBody
-//              + " | Force: " + rigidBody.getAccumulatedForce()
-//              + " | Velocity: " + rigidBody.getLinearVelocity()
-//      );
-
-
         // v1 = ((damping ^ dt) * v0) + (a * dt)
 
       Vector3 newVelocity = new Vector3(rigidBody.getLinearVelocity())
           .scale(
               Math.pow(
-                  rigidBody.getDamping(),
+                  1.f,
                   deltaTime
               )
           )

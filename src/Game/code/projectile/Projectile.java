@@ -1,6 +1,6 @@
 package Game.code.projectile;
 
-import KiryuEngine.KiryuPhysics.Collision.SphereCollider;
+import KiryuEngine.KiryuPhysics.Collision.SphereCollider2D;
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuPhysics.World;
@@ -39,12 +39,12 @@ public class Projectile {
         type.mass,
         position,
         velocity,
-        new SphereCollider(50.f)
+        new SphereCollider2D(50.f)
     );
     this.rigidBody.setCollisionListener(this::onCollision);
 
     if (type == ProjectileType.LASER){
-      this.rigidBody.setAffectedByGravity(false);
+      this.rigidBody.isAffectedByGravity(false);
     }
 
     world.addRigidBody(this.rigidBody);
@@ -77,7 +77,7 @@ public class Projectile {
     if (!destroyed) {
       destroyed = true;
       other.onCollision(this.rigidBody);
-      this.rigidBody.setMarkForDestruction(true);
+      this.rigidBody.markForDestruction(true);
     }
   }
 

@@ -1,8 +1,7 @@
 
 package Game.codesheep;
 
-import KiryuEngine.KiryuPhysics.Collision.SphereCollider;
-import KiryuEngine.KiryuPhysics.Particle;
+import KiryuEngine.KiryuPhysics.Collision.SphereCollider2D;
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.Vector3;
 import java.util.Random;
@@ -41,7 +40,7 @@ public class Sheep {
             mass,
             new Vector3(x, y, 0),
             Vector3.ZERO_VECTOR.copy(),
-            new SphereCollider(SIZE/2)
+            new SphereCollider2D(SIZE/2)
         );
 
         world.addRigidBody(this.rigidBody);
@@ -87,7 +86,7 @@ public class Sheep {
     public void applyDogRepulsion(Vector3 dogPosition) {
 
         if (isSafe) {
-           this.rigidBody.setIsStatic(true);
+           this.rigidBody.isStatic(true);
             return;
         }
 

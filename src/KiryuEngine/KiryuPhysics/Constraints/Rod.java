@@ -1,7 +1,6 @@
 package KiryuEngine.KiryuPhysics.Constraints;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
-import KiryuEngine.KiryuPhysics.Vector3;
 
 public class Rod extends Constraint {
 

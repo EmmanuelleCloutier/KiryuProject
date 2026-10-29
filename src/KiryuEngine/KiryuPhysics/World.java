@@ -5,141 +5,208 @@ import KiryuEngine.KiryuPhysics.Collision.Contact;
 import KiryuEngine.KiryuPhysics.Constraints.Constraint;
 import KiryuEngine.KiryuPhysics.Forces.FrictionGenerator;
 import KiryuEngine.KiryuPhysics.Forces.GravityGenerator;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
+/**
+ * This class manages physics applied to any RigidBodies
+ * as of right now it also manages collision detection
+ */
 public class World {
 
-  private final ArrayList<RigidBody> rigidBodies;
-  private final GravityGenerator gravityGenerator;
-  private final FrictionGenerator frictionGenerator;
-  private final ArrayList<Constraint> constraints;
-  private final ArrayList<Constraint> constraintsToRemove;
+  /**
+   * The rigidBodies that are active in the world
+   */
+  private final ArrayList<RigidBody> rigidBodies = new ArrayList<>();
+  /**
+   *  Force generator that applies a gravity force to rigidBodies
+   */
+  private final GravityGenerator gravityGenerator = new GravityGenerator();
+  /**
+   * force generator that applies friction to RigidBodies
+   */
+  private final FrictionGenerator frictionGenerator = new FrictionGenerator();
+  /**
+   * list of constraints affecting rigidBodies
+   */
+  private final ArrayList<Constraint> constraints = new ArrayList<>();
+  /**
+   * Whether the world should have gravity
+   */
+  private boolean allowGravity = true;
 
+  /*
+  * GETTERS
+  */
+  //region
 
-  private boolean bAllowGravity = true;
-
-
+  /**
+   * @return <font color="orange">{@code boolean}</font>
+   * - whether the gravity is on or off
+   */
   public boolean isGravityAllowed() {
-    return bAllowGravity;
+    return allowGravity;
   }
 
-  public void setGravity(boolean bAllowGravity) {
-    this.bAllowGravity = bAllowGravity;
+  //endregion
+
+  /*
+   * SETTER
+   */
+  //region
+
+  /**
+   *
+   * @param bAllowGravity <font color="orange">{@code boolean}</font>
+   * - set's if the gravity should be on or off
+   */
+  public void isGravityAllowed(boolean bAllowGravity) {
+    this.allowGravity = bAllowGravity;
   }
 
-
-  public World(){
-    this.rigidBodies = new ArrayList<>();
-    this.constraints = new ArrayList<>();
-    this.constraintsToRemove = new ArrayList<>();
-    this.frictionGenerator = new FrictionGenerator();
-    this.gravityGenerator = new GravityGenerator();
+  /**
+   * toggle's the world's gravity state
+   */
+  public void toggleGravity(){
+    this.allowGravity = !allowGravity;
   }
 
-  public void UpdatePhysics(float deltaTime){
+//endregion
 
+  /**
+   * update the physics of this world in order:
+   * Rigidbody integration,
+   * Collision Check,
+   * Solve constraints,
+   * Solve collisions
+   * @param deltaTime <font color="orange">{@code double}</font>
+   * - time elapsed between each frames
+   */
+  public void updatePhysics(float deltaTime){
+
+    updateRigidBodies(deltaTime);
+
+    checkCollisions();
+
+    updateConstraints();
+
+    resolvePhysics();
+  }
+  /**
+   * resolve the last step of the physics engine
+   * and also cleanup any rigidBody that should no longer
+   * be active in the world
+   */
+  private void resolvePhysics(){
+
+    resolveCollisions();
+
+    //remove rigidBodies that should not be active anymore
+    rigidBodies.removeIf(RigidBody::isMarkedForDestruction);
+  }
+
+  /*
+   * RIGIDBODY MANAGEMENT
+   */
+  //region
+  /**
+   * Adds a rigid body to this world.
+   * @param rigidBody <font color="yellow">{@link RigidBody}</font>
+   * - the RigidBody to add
+   * @return <font color="orange">{@code boolean}</font>
+   * - Whether we added the RigidBody successfully
+   */
+  public boolean addRigidBody(@NotNull RigidBody rigidBody) {
+
+    if (rigidBodies.contains(rigidBody)) {
+      return false;
+    }
+
+    return rigidBodies.add(rigidBody);
+  }
+  /**
+   * Removes a rigid body and its associated constraints.
+   * @param rigidBody <font color="yellow">{@link RigidBody}</font>
+   * - The RigidBody to remove
+   * @return <font color="orange">{@code boolean}</font>
+   * - Whether we removed the RigidBody successfully
+   */
+  public boolean removeRigidBody(RigidBody rigidBody){
+    if (!rigidBodies.remove(rigidBody)) {
+      return false;
+    }
+
+    removeConstraint(rigidBody.getCollider());
+
+    return true;
+  }
+  /**
+   * applies forces to each rigidbody in this world
+   * and integrates them using Euler's integration
+   */
+  public void updateRigidBodies(float deltaTime){
     if (rigidBodies.isEmpty()) return;
 
     for (RigidBody rb : rigidBodies) {
-//      System.out.println(
-//          "START " + rb +
-//              " | Static: " + rb.isStatic() +
-//              " | Force: " + rb.getAccumulatedForce()
-//      );
 
+      //we don't need to apply forces to a static RigidBody
       if (rb.isStatic()) {
         continue;
       }
 
-      if (bAllowGravity) {
+      if (allowGravity) {
         gravityGenerator.applyForce(rb);
       }
 
-//      System.out.println(
-//          "AFTER GRAVITY " + rb +
-//              " | Force: " + rb.getAccumulatedForce()
-//      );
-
+      //if a RigidBody is colliding, we apply friction for every
+      //collision it has
       if (rb.isColliding() && !rb.getContacts().isEmpty()) {
-        for (Contact contact : rb.getContacts()) {
-          frictionGenerator.applyForce(rb);
-        }
+        frictionGenerator.applyForce(rb);
       }
-
-//      System.out.println(
-//          "AFTER FRICTION " + rb +
-//              " | Force: " + rb.getAccumulatedForce()
-//      );
-
-//      System.out.println(
-//          rb + " | Static: " + rb.isStatic()
-//              + " | Force: " + rb.getAccumulatedForce()
-//      );
-      //System.out.println("After collision detection: " + rb.getAccumulatedForce());
-    }
-
-    if (!constraints.isEmpty()) {
-      for (Constraint cons : constraints) {
-
-        if(cons.getFirst().getRigidBody().isStatic() &&
-            cons.getSecond().getRigidBody().isStatic()){
-            constraintsToRemove.add(cons);
-            continue;
-        }
-
-        if (cons.isConstrained()) {
-          cons.applyConstraint();
-        }
-      }
-    }
-
-    checkCollisions();
-
-
-
-    ResolvePhysics(deltaTime);
-  }
-
-
-
-  private void ResolvePhysics(float deltaTime){
-
-    for (RigidBody rb : rigidBodies
-         ) {
-      if (rb.isStatic()) continue;
-
+      // integrate all forces applied to the RigidBody
       Integrator.integrate(rb, deltaTime);
+    }
+  }
+  //endregion
 
-      resolveCollisions(rb);
+  /*
+   * CONSTRAINTS MANAGEMENT
+   */
+  //region
+  /**
+   * Adds a constraint to this world.
+   * @param constraint <font color="yellow">{@link Constraint}</font>
+   * - the constraint to add
+   * @return <font color="orange">{@code boolean}</font>
+   * - Whether we added the constraint successfully
+   */
+  public boolean addConstraint(@NotNull Constraint constraint) {
+
+    if (constraints.contains(constraint)) {
+      return false;
     }
 
-    for (Constraint cons:constraintsToRemove
-         ) {
-      constraints.remove(cons);
-    }
-    constraintsToRemove.clear();
-
-    rigidBodies.removeIf(RigidBody::isMarkForDestruction);
-  }
-
-
-  public boolean addRigidBody(RigidBody rigidBody){
-    return rigidBodies.add(rigidBody);
-  }
-
-  public boolean removeRigidBody(RigidBody rigidBody){
-    return rigidBodies.remove(rigidBody);
-  }
-
-  public boolean addConstraint(Constraint constraint){
     return constraints.add(constraint);
   }
-
+  /**
+   * removes a constraint from this world.
+   * @param constraint <font color="yellow">{@link Constraint}</font>
+   * - the constraint to remove
+   * @return <font color="orange">{@code boolean}</font>
+   * - Whether we removed the constraint successfully
+   */
   public boolean removeConstraint(Constraint constraint){
     return constraints.remove(constraint);
   }
-
+  /**
+   * removes all constraints associated with a collider from this world.
+   * @param collider <font color="yellow">{@link Collider}</font>
+   * - the collider we should remove constraints for
+   * @return <font color="orange">{@code boolean}</font>
+   * - Whether we removed the constraint successfully
+   */
   public boolean removeConstraint(Collider collider){
 
     return constraints.removeIf(constraint ->
@@ -147,9 +214,41 @@ public class World {
             constraint.getSecond() == collider
     );
   }
+  /**
+   * Applies active constraints to the RigidBodies it is
+   * linked to
+   */
+  private void updateConstraints() {
+    for (Constraint constraint : constraints) {
+      RigidBody first = constraint.getFirst().getRigidBody();
+      RigidBody second = constraint.getSecond().getRigidBody();
 
+      //if both are static there's no need to apply constraints
+      if (first.isStatic() && second.isStatic()) {
+        continue;
+      }
+      // apply the constraint if the conditions are met
+      if (constraint.isConstrained()) {
+        constraint.applyConstraint();
+      }
+    }
+
+    //clean up constraints of ineligible RigidBodies
+    constraints.removeIf(constraint ->
+        constraint.getFirst().getRigidBody().isStatic()
+            && constraint.getSecond().getRigidBody().isStatic()
+    );
+  }
+  //endregion
+
+  /*
+   * COLLISION MANAGEMENT
+   */
+  //region
+  /**
+   * Simple Collision detection
+   */
   public void checkCollisions(){
-
 
     // right now this O(n^2), which is kinda bad
     // we need to change this for a quad tree at some point
@@ -163,7 +262,7 @@ public class World {
         if (first.isStatic() && second.isStatic()) {
           continue;
         }
-
+        //if either collider are deactivated, don't check collisions
         if (first.getCollider().isDeactivated()
             || second.getCollider().isDeactivated()) {
           continue;
@@ -194,71 +293,161 @@ public class World {
       }
     }
   }
+  /**
+   * resolving collision for every pair of rigid bodies
+   * if they are in contact
+   */
+  private void resolveCollisions(){
 
-  private void resolveCollisions(RigidBody rigidBody){
+    for (int i = 0; i < rigidBodies.size() - 1; i++) {
+      for (int j = i + 1; j < rigidBodies.size(); j++) {
+        RigidBody bodyA = rigidBodies.get(i);
+        RigidBody bodyB = rigidBodies.get(j);
 
-    if (rigidBody.getContacts().isEmpty()) return;
+        Contact contact = findContactBetween(bodyA, bodyB);
 
-    Vector3 totalPositionCorrection = new Vector3(0, 0, 0);
-    Vector3 velocity = new Vector3(rigidBody.getLinearVelocity());
-    int collisionCount = 0;
+        if (contact == null) {
+          continue;
+        }
 
-    // Tuning parameters to stop jitter
-    double percent = 0.2; // Positional correction percentage (Baumgarte Stabilization)
-    double slop = 0.1;    // Penetration allowance to prevent micro-oscillations
-
-    for (Contact contact : rigidBody.getContacts()) {
-
-
-
-      double minimumDistance = rigidBody.getCollider().getSize() + contact.getOther().getSize();
-
-      Vector3 difference = new Vector3(rigidBody.getPosition()).sub(
-          contact.getOther().getRigidBody().getPosition()
-      );
-
-      double distance = difference.getLength();
-
-      if (distance >= minimumDistance) {
-        continue;
-      }
-
-      rigidBody.onCollision(contact.getOther().getRigidBody());
-
-      Vector3 normal;
-      if (distance < 0.00000001f) {
-        continue;
-      }
-
-      normal = new Vector3(difference).scale(1.0 / distance).normalize();
-
-      // 1. Calculate penetration depth
-      double penetration = minimumDistance - distance;
-
-      // 2. Accumulate positional correction using a slop threshold
-      if (penetration > slop) {
-        Vector3 correction = new Vector3(normal).scale((penetration - slop) * percent);
-        totalPositionCorrection.add(correction);
-        collisionCount++;
-      }
-
-      // 3. Accumulate velocity adjustments against the original/accumulated frame velocity
-      double velocityAlongNormal = velocity.dotProduct(normal);
-
-      if (velocityAlongNormal < 0) {
-        velocity.sub(new Vector3(normal).scale(velocityAlongNormal));
+        resolveContact(bodyA, bodyB, contact);
       }
     }
 
-    // 4. Apply the averaged/blended changes once at the end of the frame
-    if (collisionCount > 0) {
-      Vector3 finalPosition = new Vector3(rigidBody.getPosition()).add(totalPositionCorrection);
-      rigidBody.setPosition(finalPosition);
+    for (RigidBody body : rigidBodies) {
+      body.clearContacts();
     }
-
-    rigidBody.setLinearVelocity(velocity);
-    rigidBody.clearContacts();
   }
+  /**
+   * Find a contact between a pair of RigidBodies
+   * @param bodyA <font color="yellow">{@link RigidBody}</font>
+   * - first RigidBody of the pair
+   * @param bodyB <font color="yellow">{@link RigidBody}</font>
+   * - second RigiBody of the pair
+   * @return <font color="yellow">{@link Contact}</font>
+   * - Contact found
+   */
+  private @Nullable Contact findContactBetween(RigidBody bodyA, RigidBody bodyB) {
+    Contact contact = bodyA.findContact(bodyB);
+
+    return contact != null
+        ? contact
+        : bodyB.findContact(bodyA);
+  }
+  /**
+   * Resolve a Contact (collision) between a pair of RigidBodies
+   * @param bodyA <font color="yellow">{@link RigidBody}</font>
+   * - first RigidBody of the pair
+   * @param bodyB <font color="yellow">{@link RigidBody}</font>
+   * - second RigiBody of the pair
+   * @param contact <font color="yellow">{@link Contact}</font>
+   * - the contact that needs to be resolved
+   */
+  private void resolveContact(
+      RigidBody bodyA,
+      RigidBody bodyB,
+      Contact contact
+  ) {
+    double inverseMassA = bodyA.getInverseMass();
+    double inverseMassB = bodyB.getInverseMass();
+    double distance = contact.getDistance();
+    Vector3 normal = contact.getNormal();
+
+    double inverseMassSum = inverseMassA + inverseMassB;
+
+    if (inverseMassSum <= 0.0) {
+      return;
+    }
+
+    double minimumDistance =
+        bodyA.getCollider().getSize()
+            + bodyB.getCollider().getSize();
+
+    double penetration = minimumDistance - distance;
+
+    /*
+    Baumgarte stabilization parameters
+    to stop jittering on collisions
+     */
+    double slop = 0.1; //minimum penetration allowed so collisions are less strict
+    double percent = 0.8; //penetration % allowed
+
+    if (penetration > slop) {
+      double correctionMagnitude =
+          (penetration - slop) * percent / inverseMassSum;
+
+      Vector3 correction =
+          new Vector3(normal).scale(correctionMagnitude);
+
+      //correct positions if the RigidBodies aren't static
+      if (!bodyA.isStatic()) {
+        bodyA.setPosition(
+            new Vector3(bodyA.getPosition())
+                .sub(new Vector3(correction).scale(inverseMassA))
+        );
+      }
+
+      if (!bodyB.isStatic()) {
+        bodyB.setPosition(
+            new Vector3(bodyB.getPosition())
+                .add(new Vector3(correction).scale(inverseMassB))
+        );
+      }
+    }
+
+    // Relative velocity: B relative to A.
+    Vector3 relativeVelocity =
+        new Vector3(bodyB.getLinearVelocity())
+            .sub(bodyA.getLinearVelocity());
+
+    double velocityAlongNormal =
+        relativeVelocity.dotProduct(normal);
+
+    // the rigid bodies are separating:
+    // no normal or friction impulse is needed.
+    if (velocityAlongNormal >= 0.0) {
+      contact.setNormalImpulse(0.0);
+      return;
+    }
+
+    // Start with zero restitution. We can add restitution later.
+    // 0 = inelastic , 1 = perfectly elastic
+    double restitution = 0.0;
+
+    //-(1.0 + restitution) * velocityAlongNormal
+    // the relative separation is proportional to the relative approach
+    double normalImpulseMagnitude =
+        -(1.0 + restitution) * velocityAlongNormal
+            / inverseMassSum;
+
+    Vector3 normalImpulse =
+        new Vector3(normal).scale(normalImpulseMagnitude);
+
+    // Apply normal impulse if the rigid bodies aren't static
+    if (!bodyA.isStatic()) {
+      bodyA.setLinearVelocity(
+          new Vector3(bodyA.getLinearVelocity())
+              .sub(new Vector3(normalImpulse).scale(inverseMassA))
+      );
+    }
+
+    if (!bodyB.isStatic()) {
+      bodyB.setLinearVelocity(
+          new Vector3(bodyB.getLinearVelocity())
+              .add(new Vector3(normalImpulse).scale(inverseMassB))
+      );
+    }
+
+    contact.setNormalImpulse(normalImpulseMagnitude);
+
+    //apply friction
+    frictionGenerator.applyForce(bodyA,bodyB,contact);
+
+    // Notify both bodies of the collision.
+    bodyA.onCollision(bodyB);
+    bodyB.onCollision(bodyA);
+  }
+//endregion
 
 }
 

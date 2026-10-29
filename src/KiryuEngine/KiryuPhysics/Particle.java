@@ -1,7 +1,7 @@
 package KiryuEngine.KiryuPhysics;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
-
+@Deprecated
 public class Particle {
 
   //private final RigidBody rigidbody;

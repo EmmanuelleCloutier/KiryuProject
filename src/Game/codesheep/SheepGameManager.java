@@ -1,8 +1,6 @@
 
 package Game.codesheep;
 
-import KiryuEngine.KiryuPhysics.Collision.Collider;
-import KiryuEngine.KiryuPhysics.Constraints.Constraint;
 import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
@@ -11,7 +9,6 @@ import KiryuEngine.KiryuPhysics.Constraints.Spring;
 import KiryuEngine.KiryuPhysics.Vector3;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 public class SheepGameManager {
@@ -48,7 +45,7 @@ public class SheepGameManager {
         this.sketch = sketch;
 
         world = new World();
-        world.setGravity(false);
+        world.isGravityAllowed(false);
 
         spriteRenderer = new SpriteRenderer(sketch);
 
@@ -89,7 +86,7 @@ public class SheepGameManager {
 
                 sheep.setSafe(true);
                 sheep.setLost(false);
-                sheep.getRigidBody().setIsStatic(true);
+                sheep.getRigidBody().isStatic(true);
                 sheep.getRigidBody().getCollider().setDeactivated(true);
 
                 //move the sheep to its resting position
@@ -431,7 +428,7 @@ public class SheepGameManager {
        updateLostSheep(); //identrify sheep that have separated from the main herd
 
         //update particule positions and velocities through the physic engine 
-        world.UpdatePhysics(deltaTime);
+        world.updatePhysics(deltaTime);
 
         updateSheepPen();
 
