@@ -36,11 +36,6 @@ public class World {
    */
   private boolean allowGravity = true;
 
-  /**
-   * Constructor
-   */
-  public World(){}
-
   /*
   * GETTERS
   */
@@ -105,17 +100,7 @@ public class World {
    */
   private void resolvePhysics(){
 
-    for (RigidBody rb : rigidBodies
-         ) {
-      if (rb.isStatic()) continue;
-      if (rb.getContacts().isEmpty())continue;
-
-      resolveCollisions(rb);
-
-      //after resolving collisions we clear all collision
-      //detected this frame
-      rb.clearContacts();
-    }
+    resolveCollisions();
 
     //remove rigidBodies that should not be active anymore
     rigidBodies.removeIf(RigidBody::isMarkedForDestruction);
@@ -177,9 +162,7 @@ public class World {
       //if a RigidBody is colliding, we apply friction for every
       //collision it has
       if (rb.isColliding() && !rb.getContacts().isEmpty()) {
-        for (Contact contact : rb.getContacts()) {
-          frictionGenerator.applyForce(rb);
-        }
+        frictionGenerator.applyForce(rb);
       }
       // integrate all forces applied to the RigidBody
       Integrator.integrate(rb, deltaTime);
@@ -310,68 +293,171 @@ public class World {
     }
   }
   /**
-   * resolve collisions for every contact the rigidBody has
-   * @param rigidBody <font color="yellow">{@link RigidBody}</font>
-   * - the RigidBody that has collisions
+   *
    */
-  private void resolveCollisions(RigidBody rigidBody){
+  private void resolveCollisions(){
 
-    Vector3 totalPositionCorrection = new Vector3(0, 0, 0);
-    Vector3 velocity = new Vector3(rigidBody.getLinearVelocity());
-    int collisionCount = 0;
+    for (int i = 0; i < rigidBodies.size() - 1; i++) {
+      for (int j = i + 1; j < rigidBodies.size(); j++) {
+        RigidBody bodyA = rigidBodies.get(i);
+        RigidBody bodyB = rigidBodies.get(j);
 
-    // Tuning parameters to stop jitter
-    double percent = 0.2; // Positional correction percentage (Baumgarte Stabilization)
-    double slop = 0.1;    // Penetration allowance to prevent micro-oscillations
+        Contact contact = findContactBetween(bodyA, bodyB);
 
-    for (Contact contact : rigidBody.getContacts()) {
+        if (contact == null) {
+          continue;
+        }
 
-      double minimumDistance = rigidBody.getCollider().getSize() + contact.getOther().getSize();
+        resolveContact(bodyA, bodyB, contact);
+      }
+    }
 
-      Vector3 difference = new Vector3(rigidBody.getPosition()).sub(
-          contact.getOther().getRigidBody().getPosition()
+    for (RigidBody body : rigidBodies) {
+      body.clearContacts();
+    }
+  }
+
+
+  /**
+   *
+   * @param owner
+   * @param other
+   * @return
+   */
+  private Contact findContact(RigidBody owner, RigidBody other) {
+    for (Contact contact : owner.getContacts()) {
+      if (contact.getOther() == other.getCollider()) {
+        return contact;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   *
+   * @param bodyA
+   * @param bodyB
+   * @return
+   */
+  private Contact findContactBetween(RigidBody bodyA, RigidBody bodyB) {
+    Contact contact = findContact(bodyA, bodyB);
+
+    return contact != null
+        ? contact
+        : findContact(bodyB, bodyA);
+  }
+
+
+  /**
+   *
+   * @param bodyA
+   * @param bodyB
+   * @param contact
+   */
+  private void resolveContact(
+      RigidBody bodyA,
+      RigidBody bodyB,
+      Contact contact
+  ) {
+    double inverseMassA = bodyA.getInverseMass();
+    double inverseMassB = bodyB.getInverseMass();
+    double distance = contact.getDistance();
+    Vector3 normal = contact.getNormal();
+
+    double inverseMassSum = inverseMassA + inverseMassB;
+
+    if (inverseMassSum <= 0.0) {
+      return;
+    }
+
+    double minimumDistance =
+        bodyA.getCollider().getSize()
+            + bodyB.getCollider().getSize();
+
+    double penetration = minimumDistance - distance;
+
+    /*
+    Baumgarte stabilization parameters
+    to stop jittering on collisions
+     */
+    double slop = 0.1; //minimum penetration allowed so collisions are less strict
+    double percent = 0.8; //penetration % allowed
+
+    if (penetration > slop) {
+      double correctionMagnitude =
+          (penetration - slop) * percent / inverseMassSum;
+
+      Vector3 correction =
+          new Vector3(normal).scale(correctionMagnitude);
+
+      //correct positions if the RigidBodies aren't static
+      if (!bodyA.isStatic()) {
+        bodyA.setPosition(
+            new Vector3(bodyA.getPosition())
+                .sub(new Vector3(correction).scale(inverseMassA))
+        );
+      }
+
+      if (!bodyB.isStatic()) {
+        bodyB.setPosition(
+            new Vector3(bodyB.getPosition())
+                .add(new Vector3(correction).scale(inverseMassB))
+        );
+      }
+    }
+
+    // Relative velocity: B relative to A.
+    Vector3 relativeVelocity =
+        new Vector3(bodyB.getLinearVelocity())
+            .sub(bodyA.getLinearVelocity());
+
+    double velocityAlongNormal =
+        relativeVelocity.dotProduct(normal);
+
+    // the rigid bodies are separating:
+    // no normal or friction impulse is needed.
+    if (velocityAlongNormal >= 0.0) {
+      contact.setNormalImpulse(0.0);
+      return;
+    }
+
+    // Start with zero restitution. We can add restitution later.
+    // 0 = inelastic , 1 = perfectly elastic
+    double restitution = 0.0;
+
+    //-(1.0 + restitution) * velocityAlongNormal
+    // the relative separation is proportional to the relative approach
+    double normalImpulseMagnitude =
+        -(1.0 + restitution) * velocityAlongNormal
+            / inverseMassSum;
+
+    Vector3 normalImpulse =
+        new Vector3(normal).scale(normalImpulseMagnitude);
+
+    // Apply normal impulse if the rigid bodies aren't static
+    if (!bodyA.isStatic()) {
+      bodyA.setLinearVelocity(
+          new Vector3(bodyA.getLinearVelocity())
+              .sub(new Vector3(normalImpulse).scale(inverseMassA))
       );
-
-      double distance = difference.getLength();
-
-      if (distance >= minimumDistance) {
-        continue;
-      }
-
-      rigidBody.onCollision(contact.getOther().getRigidBody());
-
-      Vector3 normal;
-      if (distance < 0.00000001f) {
-        continue;
-      }
-
-      normal = new Vector3(difference).scale(1.0 / distance);
-
-      // Calculate penetration depth
-      double penetration = minimumDistance - distance;
-
-      // Accumulate positional correction using a slop threshold
-      if (penetration > slop) {
-        Vector3 correction = new Vector3(normal).scale((penetration - slop) * percent);
-        totalPositionCorrection.add(correction);
-        collisionCount++;
-      }
-
-      // Accumulate velocity adjustments against the accumulated frame velocity
-      double velocityAlongNormal = velocity.dotProduct(normal);
-
-      if (velocityAlongNormal < 0) {
-        velocity.sub(new Vector3(normal).scale(velocityAlongNormal));
-      }
     }
 
-    // Apply the averaged/blended changes once at the end of the frame
-    if (collisionCount > 0) {
-      Vector3 finalPosition = new Vector3(rigidBody.getPosition()).add(totalPositionCorrection);
-      rigidBody.setPosition(finalPosition);
+    if (!bodyB.isStatic()) {
+      bodyB.setLinearVelocity(
+          new Vector3(bodyB.getLinearVelocity())
+              .add(new Vector3(normalImpulse).scale(inverseMassB))
+      );
     }
 
-    rigidBody.setLinearVelocity(velocity);
+    contact.setNormalImpulse(normalImpulseMagnitude);
+
+    //apply friction
+    frictionGenerator.applyForce(bodyA,bodyB,contact);
+
+    // Notify both bodies of the collision.
+    bodyA.onCollision(bodyB);
+    bodyB.onCollision(bodyA);
   }
 //endregion
 

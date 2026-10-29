@@ -2,7 +2,7 @@ package KiryuEngine.KiryuPhysics.Forces;
 
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
-
+@Deprecated
 public class Force {
 
     public static final Vector3 GRAVITY =
