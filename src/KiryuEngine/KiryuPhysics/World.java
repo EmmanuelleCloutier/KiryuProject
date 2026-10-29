@@ -6,6 +6,7 @@ import KiryuEngine.KiryuPhysics.Constraints.Constraint;
 import KiryuEngine.KiryuPhysics.Forces.FrictionGenerator;
 import KiryuEngine.KiryuPhysics.Forces.GravityGenerator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -293,7 +294,8 @@ public class World {
     }
   }
   /**
-   *
+   * resolving collision for every pair of rigid bodies
+   * if they are in contact
    */
   private void resolveCollisions(){
 
@@ -316,44 +318,30 @@ public class World {
       body.clearContacts();
     }
   }
-
-
   /**
-   *
-   * @param owner
-   * @param other
-   * @return
+   * Find a contact between a pair of RigidBodies
+   * @param bodyA <font color="yellow">{@link RigidBody}</font>
+   * - first RigidBody of the pair
+   * @param bodyB <font color="yellow">{@link RigidBody}</font>
+   * - second RigiBody of the pair
+   * @return <font color="yellow">{@link Contact}</font>
+   * - Contact found
    */
-  private Contact findContact(RigidBody owner, RigidBody other) {
-    for (Contact contact : owner.getContacts()) {
-      if (contact.getOther() == other.getCollider()) {
-        return contact;
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   *
-   * @param bodyA
-   * @param bodyB
-   * @return
-   */
-  private Contact findContactBetween(RigidBody bodyA, RigidBody bodyB) {
-    Contact contact = findContact(bodyA, bodyB);
+  private @Nullable Contact findContactBetween(RigidBody bodyA, RigidBody bodyB) {
+    Contact contact = bodyA.findContact(bodyB);
 
     return contact != null
         ? contact
-        : findContact(bodyB, bodyA);
+        : bodyB.findContact(bodyA);
   }
-
-
   /**
-   *
-   * @param bodyA
-   * @param bodyB
-   * @param contact
+   * Resolve a Contact (collision) between a pair of RigidBodies
+   * @param bodyA <font color="yellow">{@link RigidBody}</font>
+   * - first RigidBody of the pair
+   * @param bodyB <font color="yellow">{@link RigidBody}</font>
+   * - second RigiBody of the pair
+   * @param contact <font color="yellow">{@link Contact}</font>
+   * - the contact that needs to be resolved
    */
   private void resolveContact(
       RigidBody bodyA,

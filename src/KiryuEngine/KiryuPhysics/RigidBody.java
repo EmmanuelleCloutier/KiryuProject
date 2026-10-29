@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
 import KiryuEngine.KiryuPhysics.Collision.Contact;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.function.Consumer;
@@ -332,6 +333,24 @@ public class RigidBody {
    */
   public void clearContacts(){
     this.contacts.clear();
+  }
+  /**
+   * Find a contact with another RigidBody in the list of contacts
+   * @param other <font color="yellow">{@link RigidBody}</font>
+   * - the other RigidBody that is supposed to be colliding
+   * @return <font color="yellow">{@link Contact}</font>
+   * - contact found with the other RigidBody
+   */
+  public @Nullable Contact findContact(@NotNull RigidBody other) {
+    if (this.contacts.isEmpty())return null;
+
+    for (Contact contact : this.getContacts()) {
+      if (contact.getOther() == other.getCollider()) {
+        return contact;
+      }
+    }
+
+    return null;
   }
   /**
    *

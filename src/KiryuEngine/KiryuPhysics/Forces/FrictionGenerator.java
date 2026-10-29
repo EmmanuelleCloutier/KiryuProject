@@ -7,17 +7,24 @@ import KiryuEngine.KiryuPhysics.Vector3;
 
 public class FrictionGenerator implements ForceGenerator {
 
-    /**
-     * add the generator's gravity force to the RigidBody's
-     * accumulated forces
-     * @param rigidBody <font color="yellow">{@link RigidBody}</font>
-     * - the RigidBody we apply the generator's gravity force to
-     */
     public void applyForce(RigidBody rigidBody) {
 
     }
 
-    public void applyForce(RigidBody bodyA, RigidBody bodyB, Contact contact){
+    /**
+     * calculates and applies friction force to a pair of RigidBody
+     * @param bodyA <font color="yellow">{@link RigidBody}</font>
+     * - first RigidBody of the pair
+     * @param bodyB <font color="yellow">{@link RigidBody}</font>
+     * - second RigidBody of the pair
+     * @param contact <font color="yellow">{@link Contact}</font>
+     * - the contact between the two RigidBodies
+     */
+    public void applyForce(
+        RigidBody bodyA,
+        RigidBody bodyB,
+        Contact contact
+    ){
 
         double normalImpulse = contact.getNormalImpulse();
         double inverseMassSum = bodyA.getInverseMass() +
