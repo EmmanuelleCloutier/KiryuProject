@@ -86,7 +86,7 @@ public class Sheep {
     public void applyDogRepulsion(Vector3 dogPosition) {
 
         if (isSafe) {
-           this.rigidBody.setIsStatic(true);
+           this.rigidBody.isStatic(true);
             return;
         }
 

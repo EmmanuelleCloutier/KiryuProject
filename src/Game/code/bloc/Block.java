@@ -37,7 +37,7 @@ public class Block {
             new BoxCollider2D(25)
         );
         this.rigidBody.setCollisionListener(this::onCollision);
-        this.rigidBody.setIsStatic(true);
+        this.rigidBody.isStatic(true);
         this.rigidBody.setPosition(new Vector3(position.x,position.y,0));
         world.addRigidBody(this.rigidBody);
     }
@@ -64,7 +64,7 @@ public class Block {
 
         if (!destroyed) {
             destroyed = true;
-            this.rigidBody.setMarkForDestruction(true);
+            this.rigidBody.markForDestruction(true);
         }
     }
 

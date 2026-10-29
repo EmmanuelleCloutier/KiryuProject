@@ -38,7 +38,7 @@ public class SheepObstacle {
         );
 
         this.rigidBody.setPosition(new Vector3(x,y,0));
-        this.rigidBody.setIsStatic(true);
+        this.rigidBody.isStatic(true);
 
         world.addRigidBody(this.rigidBody);
 

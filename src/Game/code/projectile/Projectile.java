@@ -44,7 +44,7 @@ public class Projectile {
     this.rigidBody.setCollisionListener(this::onCollision);
 
     if (type == ProjectileType.LASER){
-      this.rigidBody.setAffectedByGravity(false);
+      this.rigidBody.isAffectedByGravity(false);
     }
 
     world.addRigidBody(this.rigidBody);
@@ -77,7 +77,7 @@ public class Projectile {
     if (!destroyed) {
       destroyed = true;
       other.onCollision(this.rigidBody);
-      this.rigidBody.setMarkForDestruction(true);
+      this.rigidBody.markForDestruction(true);
     }
   }
 

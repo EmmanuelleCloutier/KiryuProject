@@ -8,7 +8,6 @@ import Game.code.projectile.ProjectileRenderer;
 import Game.code.projectile.ProjectileSystem;
 import Game.code.projectile.ProjectileType;
 //import KiryuEngine.KiryuCore.KiryuSound;
-import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuPhysics.Vector3;
 import KiryuEngine.KiryuPhysics.World;
 import processing.core.PApplet;
@@ -66,7 +65,7 @@ public class GameManager {
 
   public void update(float deltaTime){
 
-    this.world.UpdatePhysics(deltaTime);
+    this.world.updatePhysics(deltaTime);
     //this.projectileSystem.update(deltaTime);
     //detectCollisions();
 

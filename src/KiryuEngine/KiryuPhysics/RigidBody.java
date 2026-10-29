@@ -1,5 +1,6 @@
 package KiryuEngine.KiryuPhysics;
 
+import KiryuEngine.KiryuPhysics.Constraints.Constraint;
 import org.jetbrains.annotations.NotNull;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
@@ -40,16 +41,16 @@ public class RigidBody {
   /**
    * determines whether the body is static(immovable) or not
    */
-  private boolean bIsStatic = false;
+  private boolean isStatic = false;
   /**
    * determines whether gravity should affect the body
    */
-  private boolean bAffectedByGravity = true;
+  private boolean isAffectedByGravity = true;
   /**
    * marks the body for destruction, allowing the physics
    * world to clean up bodies that should not be simulated anymore
    */
-  private boolean markForDestruction = false;
+  private boolean isMarkedForDestruction = false;
   /**
    * force acts as the acceleration of the body
    * it never changes unless specifically told to.
@@ -209,7 +210,7 @@ public class RigidBody {
    * - Whether the rigidBody is static or not
    */
   public boolean isStatic() {
-    return bIsStatic;
+    return isStatic;
   }
   /**
    *  @return <span style="color: orange;">ArrayList</span>&lt;<span style="color: yellow;">{@link Contact}</span>&gt;
@@ -223,14 +224,14 @@ public class RigidBody {
    * - Whether the rigidBody is affected by gravity or not
    */
   public boolean isAffectedByGravity() {
-    return bAffectedByGravity;
+    return isAffectedByGravity;
   }
   /**
    * @return <font color="orange">{@code boolean}</font>
    * - Whether the rigidBody is marked for destruction or not
    */
-  public boolean isMarkForDestruction() {
-    return markForDestruction;
+  public boolean isMarkedForDestruction() {
+    return isMarkedForDestruction;
   }
 
   //endregion
@@ -278,28 +279,40 @@ public class RigidBody {
    * @param bIsStatic <font color="orange">{@code boolean}</font>
    * - sets whether the RigidBody is static or not
    */
-  public void setIsStatic(boolean bIsStatic) {
-    this.bIsStatic = bIsStatic;
+  public void isStatic(boolean bIsStatic) {
+    this.isStatic = bIsStatic;
+  }
+  /**
+   * Toggle's the RigidBody static state
+   */
+  public void toggleIsStatic(){
+    this.isStatic = !this.isStatic;
   }
   /**
    * @param bAffectedByGravity <font color="orange">{@code boolean}</font>
    * - sets whether the RigidBody is affected by gravity or not
    */
-  public void setAffectedByGravity(boolean bAffectedByGravity) {
-    this.bAffectedByGravity = bAffectedByGravity;
+  public void isAffectedByGravity(boolean bAffectedByGravity) {
+    this.isAffectedByGravity = bAffectedByGravity;
   }
   /**
-   * @param markForDestruction <font color="orange">{@code boolean}</font>
+   * Toggle's the RigidBody gravity state
+   */
+  public void toggleIsAffectedByGravity(){
+    this.isAffectedByGravity = !this.isAffectedByGravity;
+  }
+  /**
+   * @param markedForDestruction <font color="orange">{@code boolean}</font>
    * - sets whether the RigidBody is marked for destruction or not
    */
-  public void setMarkForDestruction(boolean markForDestruction) {
-    this.markForDestruction = markForDestruction;
+  public void markForDestruction(boolean markedForDestruction) {
+    this.isMarkedForDestruction = markedForDestruction;
   }
   /**
    * marks the RigidBody for destruction
    */
-  public void setMarkForDestruction() {
-    this.markForDestruction = true;
+  public void markForDestruction() {
+    this.isMarkedForDestruction = true;
   }
 
   //endregion
