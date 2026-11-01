@@ -1,2 +1,4 @@
-package KiryuEngine.KiryuMath;public class Quaternion {
+package KiryuEngine.KiryuMath;
+
+public class Quaternion {
 }
