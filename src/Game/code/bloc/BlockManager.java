@@ -1,7 +1,7 @@
 package Game.code.bloc;
 import KiryuEngine.KiryuCore.KiryuSound;
 import KiryuEngine.KiryuPhysics.Particle;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.Animation;
 import KiryuEngine.KiryuRendering.Sprite;

@@ -1,7 +1,7 @@
 package KiryuEngine.KiryuPhysics.Forces;
 
 import KiryuEngine.KiryuPhysics.RigidBody;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 
 
 public class GravityGenerator implements ForceGenerator {

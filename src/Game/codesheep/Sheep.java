@@ -3,7 +3,7 @@ package Game.codesheep;
 
 import KiryuEngine.KiryuPhysics.Collision.SphereCollider2D;
 import KiryuEngine.KiryuPhysics.RigidBody;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 import java.util.Random;
 import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.SpriteRenderer;

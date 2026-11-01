@@ -3,7 +3,7 @@ package KiryuEngine.KiryuPhysics.Constraints;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
 import KiryuEngine.KiryuPhysics.RigidBody;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 
 public class Spring extends Constraint {
 

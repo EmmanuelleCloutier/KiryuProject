@@ -1,7 +1,7 @@
 package KiryuEngine.KiryuPhysics.Forces;
 
 import KiryuEngine.KiryuPhysics.Particle;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 @Deprecated
 public class Force {
 

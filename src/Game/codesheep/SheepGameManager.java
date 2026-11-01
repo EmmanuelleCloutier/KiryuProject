@@ -6,7 +6,7 @@ import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
 
 import KiryuEngine.KiryuPhysics.Constraints.Spring;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 
 import java.util.ArrayList;
 import java.util.Random;

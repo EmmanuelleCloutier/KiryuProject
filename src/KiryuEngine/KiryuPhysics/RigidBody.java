@@ -1,6 +1,6 @@
 package KiryuEngine.KiryuPhysics;
 
-import KiryuEngine.KiryuPhysics.Constraints.Constraint;
+import KiryuEngine.KiryuMath.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 import KiryuEngine.KiryuPhysics.Collision.Collider;
@@ -119,7 +119,10 @@ public class RigidBody {
       @NotNull Vector3 linearVelocity,
       @NotNull Collider collider
   ) {
-
+    //if mass is either negative or too near of 0 set it to 1
+    if (mass<1e-8){
+      mass = 1.f;
+    }
     this.mass = mass;
     this.inverseMass = 1 / this.mass;
 

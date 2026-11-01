@@ -1,6 +1,6 @@
 package KiryuEngine.KiryuRendering;
 
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 import processing.core.PApplet;
 
 

@@ -1,7 +1,7 @@
 package Game.code.projectile;
 
 import java.util.ArrayList;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 
 
 /**

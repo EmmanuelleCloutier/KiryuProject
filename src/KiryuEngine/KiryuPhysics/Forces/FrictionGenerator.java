@@ -2,7 +2,7 @@ package KiryuEngine.KiryuPhysics.Forces;
 
 import KiryuEngine.KiryuPhysics.Collision.Contact;
 import KiryuEngine.KiryuPhysics.RigidBody;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 
 
 public class FrictionGenerator implements ForceGenerator {

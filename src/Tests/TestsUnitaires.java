@@ -1,7 +1,5 @@
 package Tests;
 
-import KiryuEngine.KiryuPhysics.Vector3;
-
 public class TestsUnitaires {
 //
 //  private String errorMessage(String test, String cas) {

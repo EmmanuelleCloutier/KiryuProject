@@ -1,11 +1,5 @@
 package Tests;
 
-import KiryuEngine.KiryuPhysics.Collision.*;
-import KiryuEngine.KiryuPhysics.Constraints.Cable;
-import KiryuEngine.KiryuPhysics.Constraints.Rod;
-import KiryuEngine.KiryuPhysics.Particle;
-import KiryuEngine.KiryuPhysics.Vector3;
-
 public class TestsCollision {
 
 //
