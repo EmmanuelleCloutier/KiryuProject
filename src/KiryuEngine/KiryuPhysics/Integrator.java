@@ -1,5 +1,7 @@
 package KiryuEngine.KiryuPhysics;
 
+import KiryuEngine.KiryuMath.Vector3;
+
 public class Integrator {
 
     /**

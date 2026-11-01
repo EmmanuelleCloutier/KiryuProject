@@ -1,6 +1,6 @@
 package Game.code.projectile;
 
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuRendering.Sprite;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;

@@ -2,7 +2,7 @@ package Game.code.projectile;
 
 import KiryuEngine.KiryuPhysics.Collision.SphereCollider2D;
 import KiryuEngine.KiryuPhysics.RigidBody;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.World;
 
 public class Projectile {

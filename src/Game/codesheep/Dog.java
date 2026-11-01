@@ -1,7 +1,7 @@
 
 package Game.codesheep;
 
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuRendering.SpriteRenderer;
 import processing.core.PApplet;
 

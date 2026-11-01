@@ -1,4 +1,4 @@
-package KiryuEngine.KiryuPhysics;
+package KiryuEngine.KiryuMath;
 
 import static java.lang.Math.sqrt;
 

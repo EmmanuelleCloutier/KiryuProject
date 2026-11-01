@@ -1,5 +1,6 @@
 package KiryuEngine.KiryuPhysics;
 
+import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.Collision.Collider;
 @Deprecated
 public class Particle {

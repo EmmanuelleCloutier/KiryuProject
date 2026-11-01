@@ -1,7 +1,6 @@
 package KiryuEngine.KiryuPhysics.Collision;
 
-import KiryuEngine.KiryuPhysics.RigidBody;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 import org.jetbrains.annotations.NotNull;
 
 

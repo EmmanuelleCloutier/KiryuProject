@@ -1,7 +1,7 @@
 
 package Game.codesheep;
 
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 import processing.core.PApplet;
 
 public class SheepPen {

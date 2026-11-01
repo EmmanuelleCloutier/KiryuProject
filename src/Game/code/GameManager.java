@@ -8,7 +8,7 @@ import Game.code.projectile.ProjectileRenderer;
 import Game.code.projectile.ProjectileSystem;
 import Game.code.projectile.ProjectileType;
 //import KiryuEngine.KiryuCore.KiryuSound;
-import KiryuEngine.KiryuPhysics.Vector3;
+import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.World;
 import processing.core.PApplet;
 import processing.core.PImage;
