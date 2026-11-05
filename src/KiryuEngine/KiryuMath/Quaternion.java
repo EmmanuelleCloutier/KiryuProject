@@ -169,4 +169,66 @@ public class Quaternion {
             y + ", " +
             z + ")";
     }
+
+    //negate
+    public Quaternion negate() {
+        return new Quaternion(
+            -w,
+            -x,
+            -y,
+            -z
+        );
+    }
+
+    
+    //soustraction with quarternions
+    public Quaternion subtract(Quaternion q) {
+        return new Quaternion(
+            w - q.w,
+            x - q.x,
+            y - q.y,
+            z - q.z
+        );
+    }
+
+    
+    //produit scalaire between two quaternions
+    public float dot(Quaternion q) {
+        return w * q.w +
+               x * q.x +
+               y * q.y +
+               z * q.z;
+    }
+
+    
+    //exponentiation quaternions
+    public Quaternion exp() {
+        float vectorLength = (float) Math.sqrt(
+            x * x + y * y + z * z
+        );
+
+        float expW = (float) Math.exp(w);
+
+        float cos = (float) Math.cos(vectorLength);
+
+        float scale;
+
+        if (vectorLength < EPSILON) {
+            scale = 1f;
+        } else {
+            scale = (float) Math.sin(vectorLength)
+                    / vectorLength;
+        }
+
+        return new Quaternion(
+            expW * cos,
+            expW * scale * x,
+            expW * scale * y,
+            expW * scale * z
+        );
+    }
+
+
+    
+
 }
