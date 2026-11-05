@@ -228,6 +228,61 @@ public class Quaternion {
         );
     }
 
+    
+    //SLERP (spherical linear interpolation)
+    public static Quaternion slerp(
+        Quaternion start,
+        Quaternion end,
+        float t
+    ) {
+        //clamp interpolation factor
+        t = Math.max(0f, Math.min(1f, t));
+
+        Quaternion q1 = start.normalize();
+        Quaternion q2 = end.normalize();
+
+        float dot = q1.dot(q2);
+
+        //use shortest rotation path
+        if (dot < 0f) {
+            q2 = q2.negate();
+            dot = -dot;
+        }
+
+        //clamp produit scalaire
+        dot = Math.max(-1f, Math.min(1f, dot));
+
+        //linear interpolation for close rotations
+        if (dot > 0.9995f) {
+            Quaternion result = new Quaternion(
+                q1.w + t * (q2.w - q1.w),
+                q1.x + t * (q2.x - q1.x),
+                q1.y + t * (q2.y - q1.y),
+                q1.z + t * (q2.z - q1.z)
+            );
+
+            return result.normalize();
+        }
+
+        //interpolation spherical
+        float theta = (float) Math.acos(dot);
+        float sinTheta = (float) Math.sin(theta);
+
+        float weight1 = (float) Math.sin((1f - t) * theta)
+                        / sinTheta;
+
+        float weight2 = (float) Math.sin(t * theta)
+                        / sinTheta;
+
+        return new Quaternion(
+            weight1 * q1.w + weight2 * q2.w,
+            weight1 * q1.x + weight2 * q2.x,
+            weight1 * q1.y + weight2 * q2.y,
+            weight1 * q1.z + weight2 * q2.z
+        ).normalize();
+    }
+
+
 
     
 
