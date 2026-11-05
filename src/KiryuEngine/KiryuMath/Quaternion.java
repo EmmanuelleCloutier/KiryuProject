@@ -28,7 +28,7 @@ public class Quaternion {
         return new Quaternion(1, 0, 0, 0);
     }
 
-    //quaternion magnitude
+    //magnitude, get quaternion lenght
     public float magnitude() {
         return (float) Math.sqrt(
             w * w + x * x + y * y + z * z
