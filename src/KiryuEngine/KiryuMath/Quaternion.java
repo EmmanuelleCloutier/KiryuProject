@@ -124,9 +124,9 @@ public class Quaternion {
 
         return new Quaternion(
             (float) Math.cos(halfAngle),
-            axis.x / length * sin,
-            axis.y / length * sin,
-            axis.z / length * sin
+            (float) (axis.x / length * sin),
+            (float) (axis.y / length * sin),
+            (float) (axis.z / length * sin)
         );
     }
 
@@ -136,9 +136,9 @@ public class Quaternion {
 
         Quaternion point = new Quaternion(
             0,
-            vector.x,
-            vector.y,
-            vector.z
+            (float) vector.x,
+            (float) vector.y,
+            (float) vector.z
         );
 
         Quaternion result = rotation
