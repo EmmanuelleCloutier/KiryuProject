@@ -142,7 +142,7 @@ public class Vector3 {
         double lenSq = getLengthSquared();
 
         if (lenSq == 0.0f) {
-            return Vector3.ZERO_VECTOR.copy();
+            return this;
         }
 
         double invLen = 1.0f / Math.sqrt(lenSq);
@@ -265,7 +265,7 @@ public class Vector3 {
      * @return Booléen. <i>"Les deux vecteurs sont orthogonaux."</i>
      */
     public boolean isOrthogonal(Vector3 other) {
-        return this.dotProduct(other) == 0;
+        return Math.abs(this.dotProduct(other)) < epsilon;
     }
 
     /**

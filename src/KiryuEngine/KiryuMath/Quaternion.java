@@ -281,9 +281,4 @@ public class Quaternion {
             weight1 * q1.z + weight2 * q2.z
         ).normalize();
     }
-
-
-
-    
-
 }
