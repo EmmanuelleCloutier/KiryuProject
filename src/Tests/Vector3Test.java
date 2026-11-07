@@ -53,29 +53,29 @@ class Vector3Test {
 
   @Test
   void zeroVectorHasZeroCoordinates() {
-    assertVectorEquals(0, 0, 0, Vector3.ZERO_VECTOR);
+    assertVectorEquals(0, 0, 0, Vector3.ZERO_VECTOR.copy());
   }
 
   @Test
   void onesVectorHasOneCoordinates() {
-    assertVectorEquals(1, 1, 1, Vector3.ONES_VECTOR);
+    assertVectorEquals(1, 1, 1, Vector3.ONES_VECTOR.copy());
   }
 
   @Test
   void unitVectorHasLengthOne() {
-    assertEquals(1.0, Vector3.UNIT_VECTOR.getLength(), EPSILON);
+    assertEquals(1.0, Vector3.UNIT_VECTOR.copy().getLength(), EPSILON);
   }
 
   @Test
   void directionConstantsHaveCorrectCoordinates() {
-    assertVectorEquals(0, 1, 0, Vector3.UP_VECTOR);
-    assertVectorEquals(0, -1, 0, Vector3.DOWN_VECTOR);
+    assertVectorEquals(0, 1, 0, Vector3.UP_VECTOR.copy());
+    assertVectorEquals(0, -1, 0, Vector3.DOWN_VECTOR.copy());
 
-    assertVectorEquals(1, 0, 0, Vector3.RIGHT_VECTOR);
-    assertVectorEquals(-1, 0, 0, Vector3.LEFT_VECTOR);
+    assertVectorEquals(1, 0, 0, Vector3.RIGHT_VECTOR.copy());
+    assertVectorEquals(-1, 0, 0, Vector3.LEFT_VECTOR.copy());
 
-    assertVectorEquals(0, 0, 1, Vector3.FORWARD_VECTOR);
-    assertVectorEquals(0, 0, -1, Vector3.BACKWARD_VECTOR);
+    assertVectorEquals(0, 0, 1, Vector3.FORWARD_VECTOR.copy());
+    assertVectorEquals(0, 0, -1, Vector3.BACKWARD_VECTOR.copy());
   }
 
   // --------------------------------------------------
@@ -187,7 +187,7 @@ class Vector3Test {
 
   @Test
   void zeroVectorHasZeroLength() {
-    assertEquals(0, Vector3.ZERO_VECTOR.getLength(), EPSILON);
+    assertEquals(0, Vector3.ZERO_VECTOR.copy().getLength(), EPSILON);
   }
 
   // --------------------------------------------------
@@ -248,7 +248,7 @@ class Vector3Test {
     Vector3 result = zero.normalize();
 
     assertVectorEquals(0, 0, 0, result);
-    assertNotSame(Vector3.ZERO_VECTOR, result);
+    assertNotSame(Vector3.ZERO_VECTOR.copy(), result);
   }
 
   @Test
@@ -269,7 +269,7 @@ class Vector3Test {
     Vector3 result = Vector3.getVectorNormal(zero);
 
     assertVectorEquals(0, 0, 0, result);
-    assertNotSame(Vector3.ZERO_VECTOR, result);
+    assertNotSame(Vector3.ZERO_VECTOR.copy(), result);
   }
 
   // --------------------------------------------------
@@ -355,7 +355,7 @@ class Vector3Test {
   void dotProductOfOrthogonalVectorsIsZero() {
     assertEquals(
         0,
-        Vector3.RIGHT_VECTOR.dotProduct(Vector3.UP_VECTOR),
+        Vector3.RIGHT_VECTOR.copy().dotProduct(Vector3.UP_VECTOR.copy()),
         EPSILON
     );
   }
@@ -366,8 +366,8 @@ class Vector3Test {
 
   @Test
   void crossProductReturnsCorrectVector() {
-    Vector3 result = Vector3.RIGHT_VECTOR.crossProduct(
-        Vector3.UP_VECTOR
+    Vector3 result = Vector3.RIGHT_VECTOR.copy().crossProduct(
+        Vector3.UP_VECTOR.copy()
     );
 
     assertVectorEquals(0, 0, 1, result);
@@ -398,14 +398,14 @@ class Vector3Test {
   @Test
   void isOrthogonalReturnsTrueForPerpendicularVectors() {
     assertTrue(
-        Vector3.RIGHT_VECTOR.isOrthogonal(Vector3.UP_VECTOR)
+        Vector3.RIGHT_VECTOR.copy().isOrthogonal(Vector3.UP_VECTOR.copy())
     );
   }
 
   @Test
   void isOrthogonalReturnsFalseForNonPerpendicularVectors() {
     assertFalse(
-        Vector3.RIGHT_VECTOR.isOrthogonal(Vector3.ONES_VECTOR)
+        Vector3.RIGHT_VECTOR.copy().isOrthogonal(Vector3.ONES_VECTOR.copy())
     );
   }
 
@@ -428,7 +428,7 @@ class Vector3Test {
   @Test
   void isCollinearReturnsFalseForNonParallelVectors() {
     assertFalse(
-        Vector3.RIGHT_VECTOR.isCollinear(Vector3.UP_VECTOR)
+        Vector3.RIGHT_VECTOR.copy().isCollinear(Vector3.UP_VECTOR.copy())
     );
   }
 

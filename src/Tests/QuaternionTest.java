@@ -294,7 +294,7 @@ class QuaternionTest {
     @Test
     void fromAxisAngleZeroDegreesReturnsIdentity() {
         Quaternion result = Quaternion.fromAxisAngle(
-            Vector3.UP_VECTOR,
+            Vector3.UP_VECTOR.copy(),
             0
         );
 
@@ -304,7 +304,7 @@ class QuaternionTest {
     @Test
     void fromAxisAngle90DegreesAroundZ() {
         Quaternion result = Quaternion.fromAxisAngle(
-            Vector3.FORWARD_VECTOR,
+            Vector3.FORWARD_VECTOR.copy(),
             90
         );
 
@@ -339,7 +339,7 @@ class QuaternionTest {
         assertThrows(
             IllegalArgumentException.class,
             () -> Quaternion.fromAxisAngle(
-                Vector3.ZERO_VECTOR,
+                Vector3.ZERO_VECTOR.copy(),
                 90
             )
         );
@@ -371,11 +371,11 @@ class QuaternionTest {
     @Test
     void rotate90DegreesAroundZAxis() {
         Quaternion rotation = Quaternion.fromAxisAngle(
-            Vector3.FORWARD_VECTOR,
+            Vector3.FORWARD_VECTOR.copy(),
             90
         );
 
-        Vector3 result = rotation.rotate(Vector3.RIGHT_VECTOR);
+        Vector3 result = rotation.rotate(Vector3.RIGHT_VECTOR.copy());
 
         assertVectorEquals(0, 1, 0, result);
     }
@@ -383,11 +383,11 @@ class QuaternionTest {
     @Test
     void rotate90DegreesAroundXAxis() {
         Quaternion rotation = Quaternion.fromAxisAngle(
-            Vector3.RIGHT_VECTOR,
+            Vector3.RIGHT_VECTOR.copy(),
             90
         );
 
-        Vector3 result = rotation.rotate(Vector3.UP_VECTOR);
+        Vector3 result = rotation.rotate(Vector3.UP_VECTOR.copy());
 
         assertVectorEquals(0, 0, 1, result);
     }
@@ -395,11 +395,11 @@ class QuaternionTest {
     @Test
     void rotate90DegreesAroundYAxis() {
         Quaternion rotation = Quaternion.fromAxisAngle(
-            Vector3.UP_VECTOR,
+            Vector3.UP_VECTOR.copy(),
             90
         );
 
-        Vector3 result = rotation.rotate(Vector3.FORWARD_VECTOR);
+        Vector3 result = rotation.rotate(Vector3.FORWARD_VECTOR.copy());
 
         assertVectorEquals(1, 0, 0, result);
     }
@@ -409,7 +409,7 @@ class QuaternionTest {
         Vector3 original = new Vector3(1, 2, 3);
 
         Quaternion rotation = Quaternion.fromAxisAngle(
-            Vector3.UP_VECTOR,
+            Vector3.UP_VECTOR.copy(),
             45
         );
 
@@ -427,7 +427,7 @@ class QuaternionTest {
         Vector3 original = new Vector3(1, 2, 3);
 
         Quaternion rotation = Quaternion.fromAxisAngle(
-            Vector3.UP_VECTOR,
+            Vector3.UP_VECTOR.copy(),
             45
         );
 
@@ -439,7 +439,7 @@ class QuaternionTest {
     @Test
     void rotateWithNonNormalizedQuaternionWorks() {
         Quaternion rotation = Quaternion.fromAxisAngle(
-            Vector3.FORWARD_VECTOR,
+            Vector3.FORWARD_VECTOR.copy(),
             90
         );
 
@@ -450,7 +450,7 @@ class QuaternionTest {
             rotation.z * 5
         );
 
-        Vector3 result = scaledRotation.rotate(Vector3.RIGHT_VECTOR);
+        Vector3 result = scaledRotation.rotate(Vector3.RIGHT_VECTOR.copy());
 
         assertVectorEquals(0, 1, 0, result);
     }
