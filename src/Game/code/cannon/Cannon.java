@@ -4,8 +4,8 @@ import Game.code.projectile.ProjectileType;
 import KiryuEngine.KiryuCore.KiryuSound;
 import KiryuEngine.KiryuPhysics.Forces.Force;
 import KiryuEngine.KiryuMath.Vector3;
-import KiryuEngine.KiryuRendering.Animation;
-import KiryuEngine.KiryuRendering.Sprite;
+import KiryuEngine.KiryuRendering.TwoDimentional.Animation;
+import KiryuEngine.KiryuRendering.TwoDimentional.Sprite;
 import processing.core.PApplet;
 import processing.core.PVector;
 

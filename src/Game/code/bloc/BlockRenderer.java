@@ -1,6 +1,6 @@
 package Game.code.bloc;
 
-import KiryuEngine.KiryuRendering.SpriteRenderer;
+import KiryuEngine.KiryuRendering.TwoDimentional.SpriteRenderer;
 import processing.core.PApplet;
 
 import java.util.ArrayList;

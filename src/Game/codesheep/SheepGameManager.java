@@ -2,7 +2,7 @@
 package Game.codesheep;
 
 import KiryuEngine.KiryuPhysics.World;
-import KiryuEngine.KiryuRendering.SpriteRenderer;
+import KiryuEngine.KiryuRendering.TwoDimentional.SpriteRenderer;
 import processing.core.PApplet;
 
 import KiryuEngine.KiryuPhysics.Constraints.Spring;

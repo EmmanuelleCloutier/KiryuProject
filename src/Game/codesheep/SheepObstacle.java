@@ -5,7 +5,7 @@ import KiryuEngine.KiryuPhysics.Collision.SphereCollider2D;
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.World;
-import KiryuEngine.KiryuRendering.SpriteRenderer;
+import KiryuEngine.KiryuRendering.TwoDimentional.SpriteRenderer;
 
 public class SheepObstacle {
 

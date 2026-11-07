@@ -1,8 +1,8 @@
 package Game.code.cannon;
 
 import KiryuEngine.KiryuMath.Vector3;
-import KiryuEngine.KiryuRendering.Sprite;
-import KiryuEngine.KiryuRendering.SpriteRenderer;
+import KiryuEngine.KiryuRendering.TwoDimentional.Sprite;
+import KiryuEngine.KiryuRendering.TwoDimentional.SpriteRenderer;
 import processing.core.PApplet;
 
 public class TrajectoryRenderer extends SpriteRenderer {

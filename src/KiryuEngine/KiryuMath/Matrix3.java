@@ -94,7 +94,7 @@ public class Matrix3 {
    * @return <font color="orange">{@code double}</font>
    * - the determinant of this matrix
    */
-  private double getDeterminant(){
+  public double getDeterminant(){
     /*
         ┌       ┐
         │ a b c │
@@ -246,9 +246,8 @@ public class Matrix3 {
    * - the scalar value to multiply the matrix with
    */
   public void multiplyScalar(double scalar){
-    for (double value:elements
-         ) {
-      value *= scalar;
+    for (int i = 0; i < this.length; i++) {
+      this.elements[i] *= scalar;
     }
   }
   /**
@@ -311,7 +310,7 @@ public class Matrix3 {
     for (int i = 0; i < 3; i++) {
       this.elements[i] *= vector.x;
       this.elements[3 + i] *= vector.y;
-      this.elements[5 + i] *= vector.z;
+      this.elements[6 + i] *= vector.z;
     }
   }
 }
