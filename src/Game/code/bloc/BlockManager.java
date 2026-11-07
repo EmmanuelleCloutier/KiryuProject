@@ -3,8 +3,8 @@ import KiryuEngine.KiryuCore.KiryuSound;
 import KiryuEngine.KiryuPhysics.Particle;
 import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.World;
-import KiryuEngine.KiryuRendering.Animation;
-import KiryuEngine.KiryuRendering.Sprite;
+import KiryuEngine.KiryuRendering.TwoDimentional.Animation;
+import KiryuEngine.KiryuRendering.TwoDimentional.Sprite;
 import processing.core.PApplet;
 
 import java.util.*;

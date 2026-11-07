@@ -1,4 +1,4 @@
-package KiryuEngine.KiryuRendering;
+package KiryuEngine.KiryuRendering.TwoDimentional;
 
 import KiryuEngine.KiryuMath.Vector3;
 import processing.core.PApplet;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import static processing.core.PConstants.ARGB;
 import static processing.core.PConstants.CENTER;
 
-public class Animation implements Renderable{
+public class Animation implements Renderable {
 
   private final String animationPath;
   private final ArrayList<PImage> animationSequence;

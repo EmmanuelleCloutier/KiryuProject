@@ -1,4 +1,4 @@
-package KiryuEngine.KiryuRendering;
+package KiryuEngine.KiryuRendering.TwoDimentional;
 
 import KiryuEngine.KiryuMath.Vector3;
 import processing.core.PApplet;

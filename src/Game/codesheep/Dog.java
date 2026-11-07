@@ -2,7 +2,7 @@
 package Game.codesheep;
 
 import KiryuEngine.KiryuMath.Vector3;
-import KiryuEngine.KiryuRendering.SpriteRenderer;
+import KiryuEngine.KiryuRendering.TwoDimentional.SpriteRenderer;
 import processing.core.PApplet;
 
 public class Dog {

@@ -1,6 +1,6 @@
 package Game.code.projectile;
 
-import KiryuEngine.KiryuRendering.Sprite;
+import KiryuEngine.KiryuRendering.TwoDimentional.Sprite;
 
 import static Game.code.projectile.ProjectileType.Default.*;
 

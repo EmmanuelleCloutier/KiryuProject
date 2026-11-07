@@ -3,8 +3,8 @@ import KiryuEngine.KiryuPhysics.Collision.BoxCollider2D;
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.World;
-import KiryuEngine.KiryuRendering.Animation;
-import KiryuEngine.KiryuRendering.Sprite;
+import KiryuEngine.KiryuRendering.TwoDimentional.Animation;
+import KiryuEngine.KiryuRendering.TwoDimentional.Sprite;
 
 public class Block {
 
