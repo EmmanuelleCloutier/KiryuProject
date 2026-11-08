@@ -1,19 +1,20 @@
 package KiryuEngine.KiryuRendering.ThreeDimentional;
 
+import KiryuEngine.KiryuMath.Quaternion;
+import KiryuEngine.KiryuMath.Vector3;
 import processing.core.PApplet;
 import processing.core.PShape;
-
-
-import java.util.HashSet;
+import java.util.ArrayList;
 
 public class MeshRenderer {
   private final PApplet sketch;
-  private final HashSet<Mesh> loadedMesh;
+  private final ArrayList<Mesh> loadedMesh;
 
 
   public MeshRenderer(PApplet sketch){
     this.sketch = sketch;
-    this.loadedMesh = new HashSet<>();
+    this.loadedMesh =new ArrayList<>() {
+    };
   }
 
   public boolean addMesh(Mesh mesh){
@@ -38,5 +39,7 @@ public class MeshRenderer {
     return loadedMesh.remove(mesh);
   }
 
+  private void drawMesh(Mesh mesh, Vector3 position, Quaternion rotation){
 
+  }
 }
