@@ -9,5 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="ProcessingCore" level="project" />
     <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="jetbrains.annotations" level="project" />
+    <orderEntry type="library" name="junit" level="project" />
   </component>
 </module>

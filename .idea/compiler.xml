@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <excludeFromCompile>
+      <file url="file://$PROJECT_DIR$/src/Tests/UnitTestAll.java" />
+      <file url="file://$PROJECT_DIR$/src/Tests/Vector3Test.java" />
+      <file url="file://$PROJECT_DIR$/src/Tests/Matrix3Test.java" />
+      <file url="file://$PROJECT_DIR$/src/Tests/Matrix4Test.java" />
+      <file url="file://$PROJECT_DIR$/src/Tests/QuaternionTest.java" />
+    </excludeFromCompile>
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
     </annotationProcessing>
