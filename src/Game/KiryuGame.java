@@ -37,22 +37,19 @@ public class KiryuGame extends PApplet {
         Dimension screenSize =
             Toolkit.getDefaultToolkit().getScreenSize();
 
-        size(screenSize.width, screenSize.height);
+        size(screenSize.width, screenSize.height, P3D);
     }
 
     @Override
     public void setup() {
         frameRate(60);
-
         KiryuTime.init();
-
         mainMenu = new MainMenu(this);
     }
 
     @Override
     public void draw() {
         KiryuTime.update();
-
         float deltaTime = KiryuTime.getDeltaTime();
 
         switch (currentState) {
@@ -101,7 +98,7 @@ public class KiryuGame extends PApplet {
                     currentState = GameState.LEVEL_3;
                 }
 
-                else if (choice == 4) {
+                else if (choice == 4){
                     exit();
                 }
                 break;
@@ -113,8 +110,9 @@ public class KiryuGame extends PApplet {
             case LEVEL_2:
                 // Future mouse inputs
                 break;
+
             case LEVEL_3:
-                // Future mouse inputs
+                // Future keyboard inputs
                 break;
         }
     }
@@ -138,10 +136,10 @@ public class KiryuGame extends PApplet {
             case LEVEL_2:
                 // Future keyboard inputs
                 break;
+
             case LEVEL_3:
                 // Future keyboard inputs
                 break;
-
             default:
                 break;
         }

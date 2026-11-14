@@ -4,7 +4,7 @@ import processing.core.PShape;
 
 import java.util.Objects;
 
-class Mesh {
+public class Mesh {
 
   private PShape model;
   private final String filename;

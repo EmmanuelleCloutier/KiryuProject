@@ -2,6 +2,7 @@ package KiryuEngine.KiryuMath;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import processing.core.PMatrix3D;
 
 public class Matrix4 {
   /**
@@ -260,6 +261,28 @@ public class Matrix4 {
     this.elements[11] += dz;
   }
   /**
+   * @param x <font color="orange">{@code double}</font>
+   * - the position on the X axis
+   * @param y <font color="orange">{@code double}</font>
+   * - the position on the Y axis
+   * @param z <font color="orange">{@code double}</font>
+   * - the position on the Z axis
+   */
+  public void setPosition(double x, double y, double z) {
+    this.elements[3]  = x;
+    this.elements[7]  = y;
+    this.elements[11] = z;
+  }
+  /**
+   * @param position <font color="yellow">{@link Vector3}</font>
+   * - the vector representing the position
+   */
+  public void setPosition(@NotNull Vector3 position) {
+    this.elements[3]  = position.x;
+    this.elements[7]  = position.y;
+    this.elements[11] = position.z;
+  }
+  /**
    * @param eulerAngle <font color="orange">{@code double}</font>
    * - the angle, in degrees, to rotate on the X axis
    */
@@ -373,7 +396,6 @@ public class Matrix4 {
 
     this.multiplyMatrix(new Matrix4(combinedRotation));
   }
-
   /**
    * this transforms a quaternion into a rotation matrix
    * @param quaternion <font color="yellow">{@link Quaternion}</font>
@@ -394,6 +416,32 @@ public class Matrix4 {
         0                , 0                , 0                , 1
     };
     return new Matrix4(rotationMatrix);
+  }
+  /**
+   * transmutes a Matrix4 to a processing 3D matrix for rendering
+   * @return <font color="yellow">{@link PMatrix3D}</font>
+   * - the processing matrix used for 3d rendering in processing
+   */
+  public @NotNull PMatrix3D toProcessingMatrix(){
+    PMatrix3D processingMatrix = new PMatrix3D();
+    processingMatrix.m00 = (float) this.getElement(0);
+    processingMatrix.m01 = (float) this.getElement(1);
+    processingMatrix.m02 = (float) this.getElement(2);
+    processingMatrix.m03 = (float) this.getElement(3);
+    processingMatrix.m10 = (float) this.getElement(4);
+    processingMatrix.m11 = (float) this.getElement(5);
+    processingMatrix.m12 = (float) this.getElement(6);
+    processingMatrix.m13 = (float) this.getElement(7);
+    processingMatrix.m20 = (float) this.getElement(8);
+    processingMatrix.m21 = (float) this.getElement(9);
+    processingMatrix.m22 = (float) this.getElement(10);
+    processingMatrix.m23 = (float) this.getElement(11);
+    processingMatrix.m30 = (float) this.getElement(12);
+    processingMatrix.m31 = (float) this.getElement(13);
+    processingMatrix.m32 = (float) this.getElement(14);
+    processingMatrix.m33 = (float) this.getElement(15);
+
+    return processingMatrix;
   }
   //endregion
 }

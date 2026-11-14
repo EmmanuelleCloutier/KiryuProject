@@ -1,22 +1,40 @@
 
 package Game.Levels;
 
-import Game.codeTP3.TP3GameManager;
+import KiryuEngine.KiryuMath.Quaternion;
+import KiryuEngine.KiryuMath.Vector3;
+import KiryuEngine.KiryuRendering.ThreeDimentional.Mesh;
+import KiryuEngine.KiryuRendering.ThreeDimentional.MeshRenderer;
 import processing.core.PApplet;
 
 public class Level_3 {
 
-    private final TP3GameManager tp3GameManager;
+    PApplet test;
+    Mesh testMesh;
+    MeshRenderer meshRenderer;
 
     public Level_3(PApplet app) {
-        tp3GameManager = new TP3GameManager(app);
+        app.lights();
+        test = app;
+        meshRenderer = new MeshRenderer(app);
+        testMesh = new Mesh("Game/data/models/cube/cube.obj");
+        meshRenderer.addMesh(testMesh);
     }
 
     public void update(float deltaTime) {
-        tp3GameManager.update(deltaTime);
+
     }
 
     public void draw() {
-        tp3GameManager.draw();
+        test.background(0);
+        test.camera(800, 500, 0, 800, 500, 0, 0, 1, 0);
+        test.lights();
+        Quaternion quat = new Quaternion();
+        quat.rotate(new Vector3(5,0,0));
+        meshRenderer.drawMesh(
+            testMesh,
+            new Vector3(800,500,-100),
+            quat
+        );
     }
 }
