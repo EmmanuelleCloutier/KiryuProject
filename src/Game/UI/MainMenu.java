@@ -22,7 +22,8 @@ public class MainMenu {
 
         drawButton("LEVEL 1 - PROJECTILES", app.height * 0.45f);
         drawButton("LEVEL 2 - SHEEP", app.height * 0.55f);
-        drawButton("EXIT", app.height * 0.65f);
+        drawButton("LEVEL 3 - WIP", app.height * 0.65f);
+        drawButton("EXIT", app.height * 0.75f);
     }
 
     private void drawButton(String text, float y) {
@@ -51,6 +52,10 @@ public class MainMenu {
 
         if (isInsideButton(mouseX, mouseY, app.height * 0.65f)) {
             return 3;
+        }
+
+        if (isInsideButton(mouseX, mouseY, app.height * 0.75f)) {
+            return 4;
         }
 
         return 0;
