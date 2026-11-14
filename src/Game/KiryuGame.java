@@ -3,6 +3,7 @@ package Game;
 
 import Game.Levels.Level_1;
 import Game.Levels.Level_2;
+import Game.Levels.Level_3;
 import Game.UI.MainMenu;
 
 import KiryuEngine.KiryuCore.KiryuTime;
@@ -16,7 +17,8 @@ public class KiryuGame extends PApplet {
     private enum GameState {
         MENU,
         LEVEL_1,
-        LEVEL_2
+        LEVEL_2,
+        LEVEL_3
     }
 
     private GameState currentState = GameState.MENU;
@@ -24,6 +26,7 @@ public class KiryuGame extends PApplet {
     private MainMenu mainMenu;
     private Level_1 level1;
     private Level_2 level2;
+    private Level_3 level3;
 
     public static void main(String[] args) {
         PApplet.main("Game.KiryuGame");
@@ -34,22 +37,19 @@ public class KiryuGame extends PApplet {
         Dimension screenSize =
             Toolkit.getDefaultToolkit().getScreenSize();
 
-        size(screenSize.width, screenSize.height);
+        size(screenSize.width, screenSize.height, P3D);
     }
 
     @Override
     public void setup() {
         frameRate(60);
-
         KiryuTime.init();
-
         mainMenu = new MainMenu(this);
     }
 
     @Override
     public void draw() {
         KiryuTime.update();
-
         float deltaTime = KiryuTime.getDeltaTime();
 
         switch (currentState) {
@@ -66,6 +66,11 @@ public class KiryuGame extends PApplet {
             case LEVEL_2:
                 level2.update(deltaTime);
                 level2.draw();
+                break;
+
+            case LEVEL_3:
+                level3.update(deltaTime);
+                level3.draw();
                 break;
         }
     }
@@ -89,6 +94,11 @@ public class KiryuGame extends PApplet {
                 }
 
                 else if (choice == 3) {
+                    level3 = new Level_3(this);
+                    currentState = GameState.LEVEL_3;
+                }
+
+                else if (choice == 4){
                     exit();
                 }
                 break;
@@ -99,6 +109,10 @@ public class KiryuGame extends PApplet {
 
             case LEVEL_2:
                 // Future mouse inputs
+                break;
+
+            case LEVEL_3:
+                // Future keyboard inputs
                 break;
         }
     }
@@ -123,6 +137,9 @@ public class KiryuGame extends PApplet {
                 // Future keyboard inputs
                 break;
 
+            case LEVEL_3:
+                // Future keyboard inputs
+                break;
             default:
                 break;
         }

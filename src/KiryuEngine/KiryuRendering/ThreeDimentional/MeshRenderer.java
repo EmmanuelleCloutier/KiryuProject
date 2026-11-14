@@ -1,8 +1,10 @@
 package KiryuEngine.KiryuRendering.ThreeDimentional;
 
+import KiryuEngine.KiryuMath.Matrix4;
 import KiryuEngine.KiryuMath.Quaternion;
 import KiryuEngine.KiryuMath.Vector3;
 import processing.core.PApplet;
+import processing.core.PMatrix3D;
 import processing.core.PShape;
 import java.util.ArrayList;
 
@@ -13,7 +15,7 @@ public class MeshRenderer {
 
   public MeshRenderer(PApplet sketch){
     this.sketch = sketch;
-    this.loadedMesh =new ArrayList<>() {
+    this.loadedMesh = new ArrayList<>() {
     };
   }
 
@@ -39,7 +41,15 @@ public class MeshRenderer {
     return loadedMesh.remove(mesh);
   }
 
-  private void drawMesh(Mesh mesh, Vector3 position, Quaternion rotation){
-
+  public void drawMesh(Mesh mesh, Vector3 position, Quaternion rotation){
+    mesh.getModel().scale(0.1f);
+    Matrix4 objectMatrix = new Matrix4();
+    objectMatrix.fromQuaternion(rotation);
+    objectMatrix.setPosition(position);
+    PMatrix3D processingMatrix = new PMatrix3D(objectMatrix.toProcessingMatrix());
+    sketch.pushMatrix();
+    sketch.applyMatrix(processingMatrix);
+    sketch.shape(mesh.getModel());
+    sketch.popMatrix();
   }
 }
