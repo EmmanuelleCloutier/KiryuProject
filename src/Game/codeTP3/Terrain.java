@@ -6,7 +6,7 @@ import processing.core.PApplet;
 public class Terrain {
 
     int width; //Largeur du terrain
-    float x;
+    float x; //Position sur l'axe x du terrain
     float y; //Position en hauteur du terrain
 
 
@@ -42,17 +42,39 @@ public class Terrain {
 
     }
 
-    //retourne si le projectile est à l'extérieur de l'écran
+    /**
+     * Renvoi si le projectile a touché ou dépassé le sol
+     * @param pos : la position du projectile
+     * @return
+     */
+    public boolean checkOnGround(Vector3 pos) {
+        return pos.y > this.y;
+
+    }
+
+
+    /**
+     * retourne si le projectile est à l'intérieur de l'écran
+     * @param pos : la position du projectile
+     * @return
+     */
     public boolean checkOutside(Vector3 pos) {
 
         //largeur position en posX > this.x + width/2 et posX < this.x + width/2
-        //hauteur position en posY > this.y
         //profondeur position en posZ > 0 et posZ < 750
+        return (pos.x > this.x - (this.width/2)) && (pos.x < (this.x + (this.width/2)))
+                && (pos.z < 0) &&  (pos.z > -750);
+    }
 
+    /**
+     * renvoi le nombre de point en fonction de la distance à l'origine en profondeur
+     * @param pos
+     * @return
+     */
+    public int computeScore(Vector3 pos) {
         //Si le projectile sort en hauteur (hauteur < 0) mais reste dans les limites du terrain on incrémente le score
         //Sinon on a 0 point
-
-        return false;
+        return 0;
     }
 
 

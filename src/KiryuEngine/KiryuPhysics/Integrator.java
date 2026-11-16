@@ -15,6 +15,7 @@ public class Integrator {
                 new Quaternion(0, (float) av.x, (float) av.y, (float) av.z)
                         .multiply(rigidBody.getQRotation());
 
+        newRQuaternion.w = rigidBody.getQRotation().w + (newRQuaternion.w * 0.5f * deltaTime);
         newRQuaternion.x = rigidBody.getQRotation().x + (newRQuaternion.x * 0.5f * deltaTime);
         newRQuaternion.y = rigidBody.getQRotation().y + (newRQuaternion.y * 0.5f * deltaTime);
         newRQuaternion.z = rigidBody.getQRotation().z + (newRQuaternion.z * 0.5f * deltaTime);
