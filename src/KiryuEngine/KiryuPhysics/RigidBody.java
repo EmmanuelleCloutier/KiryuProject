@@ -1,5 +1,7 @@
 package KiryuEngine.KiryuPhysics;
 
+import KiryuEngine.KiryuMath.Matrix3;
+import KiryuEngine.KiryuMath.Quaternion;
 import KiryuEngine.KiryuMath.Vector3;
 import org.jetbrains.annotations.NotNull;
 
@@ -91,6 +93,18 @@ public class RigidBody {
    * needed for collision interaction in the game
    */
   private Consumer<RigidBody> collisionListener;
+  /**
+   * Vector describing the angular velocity of the body
+   */
+  private Vector3 angularVelocity;
+  /**
+   * The Quaternion that describe the current rotation
+   */
+  private Quaternion qRotation;
+  /**
+   * The Matrix that describe the current rotation
+   */
+  private Matrix3 mRotation;
   /**
    * simple constructor that instantiate a body with position 0
    * and velocity 0
@@ -426,5 +440,52 @@ public class RigidBody {
     }
   }
 
+  /**
+   * Set the quaternion for the rotation
+   * @param qRotation
+   */
+  public void setQRotation(Quaternion qRotation) {
+    this.qRotation = qRotation;
+  }
+
+  /**
+   * Get the quaternion for the rotation
+   * @return
+   */
+  public Quaternion getQRotation() {
+    return this.qRotation;
+  }
+
+  /**
+   * Set the rotation Matrix
+   * @param mRotation
+   */
+  public void setMRotation(Matrix3 mRotation) {
+    this.mRotation = mRotation;
+  }
+
+  /**
+   * get the rotation matrix
+   * @return
+   */
+  public Matrix3 getMRotation() {
+    return mRotation;
+  }
+
+  /**
+   * set the angular velocity of the body
+   * @param angularVelocity
+   */
+  public void setAngularVelocity(Vector3 angularVelocity) {
+    this.angularVelocity = angularVelocity;
+  }
+
+  /**
+   * get the angular velocity of the body
+   * @return
+   */
+  public Vector3 getAngularVelocity() {
+    return angularVelocity;
+  }
 
 }
