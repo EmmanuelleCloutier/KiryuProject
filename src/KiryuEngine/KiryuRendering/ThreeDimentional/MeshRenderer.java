@@ -3,6 +3,7 @@ package KiryuEngine.KiryuRendering.ThreeDimentional;
 import KiryuEngine.KiryuMath.Matrix4;
 import KiryuEngine.KiryuMath.Quaternion;
 import KiryuEngine.KiryuMath.Vector3;
+import org.jetbrains.annotations.NotNull;
 import processing.core.PApplet;
 import processing.core.PMatrix3D;
 import processing.core.PShape;
@@ -19,14 +20,14 @@ public class MeshRenderer {
     };
   }
 
-  public boolean addMesh(Mesh mesh){
+  public boolean addMesh(@NotNull Mesh mesh){
     if (loadMesh(mesh)) {
       return loadedMesh.add(mesh);
     }
     return false;
   }
 
-  private boolean loadMesh(Mesh mesh){
+  private boolean loadMesh(@NotNull Mesh mesh){
     if(loadedMesh.contains(mesh)) return false;
 
     PShape model = this.sketch.loadShape(mesh.getFilename());
@@ -37,14 +38,17 @@ public class MeshRenderer {
     return false;
   }
 
-  public boolean removeMesh(Mesh mesh){
+  public boolean removeMesh(@NotNull Mesh mesh){
     return loadedMesh.remove(mesh);
   }
 
-  public void drawMesh(Mesh mesh, Vector3 position, Quaternion rotation){
-    mesh.getModel().scale(0.1f);
+  public void drawMesh(
+      @NotNull Mesh mesh,
+      @NotNull Vector3 position,
+      @NotNull Quaternion rotation
+  ){
     Matrix4 objectMatrix = new Matrix4();
-    objectMatrix.fromQuaternion(rotation);
+    objectMatrix = objectMatrix.fromQuaternion(rotation);
     objectMatrix.setPosition(position);
     PMatrix3D processingMatrix = new PMatrix3D(objectMatrix.toProcessingMatrix());
     sketch.pushMatrix();

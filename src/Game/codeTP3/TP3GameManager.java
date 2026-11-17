@@ -1,7 +1,10 @@
 package Game.codeTP3;
 
+import KiryuEngine.KiryuMath.Quaternion;
 import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.World;
+import KiryuEngine.KiryuRendering.ThreeDimentional.Mesh;
+import KiryuEngine.KiryuRendering.ThreeDimentional.MeshRenderer;
 import processing.core.PApplet;
 
 
@@ -11,7 +14,10 @@ public class TP3GameManager {
     private final World world;
 
 
-    private final Vector3 projectileOrigine = Vector3.ZERO_VECTOR.copy(); //Position initiale du projectile
+    MeshRenderer meshRenderer;
+
+
+    private final Vector3 projectileOrigin = Vector3.ZERO_VECTOR.copy(); //Position initiale du projectile
 
     private Terrain terrain;
     private Projectile3D projectile = null; //projectile lancé
@@ -20,10 +26,19 @@ public class TP3GameManager {
     public TP3GameManager(PApplet sketch) {
         this.sketch = sketch;
 
-        this.terrain = new Terrain(400, sketch.width/2,sketch.height * 0.75f);
+        this.terrain = new Terrain(
+            400,
+            sketch.width/2,
+            sketch.height * 0.75f
+        );
 
         world = new World();
         world.isGravityAllowed(true);
+
+        meshRenderer = new MeshRenderer(this.sketch);
+
+        testsetup();
+
     }
 
 
@@ -34,7 +49,7 @@ public class TP3GameManager {
         //Si le projectile sort du terrain on calcul le score avec la distance
         if (this.projectile != null) {
             if (terrain.checkOutside(new Vector3(0,0,0))) {
-                double distance = this.projectile.getPos().distance(this.projectileOrigine);
+                double distance = this.projectile.getPos().distance(this.projectileOrigin);
                 score += Math.round(distance);
                 this.projectile.removeProjectile(this.world);
                 this.projectile = null;
@@ -44,11 +59,30 @@ public class TP3GameManager {
 
     }
 
+
     public void draw() {
 
-        sketch.background(0);
+        sketch.background(125);
+        sketch.lights();
 
-        sketch.camera(sketch.width/2, sketch.mouseY, (sketch.height/2) / sketch.tan(sketch.PI/6), sketch.width/2, sketch.height/2, 0, 0, 1, 0);
+        sketch.camera(
+            sketch.width/2,
+            sketch.mouseY,
+            1000,
+            sketch.width/2,
+            sketch.height/2,
+            0,
+            0,
+            1,
+            0
+        );
+
+        testdraw();
+
+
+
+
+
 
         //draw le terrain
         terrain.draw_terrain(sketch);
@@ -78,6 +112,53 @@ public class TP3GameManager {
 
 
         sketch.hint(sketch.ENABLE_DEPTH_TEST);
+    }
+
+    Mesh cannonball;
+    Mesh basketball;
+    Mesh laser;
+    public void testsetup(){
+        cannonball = new Mesh("src/Game/data/models/cannonball/cannonball.obj");
+        meshRenderer.addMesh(cannonball);
+
+        basketball = new Mesh("src/Game/data/models/basketball/Basketball.obj");
+        meshRenderer.addMesh(basketball);
+
+        laser = new Mesh("src/Game/data/models/laser/laser.obj");
+        meshRenderer.addMesh(laser);
+
+    }
+
+    float rotation = 0;
+    public void testdraw(){
+
+
+
+        rotation+=1;
+        Quaternion quat = Quaternion.fromAxisAngle(
+            Vector3.UP_VECTOR.copy(),
+            rotation
+        );
+
+        meshRenderer.drawMesh(
+            cannonball,
+            new Vector3(sketch.width/2f,sketch.height/2f,100),
+            quat
+        );
+
+        meshRenderer.drawMesh(
+            basketball,
+            new Vector3(sketch.width/2f - 125,sketch.height/2f,100),
+            quat
+        );
+
+
+        meshRenderer.drawMesh(
+            laser,
+            new Vector3(sketch.width/2f + 125,sketch.height/2f,100),
+            quat
+        );
+
     }
 
 }
