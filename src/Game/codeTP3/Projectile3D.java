@@ -4,12 +4,19 @@ import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.Collision.Collider;
 import KiryuEngine.KiryuPhysics.RigidBody;
 import KiryuEngine.KiryuPhysics.World;
+import KiryuEngine.KiryuRendering.ThreeDimentional.Mesh;
 
 public class Projectile3D {
 
+    private Mesh mesh;
     private RigidBody rigidBody;
 
-    public Projectile3D(World world, double mass, Vector3 pos, Collider collider) {
+    public Projectile3D(
+        World world,
+        double mass,
+        Vector3 pos,
+        Collider collider
+    ) {
 
         this.rigidBody = new RigidBody(mass,
                 pos,

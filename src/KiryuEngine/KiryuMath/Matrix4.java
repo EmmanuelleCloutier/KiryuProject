@@ -410,9 +410,9 @@ public class Matrix4 {
     double z = quaternion.z;
 
     double[] rotationMatrix = new double[]{
-        1 - 2*(y*y + z*z), 2*(x*y - z*w)    , 2*(x*z + y*w)    , 0,
-        2*(x*y + z*w)    , 1 - 2*(x*x + z*z), 2*(y*z - x*w)    , 0,
-        2*(x*z - y*w)    , 2*(y*z + x*w)    , 1 - 2*(x*x + y*y), 0,
+        1 - 2*(y*y + z*z), 2*(x*y + z*w)    , 2*(x*z - y*w)    , 0,
+        2*(x*y - z*w)    , 1 - 2*(x*x + z*z), 2*(y*z + x*w)    , 0,
+        2*(x*z + y*w)    , 2*(y*z - x*w)    , 1 - 2*(x*x + y*y), 0,
         0                , 0                , 0                , 1
     };
     return new Matrix4(rotationMatrix);
