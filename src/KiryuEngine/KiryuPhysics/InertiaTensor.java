@@ -28,7 +28,7 @@ public class InertiaTensor {
      * @return le tenseur d'inertie associé au parallelepipede
      */
     public static Matrix3 getParallelepipedeInertiaTensor(double largeur, double longueur, double masse) {
-        double jpar = (1/.12) * masse * (largeur * largeur + longueur * longueur);
+        double jpar = (1/12f) * masse * (largeur * largeur + longueur * longueur);
 
         Matrix3 J = Matrix3.getIdentity();
         J.multiplyScalar(jpar);
@@ -47,7 +47,7 @@ public class InertiaTensor {
     public static Matrix3 getCylinderInertiaTensor(double rayon, double hauteur, double masse) {
 
         double iz = 0.5 * masse * (rayon * rayon);
-        double ixy = ((masse * rayon * rayon)/.4) + ((masse * hauteur * hauteur)/.12);
+        double ixy = ((masse * rayon * rayon)/4f) + ((masse * hauteur * hauteur)/12f);
 
         Matrix3 J = new Matrix3(
                 new double[]{ixy, 0, 0,

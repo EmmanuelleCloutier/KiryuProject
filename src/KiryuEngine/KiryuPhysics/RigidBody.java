@@ -116,17 +116,19 @@ public class RigidBody {
    * The Matrix that describe the current rotation
    */
   private Matrix3 mRotation;
-
   /**
    * The Matrix that represent the initial inertia tensor of the mass center
    */
   private Matrix3 inertiaTensor;
-
   /**
    * The Matrix that represent the inverse of the inertia tensor
    */
   private Matrix3 inverseInertiaTensor;
-
+  /**
+   * indicates the center of mass of the rigidbody
+   * this is a position relative to the rigidbody's position
+   */
+  private Vector3 centerOfMass;
 
   // ------------- METHODE --------------- //
 
@@ -171,6 +173,13 @@ public class RigidBody {
     this.accumulatedForce = Vector3.ZERO_VECTOR.copy();
     this.contacts = new ArrayList<>();
     this.collider = collider;
+    this.torque = Vector3.ZERO_VECTOR.copy();
+    this.qRotation = new Quaternion();
+    this.mRotation = new Matrix3();
+    this.inverseInertiaTensor = new Matrix3();
+    this.inertiaTensor = new Matrix3();
+    this.angularVelocity = Vector3.ZERO_VECTOR.copy();
+    this.centerOfMass = Vector3.ZERO_VECTOR.copy();
     //the collider needs this link to the rigidbody for gameplay purposes
     collider.linkRigidBody(this);
   }
@@ -316,42 +325,57 @@ public class RigidBody {
   public boolean isMarkedForDestruction() {
     return isMarkedForDestruction;
   }
-
   /**
    * Get the quaternion for the rotation
-   * @return Quaternion
+   * @return @return <font color="yellow">{@link Quaternion}</font>
    */
   public Quaternion getQRotation() {
     return this.qRotation;
   }
-
   /**
    * get the rotation matrix
-   * @return Matrix3
+   * @return @return <font color="yellow">{@link Matrix3}</font>
    */
   public Matrix3 getMRotation() {
     return mRotation;
   }
-
   /**
    * get the angular velocity of the body
-   * @return Vector3
+   * @return @return <font color="yellow">{@link Vector3}</font>
    */
   public Vector3 getAngularVelocity() {
     return angularVelocity;
   }
-
   /**
    * get the torque
-   * @return Vector3
+   * @return @return <font color="yellow">{@link Vector3}</font>
    */
   public Vector3 getTorque() { return torque; }
 
   /**
    * get the inverse of the inertia tensor matrix
-   * @return Matrix3
+   * @return @return <font color="yellow">{@link Matrix3}</font>
    */
   public Matrix3 getInverseInertiaTensor() { return inverseInertiaTensor; }
+  /**
+   * get the relative position of the center of mass
+   * @return @return @return <font color="yellow">{@link Vector3}</font>
+   */
+  public Vector3 getCenterOfMass() {
+    return centerOfMass;
+  }
+  /**
+   * get the world space coordinates of the center of mass
+   * @return @return @return <font color="yellow">{@link Vector3}</font>
+   */
+  public Vector3 getCenterOfMassWorld() {
+    return new Vector3(this.position).add(this.centerOfMass);
+  }
+
+  public Vector3 getVelocityAtPoint(Vector3 r) {
+    return new Vector3(linearVelocity)
+        .add(new Vector3(angularVelocity).crossProduct(r));
+  }
   //endregion
 
   /*
@@ -432,37 +456,40 @@ public class RigidBody {
   public void markForDestruction() {
     this.isMarkedForDestruction = true;
   }
-
   /**
    * Set the quaternion for the rotation
-   * @param qRotation
+   * @param qRotation @return <font color="yellow">{@link Quaternion}</font>
    */
-  public void setQRotation(Quaternion qRotation) {
+  public void setQRotation(@NotNull Quaternion qRotation) {
     this.qRotation = qRotation;
   }
-
   /**
    * Set the rotation Matrix
-   * @param mRotation
+   * @param mRotation @return <font color="yellow">{@link Matrix3}</font>
    */
-  public void setMRotation(Matrix3 mRotation) {
+  public void setMRotation(@NotNull Matrix3 mRotation) {
     this.mRotation = mRotation;
   }
-
   /**
    * set the angular velocity of the body
-   * @param angularVelocity
+   * @param angularVelocity @return <font color="yellow">{@link Vector3}</font>
    */
-  public void setAngularVelocity(Vector3 angularVelocity) {
+  public void setAngularVelocity(@NotNull Vector3 angularVelocity) {
     this.angularVelocity = angularVelocity;
   }
 
   /**
    * set this inverse of the inertia tensor
-   * @param inverseInertiaTensor
+   * @param inverseInertiaTensor @return <font color="yellow">{@link Matrix3}</font>
    */
-  public void setInverseInertiaTensor(Matrix3 inverseInertiaTensor) { this.inverseInertiaTensor = inverseInertiaTensor; }
-
+  public void setInverseInertiaTensor(@NotNull Matrix3 inverseInertiaTensor) { this.inverseInertiaTensor = inverseInertiaTensor; }
+  /**
+   * set the center of mass of the rigid body
+   * @param centerOfMass <font color="yellow">{@link Vector3}</font>
+   */
+  public void setCenterOfMass(@NotNull Vector3 centerOfMass) {
+    this.centerOfMass = centerOfMass;
+  }
   //endregion
 
   /**
@@ -569,8 +596,4 @@ public class RigidBody {
       collisionListener.accept(other);
     }
   }
-
-
-
-
 }

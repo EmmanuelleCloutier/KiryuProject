@@ -36,6 +36,7 @@ public class GravityGenerator implements ForceGenerator {
      * - the RigidBody we apply the generator's gravity force to
      */
     public void applyForce(RigidBody rigidBody) {
+        if (!rigidBody.isAffectedByGravity()) return;
 
         Vector3 gravityForce = new Vector3(this.gravity)
             .scale(rigidBody.getMass());
