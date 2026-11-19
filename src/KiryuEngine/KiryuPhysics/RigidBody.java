@@ -93,6 +93,13 @@ public class RigidBody {
    * needed for collision interaction in the game
    */
   private Consumer<RigidBody> collisionListener;
+
+  // ------------- ROTATION ATTRIBUTES --------------- //
+
+  /**
+   * Vector describing the torque
+   */
+  private Vector3 torque;
   /**
    * Vector describing the angular velocity of the body
    */
@@ -105,6 +112,15 @@ public class RigidBody {
    * The Matrix that describe the current rotation
    */
   private Matrix3 mRotation;
+
+  /**
+   * The Matrix that represent the inertia tensor
+   */
+  private Matrix3 inertiaTensor;
+
+
+  // ------------- METHODE --------------- //
+
   /**
    * simple constructor that instantiate a body with position 0
    * and velocity 0
