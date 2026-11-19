@@ -1,61 +1,12 @@
 package KiryuEngine.KiryuPhysics;
 
 import KiryuEngine.KiryuMath.Matrix3;
+import KiryuEngine.KiryuMath.Matrix4;
 import KiryuEngine.KiryuMath.Quaternion;
 import KiryuEngine.KiryuMath.Vector3;
 
 public class Integrator {
 
-    private static void integrate_rotation(RigidBody rigidBody, float deltaTime) {
-
-        //Calcul de l'accélération angular
-
-        Vector3 angularAcceleration = rigidBody.getTorque().multiplyMatrix(rigidBody.getInverseInertiaTensor());
-
-        //Mise à jour de la vélocité angulaire
-
-        Vector3 av = rigidBody.getAngularVelocity().add(angularAcceleration.scale(deltaTime));
-        rigidBody.setAngularVelocity(av);
-
-        //Mise à jour du Quaternion décrivant la rotation
-
-
-        Quaternion newRQuaternion =
-                new Quaternion(0, (float) av.x, (float) av.y, (float) av.z)
-                        .multiply(rigidBody.getQRotation());
-
-        newRQuaternion.w = rigidBody.getQRotation().w + (newRQuaternion.w * 0.5f * deltaTime);
-        newRQuaternion.x = rigidBody.getQRotation().x + (newRQuaternion.x * 0.5f * deltaTime);
-        newRQuaternion.y = rigidBody.getQRotation().y + (newRQuaternion.y * 0.5f * deltaTime);
-        newRQuaternion.z = rigidBody.getQRotation().z + (newRQuaternion.z * 0.5f * deltaTime);
-
-        rigidBody.setQRotation(newRQuaternion);
-
-        //Mise à jour de la Matrice associée
-        Matrix3 newRMatrix = new Matrix3();
-        double [] elems = {
-                1 - 2*((newRQuaternion.y*newRQuaternion.y) + (newRQuaternion.z*newRQuaternion.z)),
-                2*((newRQuaternion.x*newRQuaternion.y) + (newRQuaternion.z*newRQuaternion.w)),
-                2*((newRQuaternion.x*newRQuaternion.z) - (newRQuaternion.y*newRQuaternion.w)),
-                2*((newRQuaternion.x*newRQuaternion.y) - (newRQuaternion.z*newRQuaternion.w)),
-                1 - 2*((newRQuaternion.x*newRQuaternion.x) + (newRQuaternion.z*newRQuaternion.z)),
-                2*((newRQuaternion.y*newRQuaternion.z) + (newRQuaternion.x*newRQuaternion.w)),
-                2*((newRQuaternion.x*newRQuaternion.z) + (newRQuaternion.y*newRQuaternion.w)),
-                2*((newRQuaternion.y*newRQuaternion.z) - (newRQuaternion.x*newRQuaternion.w)),
-                1 - 2*((newRQuaternion.x*newRQuaternion.x) + (newRQuaternion.y*newRQuaternion.y))
-        };
-
-        newRMatrix.setElements(elems);
-        rigidBody.setMRotation(newRMatrix);
-
-        //Mise à jour de la matrice inverse d'inertie
-        Matrix3 inverseR = newRMatrix.getInverse();
-        Matrix3 tmp = new Matrix3(elems);
-        tmp.multiplyMatrix(rigidBody.getInverseInertiaTensor());
-        tmp.multiplyMatrix(inverseR);
-        rigidBody.setInverseInertiaTensor(tmp);
-
-    }
 
     /**
      * Integrates a rigidbody using Euler integration.
@@ -67,8 +18,16 @@ public class Integrator {
         RigidBody rigidBody,
         float deltaTime
     ) {
+      integrate_linear(rigidBody,deltaTime);
+      integrate_rotation(rigidBody,deltaTime);
+    }
 
-        // v1 = ((damping ^ dt) * v0) + (a * dt)
+    private static void integrate_linear(
+        RigidBody rigidBody,
+        float deltaTime
+    ){
+
+      // v1 = ((damping ^ dt) * v0) + (a * dt)
 
       Vector3 newVelocity = new Vector3(rigidBody.getLinearVelocity())
           .scale(
@@ -106,4 +65,51 @@ public class Integrator {
 
       rigidBody.getAccumulatedForce().clear();
     }
+
+
+    private static void integrate_rotation(
+        RigidBody rigidBody,
+        float deltaTime
+    ) {
+
+      //Calcul de l'accélération angular
+
+      Vector3 angularAcceleration = rigidBody.getTorque().multiplyMatrix(rigidBody.getInverseInertiaTensor());
+
+      //Mise à jour de la vélocité angulaire
+
+      Vector3 av = rigidBody.getAngularVelocity().add(angularAcceleration.scale(deltaTime));
+      rigidBody.setAngularVelocity(av);
+
+      //Mise à jour du Quaternion décrivant la rotation
+
+
+      Quaternion newRQuaternion =
+          new Quaternion(0, (float) av.x, (float) av.y, (float) av.z)
+              .multiply(rigidBody.getQRotation());
+
+      newRQuaternion.w = rigidBody.getQRotation().w + (newRQuaternion.w * 0.5f * deltaTime);
+      newRQuaternion.x = rigidBody.getQRotation().x + (newRQuaternion.x * 0.5f * deltaTime);
+      newRQuaternion.y = rigidBody.getQRotation().y + (newRQuaternion.y * 0.5f * deltaTime);
+      newRQuaternion.z = rigidBody.getQRotation().z + (newRQuaternion.z * 0.5f * deltaTime);
+
+      rigidBody.setQRotation(newRQuaternion);
+
+      //Mise à jour de la Matrice associée
+      Matrix4 rotationMatrix  = new Matrix4().fromQuaternion(newRQuaternion);
+      Matrix3 newRMatrix = rotationMatrix.getMatrix3();
+      rigidBody.setMRotation(newRMatrix);
+
+      //Mise à jour de la matrice inverse d'inertie
+      Matrix3 inverseR = newRMatrix.getInverse();
+      Matrix3 inverseInertiaTensor = new Matrix3(newRMatrix);
+      inverseInertiaTensor.multiplyMatrix(rigidBody.getInverseInertiaTensor());
+      if (inverseR!=null) {
+        inverseInertiaTensor.multiplyMatrix(inverseR);
+      }
+      rigidBody.setInverseInertiaTensor(inverseInertiaTensor);
+
+  }
+
+
 }

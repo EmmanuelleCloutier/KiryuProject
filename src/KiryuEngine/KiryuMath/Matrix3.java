@@ -306,11 +306,12 @@ public class Matrix3 {
    * @param vector <font color="yellow">{@link Vector3}</font>
    * - the vector to scale the matrix with
    */
-  public void scale(Vector3 vector){
-    for (int i = 0; i < 3; i++) {
-      this.elements[i] *= vector.x;
-      this.elements[3 + i] *= vector.y;
-      this.elements[6 + i] *= vector.z;
-    }
+  public Vector3 multiplyVector(Vector3 vector) {
+    return new Vector3(
+        this.elements[0] * vector.x + this.elements[1] * vector.y + this.elements[2] * vector.z,
+        this.elements[3] * vector.x + this.elements[4] * vector.y + this.elements[5] * vector.z,
+        this.elements[6] * vector.x + this.elements[7] * vector.y + this.elements[8] * vector.z
+    );
   }
+
 }

@@ -161,11 +161,6 @@ public class World {
         gravityGenerator.applyForce(rb);
       }
 
-      //if a RigidBody is colliding, we apply friction for every
-      //collision it has
-      if (rb.isColliding() && !rb.getContacts().isEmpty()) {
-        frictionGenerator.applyForce(rb);
-      }
       // integrate all forces applied to the RigidBody
       Integrator.integrate(rb, deltaTime);
     }
@@ -349,16 +344,55 @@ public class World {
       RigidBody bodyB,
       Contact contact
   ) {
-    double inverseMassA = bodyA.getInverseMass();
-    double inverseMassB = bodyB.getInverseMass();
-    double distance = contact.getDistance();
-    Vector3 normal = contact.getNormal();
 
-    double inverseMassSum = inverseMassA + inverseMassB;
+    double inverseMassSum = bodyA.getInverseMass() + bodyB.getInverseMass();
 
     if (inverseMassSum <= 0.0) {
       return;
     }
+
+    resolvePenetration(
+        bodyA,
+        bodyB,
+        contact,
+        inverseMassSum
+    );
+
+    Vector3 normal = contact.getNormal();
+
+    Vector3 radiusA = new Vector3(contact.getContactPoint())
+        .sub(bodyA.getCenterOfMassWorld());
+
+    Vector3 radiusB = new Vector3(contact.getContactPoint())
+        .sub(bodyB.getCenterOfMassWorld());
+
+    Vector3 relativeVelocity = new Vector3(bodyA.getVelocityAtPoint(radiusA))
+        .sub(bodyB.getVelocityAtPoint(radiusB));
+
+    Vector3[] vectors = {
+        normal,
+        radiusA,
+        radiusB,
+        relativeVelocity
+    };
+
+
+    resolveLinearImpulse(bodyA, bodyB, contact, inverseMassSum, vectors);
+
+    resolveFrictionImpulse(bodyA, bodyB, contact, inverseMassSum, vectors);
+
+    bodyA.onCollision(bodyB);
+    bodyB.onCollision(bodyA);
+  }
+
+  private void resolvePenetration(
+      RigidBody bodyA,
+      RigidBody bodyB,
+      Contact contact,
+      double inverseMassSum
+  ) {
+
+    double distance = contact.getDistance();
 
     double minimumDistance =
         bodyA.getCollider().getSize()
@@ -366,87 +400,207 @@ public class World {
 
     double penetration = minimumDistance - distance;
 
-    /*
-    Baumgarte stabilization parameters
-    to stop jittering on collisions
-     */
-    double slop = 0.1; //minimum penetration allowed so collisions are less strict
-    double percent = 0.8; //penetration % allowed
+    // Baumgarte stabilization parameters.
+    double slop = 0.1;
+    double percent = 0.8;
 
-    if (penetration > slop) {
-      double correctionMagnitude =
-          (penetration - slop) * percent / inverseMassSum;
-
-      Vector3 correction =
-          new Vector3(normal).scale(correctionMagnitude);
-
-      //correct positions if the RigidBodies aren't static
-      if (!bodyA.isStatic()) {
-        bodyA.setPosition(
-            new Vector3(bodyA.getPosition())
-                .sub(new Vector3(correction).scale(inverseMassA))
-        );
-      }
-
-      if (!bodyB.isStatic()) {
-        bodyB.setPosition(
-            new Vector3(bodyB.getPosition())
-                .add(new Vector3(correction).scale(inverseMassB))
-        );
-      }
+    if (penetration <= slop) {
+      return;
     }
 
-    // Relative velocity: B relative to A.
-    Vector3 relativeVelocity =
-        new Vector3(bodyB.getLinearVelocity())
-            .sub(bodyA.getLinearVelocity());
+    double correctionMagnitude =
+        (penetration - slop) * percent / inverseMassSum;
+
+    Vector3 correction = new Vector3(contact.getNormal())
+        .scale(correctionMagnitude);
+
+    // Correct body A.
+    if (!bodyA.isStatic()) {
+      bodyA.setPosition(
+          new Vector3(bodyA.getPosition())
+              .sub(new Vector3(correction).scale(bodyA.getInverseMass()))
+      );
+    }
+
+    // Correct body B.
+    if (!bodyB.isStatic()) {
+      bodyB.setPosition(
+          new Vector3(bodyB.getPosition())
+              .add(new Vector3(correction).scale(bodyB.getInverseMass()))
+      );
+    }
+  }
+
+  public void resolveLinearImpulse(
+      RigidBody bodyA,
+      RigidBody bodyB,
+      Contact contact,
+      double inverseMassSum,
+      Vector3[] vectors
+  ){
+    Vector3 normal = vectors[0];
+    Vector3 radiusA = vectors[1];
+    Vector3 radiusB = vectors[2];
+    Vector3 relativeVelocity = vectors[3];
 
     double velocityAlongNormal =
         relativeVelocity.dotProduct(normal);
 
-    // the rigid bodies are separating:
-    // no normal or friction impulse is needed.
     if (velocityAlongNormal >= 0.0) {
       contact.setNormalImpulse(0.0);
       return;
     }
 
-    // Start with zero restitution. We can add restitution later.
-    // 0 = inelastic , 1 = perfectly elastic
+    // Angular contribution.
+    Vector3 angularA =  bodyA.getInverseInertiaTensor()
+        .multiplyVector(new Vector3(radiusA).crossProduct(normal));
+
+    Vector3 angularB = bodyB.getInverseInertiaTensor()
+        .multiplyVector(new Vector3(radiusB).crossProduct(normal));
+
+    double angularEffect =
+        angularA.crossProduct(radiusA).dotProduct(normal)
+            + angularB.crossProduct(radiusB).dotProduct(normal);
+
+    double effectiveInverseMass = inverseMassSum + angularEffect;
+
+    if (effectiveInverseMass <= 0.0) {
+      return;
+    }
+
     double restitution = 0.0;
 
-    //-(1.0 + restitution) * velocityAlongNormal
-    // the relative separation is proportional to the relative approach
-    double normalImpulseMagnitude =
-        -(1.0 + restitution) * velocityAlongNormal
-            / inverseMassSum;
+    double impulseMagnitude =
+        -(1.0 + restitution) * velocityAlongNormal / effectiveInverseMass;
 
-    Vector3 normalImpulse =
-        new Vector3(normal).scale(normalImpulseMagnitude);
+    Vector3 impulse = new Vector3(normal)
+        .scale(impulseMagnitude);
 
-    // Apply normal impulse if the rigid bodies aren't static
+    applyImpulse(bodyA, bodyB, radiusA, radiusB, impulse);
+
+    contact.setNormalImpulse(impulseMagnitude);
+
+  }
+
+  private void resolveFrictionImpulse(
+      RigidBody bodyA,
+      RigidBody bodyB,
+      Contact contact,
+      double inverseMassSum,
+      Vector3[] vectors
+  ) {
+    Vector3 normal = vectors[0];
+    Vector3 radiusA = vectors[1];
+    Vector3 radiusB = vectors[2];
+    Vector3 relativeVelocity = vectors[3];
+
+    // Remove the normal component.
+    Vector3 tangent = new Vector3(relativeVelocity)
+        .sub(new Vector3(normal)
+            .scale(relativeVelocity.dotProduct(normal)));
+
+    double tangentLength = tangent.getLength();
+
+    if (tangentLength < 1e-8) {
+      return;
+    }
+
+    tangent.scale(1.0 / tangentLength);
+
+    // Angular contribution.
+    Vector3 angularA = bodyA.getInverseInertiaTensor()
+        .multiplyVector(new Vector3(radiusA).crossProduct(tangent));
+
+    Vector3 angularB = bodyB.getInverseInertiaTensor()
+        .multiplyVector(new Vector3(radiusB).crossProduct(tangent));
+
+    double angularEffect =
+        angularA.crossProduct(radiusA).dotProduct(tangent)
+            + angularB.crossProduct(radiusB).dotProduct(tangent);
+
+    double effectiveInverseMass = inverseMassSum + angularEffect;
+
+    if (effectiveInverseMass <= 0.0) {
+      return;
+    }
+
+    double frictionImpulseMagnitude =
+        -relativeVelocity.dotProduct(tangent) / effectiveInverseMass;
+
+    // Average friction coefficients.
+    double staticFriction = (
+        bodyA.getStaticFrictionCoefficient()
+            + bodyB.getStaticFrictionCoefficient()
+    ) * 0.5;
+
+    double kineticFriction = (
+        bodyA.getKineticFrictionCoefficient()
+            + bodyB.getKineticFrictionCoefficient()
+    ) * 0.5;
+
+    double normalImpulse = contact.getNormalImpulse();
+
+    double maxStaticFriction = normalImpulse * staticFriction;
+
+    Vector3 frictionImpulse;
+
+    if (Math.abs(frictionImpulseMagnitude) <= maxStaticFriction) {
+
+      // Static friction.
+      frictionImpulse = new Vector3(tangent)
+          .scale(frictionImpulseMagnitude);
+
+    } else {
+
+      // Kinetic friction.
+      frictionImpulse = new Vector3(tangent)
+          .scale(-normalImpulse * kineticFriction);
+    }
+
+    applyImpulse(bodyA, bodyB, radiusA, radiusB, frictionImpulse);
+  }
+
+  private void applyImpulse(
+      RigidBody bodyA,
+      RigidBody bodyB,
+      Vector3 radiusA,
+      Vector3 radiusB,
+      Vector3 impulse
+  ) {
     if (!bodyA.isStatic()) {
+
       bodyA.setLinearVelocity(
           new Vector3(bodyA.getLinearVelocity())
-              .sub(new Vector3(normalImpulse).scale(inverseMassA))
+              .sub(new Vector3(impulse).scale(bodyA.getInverseMass()))
+      );
+
+      Vector3 angularImpulseA = new Vector3(radiusA)
+          .crossProduct(impulse)
+          .scale(-1.0);
+
+      bodyA.setAngularVelocity(
+          new Vector3(bodyA.getAngularVelocity())
+              .add(bodyA.getInverseInertiaTensor()
+                  .multiplyVector(angularImpulseA))
       );
     }
 
     if (!bodyB.isStatic()) {
+
       bodyB.setLinearVelocity(
           new Vector3(bodyB.getLinearVelocity())
-              .add(new Vector3(normalImpulse).scale(inverseMassB))
+              .add(new Vector3(impulse).scale(bodyB.getInverseMass()))
+      );
+
+      Vector3 angularImpulseB = new Vector3(radiusB)
+          .crossProduct(impulse);
+
+      bodyB.setAngularVelocity(
+          new Vector3(bodyB.getAngularVelocity())
+              .add(bodyB.getInverseInertiaTensor()
+                  .multiplyVector(angularImpulseB))
       );
     }
-
-    contact.setNormalImpulse(normalImpulseMagnitude);
-
-    //apply friction
-    frictionGenerator.applyForce(bodyA,bodyB,contact);
-
-    // Notify both bodies of the collision.
-    bodyA.onCollision(bodyB);
-    bodyB.onCollision(bodyA);
   }
 //endregion
 

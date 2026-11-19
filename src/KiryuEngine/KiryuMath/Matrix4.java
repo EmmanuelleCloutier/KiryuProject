@@ -171,6 +171,20 @@ public class Matrix4 {
     };
     return new Matrix4(transpose);
   }
+  /**
+   * @return <font color="yellow">{@link Matrix4}</font>
+   * - returns the sub matrix3 of this matrix4 removing the 4th row and column
+   */
+  public @NotNull Matrix3 getMatrix3(){
+    double[] elements = {
+      this.elements[0],this.elements[1],this.elements[2],
+      this.elements[4],this.elements[5],this.elements[6],
+      this.elements[8],this.elements[9],this.elements[10]
+    };
+    return new Matrix3(elements);
+  }
+
+
   //endregion
 
   /*
