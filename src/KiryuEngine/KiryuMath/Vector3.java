@@ -284,4 +284,16 @@ public class Vector3 {
         this.z = 0;
     }
 
+    public Vector3 multiplyMatrix(Matrix3 m) {
+
+        Vector3 res = new Vector3();
+
+        res.x = this.x * m.getElement(0) + this.y * m.getElement(3) + this.z * m.getElement(6);
+        res.x = this.x * m.getElement(1) + this.y * m.getElement(4) + this.z * m.getElement(7);
+        res.x = this.x * m.getElement(2) + this.y * m.getElement(5) + this.z * m.getElement(8);
+
+        return res;
+
+    }
+
 }

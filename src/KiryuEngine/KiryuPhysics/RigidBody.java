@@ -93,6 +93,17 @@ public class RigidBody {
    * needed for collision interaction in the game
    */
   private Consumer<RigidBody> collisionListener;
+
+  // ------------- ROTATION ATTRIBUTES --------------- //
+
+  /**
+   * Indicate if the rigid body can rotate
+   */
+  private boolean isRotating = false;
+  /**
+   * Vector describing the torque
+   */
+  private Vector3 torque;
   /**
    * Vector describing the angular velocity of the body
    */
@@ -105,6 +116,20 @@ public class RigidBody {
    * The Matrix that describe the current rotation
    */
   private Matrix3 mRotation;
+
+  /**
+   * The Matrix that represent the initial inertia tensor of the mass center
+   */
+  private Matrix3 inertiaTensor;
+
+  /**
+   * The Matrix that represent the inverse of the inertia tensor
+   */
+  private Matrix3 inverseInertiaTensor;
+
+
+  // ------------- METHODE --------------- //
+
   /**
    * simple constructor that instantiate a body with position 0
    * and velocity 0
@@ -149,6 +174,46 @@ public class RigidBody {
     //the collider needs this link to the rigidbody for gameplay purposes
     collider.linkRigidBody(this);
   }
+
+  /**
+   * full parameter constructor
+   * @param mass - the mass of the rigid body
+   * @param position - the position the rigid body starts at
+   * @param linearVelocity - the velocity the rigid body starts with
+   * @param collider - the collider of the rigid body
+   * @param inertiaTensor - the inertia tensor associated with the shape of the mesh
+   * @param qRotation - the rotation the rigid body start with
+   */
+  public RigidBody(double mass,
+                   @NotNull Vector3 position,
+                   @NotNull Vector3 linearVelocity,
+                   @NotNull Collider collider,
+                   @NotNull Matrix3 inertiaTensor,
+                   @NotNull Quaternion qRotation
+                   ) {
+
+    this(mass, position, linearVelocity, collider);
+    this.isRotating = true;
+    this.inertiaTensor = inertiaTensor;
+    this.torque = Vector3.ZERO_VECTOR.copy();
+    this.qRotation = qRotation;
+
+    //Initialisation de J'
+    double x2 = this.position.x * this.position.x;
+    double y2 = this.position.y * this.position.y;
+    double z2 = this.position.z * this.position.z;
+    Matrix3 translation = new Matrix3( new double[]{
+            y2+z2, -this.position.x*this.position.y, -this.position.x*this.position.z,
+            -this.position.x*this.position.y, x2+z2, -this.position.y*this.position.z,
+            -this.position.x*this.position.z, -this.position.y*this.position.z, x2+y2
+    });
+    translation.multiplyScalar(this.mass);
+    translation.addMatrix(this.inertiaTensor);
+
+    //Inverse de J'
+    this.inverseInertiaTensor = translation.getInverse();
+  }
+
   /*
     GETTERS
    */
@@ -252,6 +317,41 @@ public class RigidBody {
     return isMarkedForDestruction;
   }
 
+  /**
+   * Get the quaternion for the rotation
+   * @return Quaternion
+   */
+  public Quaternion getQRotation() {
+    return this.qRotation;
+  }
+
+  /**
+   * get the rotation matrix
+   * @return Matrix3
+   */
+  public Matrix3 getMRotation() {
+    return mRotation;
+  }
+
+  /**
+   * get the angular velocity of the body
+   * @return Vector3
+   */
+  public Vector3 getAngularVelocity() {
+    return angularVelocity;
+  }
+
+  /**
+   * get the torque
+   * @return Vector3
+   */
+  public Vector3 getTorque() { return torque; }
+
+  /**
+   * get the inverse of the inertia tensor matrix
+   * @return Matrix3
+   */
+  public Matrix3 getInverseInertiaTensor() { return inverseInertiaTensor; }
   //endregion
 
   /*
@@ -332,6 +432,36 @@ public class RigidBody {
   public void markForDestruction() {
     this.isMarkedForDestruction = true;
   }
+
+  /**
+   * Set the quaternion for the rotation
+   * @param qRotation
+   */
+  public void setQRotation(Quaternion qRotation) {
+    this.qRotation = qRotation;
+  }
+
+  /**
+   * Set the rotation Matrix
+   * @param mRotation
+   */
+  public void setMRotation(Matrix3 mRotation) {
+    this.mRotation = mRotation;
+  }
+
+  /**
+   * set the angular velocity of the body
+   * @param angularVelocity
+   */
+  public void setAngularVelocity(Vector3 angularVelocity) {
+    this.angularVelocity = angularVelocity;
+  }
+
+  /**
+   * set this inverse of the inertia tensor
+   * @param inverseInertiaTensor
+   */
+  public void setInverseInertiaTensor(Matrix3 inverseInertiaTensor) { this.inverseInertiaTensor = inverseInertiaTensor; }
 
   //endregion
 
@@ -440,52 +570,7 @@ public class RigidBody {
     }
   }
 
-  /**
-   * Set the quaternion for the rotation
-   * @param qRotation
-   */
-  public void setQRotation(Quaternion qRotation) {
-    this.qRotation = qRotation;
-  }
 
-  /**
-   * Get the quaternion for the rotation
-   * @return
-   */
-  public Quaternion getQRotation() {
-    return this.qRotation;
-  }
 
-  /**
-   * Set the rotation Matrix
-   * @param mRotation
-   */
-  public void setMRotation(Matrix3 mRotation) {
-    this.mRotation = mRotation;
-  }
-
-  /**
-   * get the rotation matrix
-   * @return
-   */
-  public Matrix3 getMRotation() {
-    return mRotation;
-  }
-
-  /**
-   * set the angular velocity of the body
-   * @param angularVelocity
-   */
-  public void setAngularVelocity(Vector3 angularVelocity) {
-    this.angularVelocity = angularVelocity;
-  }
-
-  /**
-   * get the angular velocity of the body
-   * @return
-   */
-  public Vector3 getAngularVelocity() {
-    return angularVelocity;
-  }
 
 }

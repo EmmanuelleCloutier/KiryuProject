@@ -8,8 +8,17 @@ public class Integrator {
 
     private static void integrate_rotation(RigidBody rigidBody, float deltaTime) {
 
+        //Calcul de l'accélération angular
+
+        Vector3 angularAcceleration = rigidBody.getTorque().multiplyMatrix(rigidBody.getInverseInertiaTensor());
+
+        //Mise à jour de la vélocité angulaire
+
+        Vector3 av = rigidBody.getAngularVelocity().add(angularAcceleration.scale(deltaTime));
+        rigidBody.setAngularVelocity(av);
+
         //Mise à jour du Quaternion décrivant la rotation
-        Vector3 av = rigidBody.getAngularVelocity();
+
 
         Quaternion newRQuaternion =
                 new Quaternion(0, (float) av.x, (float) av.y, (float) av.z)
@@ -20,12 +29,14 @@ public class Integrator {
         newRQuaternion.y = rigidBody.getQRotation().y + (newRQuaternion.y * 0.5f * deltaTime);
         newRQuaternion.z = rigidBody.getQRotation().z + (newRQuaternion.z * 0.5f * deltaTime);
 
+        rigidBody.setQRotation(newRQuaternion);
+
         //Mise à jour de la Matrice associée
         Matrix3 newRMatrix = new Matrix3();
         double [] elems = {
                 1 - 2*((newRQuaternion.y*newRQuaternion.y) + (newRQuaternion.z*newRQuaternion.z)),
                 2*((newRQuaternion.x*newRQuaternion.y) + (newRQuaternion.z*newRQuaternion.w)),
-                2*((newRQuaternion.x*newRQuaternion.y) - (newRQuaternion.y*newRQuaternion.w)),
+                2*((newRQuaternion.x*newRQuaternion.z) - (newRQuaternion.y*newRQuaternion.w)),
                 2*((newRQuaternion.x*newRQuaternion.y) - (newRQuaternion.z*newRQuaternion.w)),
                 1 - 2*((newRQuaternion.x*newRQuaternion.x) + (newRQuaternion.z*newRQuaternion.z)),
                 2*((newRQuaternion.y*newRQuaternion.z) + (newRQuaternion.x*newRQuaternion.w)),
@@ -35,6 +46,14 @@ public class Integrator {
         };
 
         newRMatrix.setElements(elems);
+        rigidBody.setMRotation(newRMatrix);
+
+        //Mise à jour de la matrice inverse d'inertie
+        Matrix3 inverseR = newRMatrix.getInverse();
+        Matrix3 tmp = new Matrix3(elems);
+        tmp.multiplyMatrix(rigidBody.getInverseInertiaTensor());
+        tmp.multiplyMatrix(inverseR);
+        rigidBody.setInverseInertiaTensor(tmp);
 
     }
 
