@@ -29,7 +29,7 @@ public class MainMenu {
     private void drawButton(String text, float y) {
         float x = app.width / 2f;
         float w = 350;
-        float h = 60;
+        float h = 40;
 
         app.rectMode(PApplet.CENTER);
         app.fill(80, 110, 150);

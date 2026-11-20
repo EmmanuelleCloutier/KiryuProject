@@ -37,7 +37,7 @@ public class KiryuGame extends PApplet {
         Dimension screenSize =
             Toolkit.getDefaultToolkit().getScreenSize();
 
-        size(screenSize.width, screenSize.height, P3D);
+        size(screenSize.width/2, screenSize.height/2, P3D);
     }
 
     @Override

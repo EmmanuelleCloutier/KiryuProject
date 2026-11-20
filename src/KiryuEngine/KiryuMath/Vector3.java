@@ -200,9 +200,9 @@ public class Vector3 {
     }
 
     /**
-     * Additionne les deux vecteurs.
+     * Ajoute un vecteur.
      * @param other Second vecteur.
-     * @return Vecteur <code>v = a + b</code>, nouveau vecteur.
+     * @return Soi. Vecteur <code>v = v + v2</code>.
      */
     public Vector3 add(Vector3 other) {
         this.x += other.x;
@@ -212,9 +212,9 @@ public class Vector3 {
     }
 
     /**
-     * Soustrait les deux vecteurs.
+     * Soustrait un vecteur.
      * @param other Second vecteur.
-     * @return Vecteur <code>v = a - b</code>, nouveau vecteur.
+     * @return Soi. Vecteur <code>v = v - v2</code>.
      */
     public Vector3 sub(Vector3 other) {
         this.x -= other.x;
@@ -224,9 +224,9 @@ public class Vector3 {
     }
 
     /**
-     * Multiplie les deux vecteurs.
+     * Multiplie les deux vecteurs par composantes.
      * @param other Second vecteur.
-     * @return Vecteur <code>v = a * b</code>, nouveau vecteur.
+     * @return Soi. Vecteur <code>v = v * v2</code>.
      */
     public Vector3 mul(Vector3 other) {
         this.x *= other.x;
