@@ -10,7 +10,7 @@ public class Terrain {
     float x; //Position sur l'axe x du terrain
     float y; //Position en hauteur du terrain
     int scale = 325;
-
+    float z = -100;
 
     public Terrain(int height, float x, float y) {
         this.height = height;
@@ -24,7 +24,7 @@ public class Terrain {
 
         sketch.stroke(255);
 
-        sketch.translate(this.x, this.y, 0);
+        sketch.translate(this.x, this.y, this.z);
         sketch.box(10, 10, 10);
 
         sketch.translate(scale/2, 0, 0);
