@@ -20,7 +20,6 @@ public class TP3GameManager {
     MeshRenderer meshRenderer;
     Mesh [] meshs = new Mesh[3];
     int currentMesh = 0;
-    int renderDepth = 100; //Profondeur de rendu
 
 
     private final Vector3 projectileOrigin; //Position initiale du projectile
@@ -39,11 +38,11 @@ public class TP3GameManager {
         );
 
         world = new World();
-        world.isGravityAllowed(false);
+        world.isGravityAllowed(true);
 
         meshRenderer = new MeshRenderer(this.sketch);
 
-        this.projectileOrigin = new Vector3(sketch.width/2f,sketch.height/2f,renderDepth);
+        this.projectileOrigin = new Vector3(sketch.width*0.10f,sketch.height/2f, 0);
 
         setupMesh();
 
@@ -71,16 +70,17 @@ public class TP3GameManager {
         world.updatePhysics(deltaTime);
 
         //Si le projectile sort du terrain on calcul le score avec la distance
-        /**
+
         if (this.projectile != null) {
-            if (terrain.checkOutside(new Vector3(0,0,0))) {
-                double distance = this.projectile.getPos().distance(this.projectileOrigin);
-                score += Math.round(distance);
+            if (terrain.checkOnGround(this.projectile.getPos())) {
+                //double distance = this.projectile.getPos().distance(this.projectileOrigin);
+
+                //score += Math.round(distance);
                 this.projectile.removeProjectile(this.world);
                 this.projectile = null;
             }
         }
-         */
+
 
 
     }
@@ -94,7 +94,7 @@ public class TP3GameManager {
 
         sketch.camera(
             sketch.width/2,
-                sketch.mouseY,
+                sketch.height/2,
             1000,
             sketch.width/2,
             sketch.height/2,
@@ -149,10 +149,10 @@ public class TP3GameManager {
         }
 
         this.projectile = new Projectile3D(this.world,
-                0.1,
+                5,
                 this.projectileOrigin,
-                new SphereCollider2D(10), meshs[currentMesh+1]);
-        this.projectile.addForce(new Vector3(0,0,-100));
+                new SphereCollider2D(10), meshs[currentMesh]);
+        this.projectile.addForce(new Vector3(10000,0,0));
 
     }
 
@@ -171,7 +171,7 @@ public class TP3GameManager {
 
         meshRenderer.drawMesh(
                 meshs[0],
-            new Vector3(sketch.width/2f + 100,sketch.height/2f,renderDepth-1000),
+            this.projectileOrigin,//new Vector3(sketch.width/2f + 100,sketch.height/2f,0),
             quat
         );
 

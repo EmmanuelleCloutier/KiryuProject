@@ -22,8 +22,6 @@ public class Terrain {
 
         sketch.pushMatrix();
 
-
-
         sketch.stroke(255);
 
         sketch.translate(this.x, this.y, 0);
@@ -79,22 +77,18 @@ public class Terrain {
      * @return
      */
     public boolean checkOnGround(Vector3 pos) {
-        return pos.y > this.y;
+        return pos.y > this.y+(this.height/2);
 
     }
 
 
     /**
-     * retourne si le projectile est à l'intérieur de l'écran
+     * retourne si le projectile est à l'intérieur du terrain (il n'a pas dépassé le fond du terrain
      * @param pos : la position du projectile
      * @return
      */
     public boolean checkOutside(Vector3 pos) {
-
-        //largeur position en posX > this.x + width/2 et posX < this.x + width/2
-        //profondeur position en posZ > 0 et posZ < 750
-        return (pos.x > this.x - (this.height/2)) && (pos.x < (this.x + (this.height/2)))
-                && (pos.z < 0) &&  (pos.z > -750);
+        return pos.x < this.x + ((15*scale)/8.f);
     }
 
     /**
