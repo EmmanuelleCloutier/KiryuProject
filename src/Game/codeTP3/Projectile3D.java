@@ -52,6 +52,8 @@ public class Projectile3D {
 
     public void drawProjectile(MeshRenderer meshRenderer) {
 
+
+
         meshRenderer.drawMesh(
                 this.mesh,
                 this.rigidBody.getPosition(),

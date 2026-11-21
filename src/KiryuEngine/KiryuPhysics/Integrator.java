@@ -72,15 +72,22 @@ public class Integrator {
         float deltaTime
     ) {
 
+        System.out.println("Torque : " + rigidBody.getTorque());
+        System.out.println("InertiaTensor : " + rigidBody.getInverseInertiaTensor());
       //Calcul de l'accélération angulaire
 
+
       Vector3 angularAcceleration = rigidBody.getTorque().multiplyMatrix(rigidBody.getInverseInertiaTensor());
-      rigidBody.resetTorque();
+      //rigidBody.resetTorque();
+
+      System.out.println("Angular acceleration : " + angularAcceleration);
 
       //Mise à jour de la vélocité angulaire
 
       Vector3 av = rigidBody.getAngularVelocity().add(angularAcceleration.scale(deltaTime));
       rigidBody.setAngularVelocity(av);
+
+      System.out.println("Angular velocity : " + av);
 
       //Mise à jour du Quaternion décrivant la rotation
 
@@ -109,6 +116,8 @@ public class Integrator {
         inverseInertiaTensor.multiplyMatrix(inverseR);
       }
       rigidBody.setInverseInertiaTensor(inverseInertiaTensor);
+
+
   }
 
 

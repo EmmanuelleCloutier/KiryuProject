@@ -163,8 +163,6 @@ public class World {
 
       // integrate all forces applied to the RigidBody
       Integrator.integrate(rb, deltaTime);
-
-
     }
   }
   //endregion
