@@ -27,6 +27,16 @@ public class Contact {
      * the distance between the two RigidBody at impact
      */
     private double distance;
+    /**
+     * Bras de levier (du centre de masse au point d'application de la force).
+     * Sert au calcul du torque.
+     */
+    private final Vector3 leverArm = new Vector3();
+    /**
+     * Force exercée sur le point de contact par l'objet avec lequel on est entré en collision.
+     * Sert au calcul du torque.
+     */
+    private final Vector3 impulseForce = new Vector3();
 
     /**
      * constructor
@@ -56,6 +66,13 @@ public class Contact {
             new Vector3(owner.getRigidBody().getPosition())
                 .add(new Vector3(normal).scale(owner.getSize()))
         );
+
+        // Calcul du bras de levier (le centre de masse soustrait au point de contact)
+        this.leverArm
+                .add(this.contactPoint)
+                .sub(owner.getRigidBody().getCenterOfMassWorld());
+        // Récupère la force exercée par l'autre objet au moment de la collision.
+        this.impulseForce.set(this.getOther().getRigidBody().getAccumulatedForce());
     }
     /**
      * @return <font color="yellow">{@link Collider}</font>
@@ -91,6 +108,22 @@ public class Contact {
      */
     public double getDistance() {
         return distance;
+    }
+
+    /**
+     * Renvoie le bras de levier.
+     * @return Vecteur, du centre de masse au point de contact.
+     */
+    public Vector3 getLeverArm() {
+        return leverArm.copy();
+    }
+
+    /**
+     * Renvoie la force exercée par l'autre objet sur le point de contact.
+     * @return Vecteur.
+     */
+    public Vector3 getImpulseForce() {
+        return impulseForce.copy();
     }
     /**
      * @param normalImpulse <font color="orange">{@code double}</font>

@@ -72,7 +72,7 @@ public class Integrator {
         float deltaTime
     ) {
 
-      //Calcul de l'accélération angular
+      //Calcul de l'accélération angulaire
 
       Vector3 angularAcceleration = rigidBody.getTorque().multiplyMatrix(rigidBody.getInverseInertiaTensor());
 

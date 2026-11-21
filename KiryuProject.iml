@@ -11,5 +11,6 @@
     <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="jetbrains.annotations" level="project" />
     <orderEntry type="library" name="junit" level="project" />
+    <orderEntry type="library" name="annotations-26.0.2" level="project" />
   </component>
 </module>
