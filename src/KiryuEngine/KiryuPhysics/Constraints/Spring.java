@@ -34,6 +34,9 @@ public class Spring extends Constraint {
 
         RigidBody bodyA = first.getRigidBody();
         RigidBody bodyB = second.getRigidBody();
+        if (bodyA == null || bodyB == null) {
+            return;
+        }
 
         //calculate the distance between the two connected bodies
         Vector3 difference =
