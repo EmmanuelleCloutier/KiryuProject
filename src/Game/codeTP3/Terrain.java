@@ -9,7 +9,7 @@ public class Terrain {
     int height; //Largeur du terrain
     float x; //Position sur l'axe x du terrain
     float y; //Position en hauteur du terrain
-    int scale = 300;
+    int scale = 325;
 
 
     public Terrain(int height, float x, float y) {

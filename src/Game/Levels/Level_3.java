@@ -4,6 +4,8 @@ package Game.Levels;
 import Game.codeTP3.TP3GameManager;
 import processing.core.PApplet;
 
+import java.awt.event.KeyEvent;
+
 public class Level_3 {
 
     PApplet sketch;
@@ -25,10 +27,14 @@ public class Level_3 {
     }
 
     public void keyPressed(char key) {
-
+        gameManager.switchProjectile();
     }
 
     public void mousePressed() {
+        gameManager.startShoot();
+    }
+
+    public void mouseReleased() {
         gameManager.shoot();
     }
 }

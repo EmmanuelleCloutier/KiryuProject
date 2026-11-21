@@ -118,6 +118,27 @@ public class KiryuGame extends PApplet {
     }
 
     @Override
+    public void mouseReleased() {
+
+        switch (currentState) {
+
+            case MENU:
+                break;
+
+            case LEVEL_1:
+                break;
+
+            case LEVEL_2:
+                // Future mouse inputs
+                break;
+
+            case LEVEL_3:
+                level3.mouseReleased();
+                break;
+        }
+    }
+
+    @Override
     public void keyPressed() {
 
         // ESC pour revenir au menu

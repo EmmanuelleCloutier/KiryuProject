@@ -1,5 +1,6 @@
 package Game.codeTP3;
 
+import KiryuEngine.KiryuMath.Quaternion;
 import KiryuEngine.KiryuMath.Vector3;
 import KiryuEngine.KiryuPhysics.Collision.Collider;
 import KiryuEngine.KiryuPhysics.RigidBody;
@@ -15,6 +16,7 @@ public class Projectile3D {
     public Projectile3D(
         World world,
         Vector3 pos,
+        Quaternion rotation,
         Projectile3DType ptype,
         Mesh mesh
     ) {
@@ -22,7 +24,9 @@ public class Projectile3D {
         this.rigidBody = new RigidBody(ptype.mass,
                 pos,
                 Vector3.ZERO_VECTOR.copy(),
-                ptype.collider);
+                ptype.collider,
+                ptype.inertiaMatrix,
+                rotation);
 
         world.addRigidBody(this.rigidBody);
 
