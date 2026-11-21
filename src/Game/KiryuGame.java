@@ -112,7 +112,7 @@ public class KiryuGame extends PApplet {
                 break;
 
             case LEVEL_3:
-                // Future keyboard inputs
+                level3.mousePressed();
                 break;
         }
     }
@@ -138,7 +138,7 @@ public class KiryuGame extends PApplet {
                 break;
 
             case LEVEL_3:
-                // Future keyboard inputs
+                level3.keyPressed(key);
                 break;
             default:
                 break;

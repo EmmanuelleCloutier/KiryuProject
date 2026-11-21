@@ -35,7 +35,7 @@ public class Projectile3D {
     }
 
     public void addForce(Vector3 force) {
-        this.rigidBody.addForce(force);
+        rigidBody.getAccumulatedForce().add(force);
     }
 
     public void removeProjectile(World world) {

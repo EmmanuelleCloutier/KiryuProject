@@ -2,10 +2,13 @@ package Game.codeTP3;
 
 import KiryuEngine.KiryuMath.Quaternion;
 import KiryuEngine.KiryuMath.Vector3;
+import KiryuEngine.KiryuPhysics.Collision.BoxCollider2D;
+import KiryuEngine.KiryuPhysics.Collision.SphereCollider2D;
 import KiryuEngine.KiryuPhysics.World;
 import KiryuEngine.KiryuRendering.ThreeDimentional.Mesh;
 import KiryuEngine.KiryuRendering.ThreeDimentional.MeshRenderer;
 import processing.core.PApplet;
+import processing.core.PConstants;
 
 
 public class TP3GameManager {
@@ -31,18 +34,20 @@ public class TP3GameManager {
 
         this.terrain = new Terrain(
             400,
-            sketch.width/2,
-            sketch.height * 0.75f
+            sketch.width * 0.25f,
+            sketch.height/2
         );
 
         world = new World();
-        world.isGravityAllowed(true);
+        world.isGravityAllowed(false);
 
         meshRenderer = new MeshRenderer(this.sketch);
 
         this.projectileOrigin = new Vector3(sketch.width/2f,sketch.height/2f,renderDepth);
 
         setupMesh();
+
+        //shoot();
 
 
     }
@@ -87,7 +92,7 @@ public class TP3GameManager {
 
         sketch.camera(
             sketch.width/2,
-            sketch.mouseY,
+                sketch.mouseY,
             1000,
             sketch.width/2,
             sketch.height/2,
@@ -137,8 +142,15 @@ public class TP3GameManager {
     //Shoot the projectiles
     public void shoot() {
 
-        this.projectile = new Projectile3D(this.world, 3, this.projectileOrigin, null, meshs[currentMesh]);
-        //this.projectile.addForce(new Vector3(0,0,-100));
+        if (this.projectile != null) {
+            this.projectile.removeProjectile(this.world);
+        }
+
+        this.projectile = new Projectile3D(this.world,
+                0.1,
+                this.projectileOrigin,
+                new SphereCollider2D(10), meshs[currentMesh+1]);
+        this.projectile.addForce(new Vector3(0,0,-100));
 
     }
 
@@ -157,7 +169,7 @@ public class TP3GameManager {
 
         meshRenderer.drawMesh(
                 meshs[0],
-            new Vector3(sketch.width/2f,sketch.height/2f,renderDepth),
+            new Vector3(sketch.width/2f + 100,sketch.height/2f,renderDepth-1000),
             quat
         );
 
