@@ -5,8 +5,6 @@ import KiryuEngine.KiryuPhysics.Collision.Collider;
 import KiryuEngine.KiryuPhysics.RigidBody;
 
 public class Cable extends Constraint {
-    private double distance;
-    private Vector3 normal;
 
     public Cable(Collider first, Collider second, float maxDistance) {
         super(first, second, maxDistance);
@@ -41,34 +39,19 @@ public class Cable extends Constraint {
             return;
         }
 
-        Vector3 radiusA = new Vector3(bodyA.getCenterOfMass());
-
-        Vector3 radiusB = new Vector3(bodyB.getCenterOfMass());
-
-        // Relative velocity: B relative to A.
-        Vector3 velocityA = new Vector3(bodyA.getLinearVelocity())
-            .add(
-                new Vector3(bodyA.getAngularVelocity())
-                    .crossProduct(radiusA)
-            );
-
-        Vector3 velocityB = new Vector3(bodyB.getLinearVelocity())
-            .add(
-                new Vector3(bodyB.getAngularVelocity())
-                    .crossProduct(radiusB)
-            );
-
-        Vector3 relativeVelocity = new Vector3(velocityB).sub(velocityA);
+        Vector3 relativeVelocity =
+            new Vector3(bodyB.getLinearVelocity())
+                .sub(bodyA.getLinearVelocity());
 
         double separatingVelocity  =
-            relativeVelocity.dotProduct(normal);
+            relativeVelocity.dotProduct(this.normal);
 
         if (separatingVelocity  >= 0.0) {
             // Bodies are already separating
             double impulseMagnitude =
                 separatingVelocity / inverseMassSum;
 
-            Vector3 impulse = new Vector3(normal)
+            Vector3 impulse = new Vector3(this.normal)
                 .scale(impulseMagnitude);
 
             bodyA.getLinearVelocity().add(
@@ -82,7 +65,7 @@ public class Cable extends Constraint {
 
         double error = this.distance - this.maxDistance;
 
-        Vector3 correction = new Vector3(normal)
+        Vector3 correction = new Vector3(this.normal)
             .scale(error / inverseMassSum);
 
         bodyA.getPosition().add(

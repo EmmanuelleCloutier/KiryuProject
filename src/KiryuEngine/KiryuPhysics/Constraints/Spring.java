@@ -42,14 +42,14 @@ public class Spring extends Constraint {
         Vector3 difference =
             new Vector3(bodyB.getPosition()).sub(bodyA.getPosition());
 
-        double distance = difference.getLength();
+        this.distance = difference.getLength();
 
         //avoid division by zero when both bodies share a position
         if (distance < 0.0001) {
             return;
         }
 
-        Vector3 direction =
+        this.normal =
             new Vector3(difference).scale(1.0 / distance);
 
         // Hooke's law : displacement from the spring resting lenght
@@ -61,7 +61,7 @@ public class Spring extends Constraint {
                 .sub(bodyA.getLinearVelocity());
 
         //project the relative velocity onto the spring direction
-        double velocityAlongSpring = relativeVelocity.dotProduct(direction);
+        double velocityAlongSpring = relativeVelocity.dotProduct(this.normal);
 
         //combine spring stiffness and damping forces
         double forceMagnitude =
@@ -69,7 +69,7 @@ public class Spring extends Constraint {
             + damping * velocityAlongSpring;
 
         Vector3 springForce =
-            new Vector3(direction).scale(forceMagnitude);
+            new Vector3(this.normal).scale(forceMagnitude);
 
         
         //convert the spring into acceleration
