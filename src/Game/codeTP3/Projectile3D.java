@@ -38,7 +38,7 @@ public class Projectile3D {
     }
 
     public void hit(Vector3 contact, Vector3 force) {
-        addForce(force.scale(1000));
+        addForce(force.scale(100));
         this.rigidBody.addTorque(contact, force);
     }
 

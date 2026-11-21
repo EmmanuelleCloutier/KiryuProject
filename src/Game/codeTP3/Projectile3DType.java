@@ -35,7 +35,7 @@ public enum Projectile3DType {
         public static Collider DEFAULT_BALL_COLLIDER = new SphereCollider2D(100);
         public static Matrix3 DEFAULT_BALL_INERTIAMATRIX = InertiaTensor.getSphereInertiaTensor(100, DEFAULT_BALL_MASS);
 
-        public static double DEFAULT_CANONBALL_MASS = 5;
+        public static double DEFAULT_CANONBALL_MASS = 15;
         public static Collider DEFAULT_CANONBALL_COLLIDER = new SphereCollider2D(100);
         public static Matrix3 DEFAULT_CANONBALL_INERTIAMATRIX = InertiaTensor.getSphereInertiaTensor(100, DEFAULT_CANONBALL_MASS);
 

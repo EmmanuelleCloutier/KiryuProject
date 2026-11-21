@@ -7,6 +7,9 @@ import KiryuEngine.KiryuRendering.ThreeDimentional.Mesh;
 import KiryuEngine.KiryuRendering.ThreeDimentional.MeshRenderer;
 import processing.core.PApplet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class TP3GameManager {
 
@@ -29,6 +32,9 @@ public class TP3GameManager {
     private int score = 0;
 
     float rotation = 0;
+
+    private List<Vector3> projectileTrace = new ArrayList<>();
+    private int compteur = 0;
 
     public TP3GameManager(PApplet sketch) {
         this.sketch = sketch;
@@ -79,12 +85,19 @@ public class TP3GameManager {
         //Si le projectile sort du terrain on calcul le score avec la distance
 
         if (this.projectile != null) {
+
+            compteur++;
+            if (compteur > 100) {
+                this.projectileTrace.add(this.projectile.getPos());
+            }
+
             if (terrain.checkOnGround(this.projectile.getPos())) {
 
                 score += this.terrain.computeScore(this.projectile.getPos());
                 this.projectile.removeProjectile(this.world);
                 this.projectile = null;
             }
+
         }
 
 
@@ -120,6 +133,14 @@ public class TP3GameManager {
             this.projectile.drawProjectile(this.meshRenderer);
         } else {
             drawProjBeforeShoot();
+        }
+
+        //draw trace
+        for (Vector3 v : projectileTrace) {
+            sketch.pushMatrix();
+            sketch.translate((float)v.x, (float)v.y, (float)v.z);
+            sketch.sphere(2);
+            sketch.popMatrix();
         }
 
 
@@ -161,6 +182,8 @@ public class TP3GameManager {
 
     //Shoot the projectiles
     public void shoot() {
+
+        this.projectileTrace.clear();
 
         if (this.projectile != null) {
             this.projectile.removeProjectile(this.world);
