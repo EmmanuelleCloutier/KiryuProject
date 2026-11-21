@@ -37,6 +37,11 @@ public class Projectile3D {
         return this.rigidBody.getPosition();
     }
 
+    public void hit(Vector3 contact, Vector3 force) {
+        addForce(force);
+        this.rigidBody.addTorque(contact, force);
+    }
+
     public void addForce(Vector3 force) {
         rigidBody.getAccumulatedForce().add(force);
     }
