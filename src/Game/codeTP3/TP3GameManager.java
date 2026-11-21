@@ -13,11 +13,14 @@ public class TP3GameManager {
     private final PApplet sketch;
     private final World world;
 
-
+    //Mesh
     MeshRenderer meshRenderer;
+    Mesh [] meshs = new Mesh[3];
+    int currentMesh = 0;
+    int renderDepth = 100; //Profondeur de rendu
 
 
-    private final Vector3 projectileOrigin = Vector3.ZERO_VECTOR.copy(); //Position initiale du projectile
+    private final Vector3 projectileOrigin; //Position initiale du projectile
 
     private Terrain terrain;
     private Projectile3D projectile = null; //projectile lancé
@@ -37,10 +40,26 @@ public class TP3GameManager {
 
         meshRenderer = new MeshRenderer(this.sketch);
 
-        testsetup();
+        this.projectileOrigin = new Vector3(sketch.width/2f,sketch.height/2f,renderDepth);
+
+        setupMesh();
+
 
     }
 
+    public void setupMesh(){
+        meshs[0] = new Mesh("src/Game/data/models/cannonball/cannonball.obj");
+        meshRenderer.addMesh(meshs[0]);
+
+        meshs[1] = new Mesh("src/Game/data/models/basketball/Basketball.obj");
+        meshRenderer.addMesh(meshs[1]);
+
+        meshs[2] = new Mesh("src/Game/data/models/laser/laser.obj");
+        meshRenderer.addMesh(meshs[2]);
+
+    }
+
+//Update
 
     public void update(float deltaTime) {
 
@@ -59,6 +78,7 @@ public class TP3GameManager {
 
     }
 
+//draw
 
     public void draw() {
 
@@ -77,17 +97,17 @@ public class TP3GameManager {
             0
         );
 
-        testdraw();
-
-
-
-
 
 
         //draw le terrain
         terrain.draw_terrain(sketch);
 
         //draw the projectile
+        if (this.projectile != null) {
+            this.projectile.drawProjectile(this.meshRenderer);
+        } else {
+            testdraw();
+        }
 
         //draw the ui
         this.drawUI();
@@ -108,26 +128,20 @@ public class TP3GameManager {
         sketch.fill(255);
         sketch.text(scoreText, sketch.width/2, 32);
 
-
-
-
         sketch.hint(sketch.ENABLE_DEPTH_TEST);
     }
 
-    Mesh cannonball;
-    Mesh basketball;
-    Mesh laser;
-    public void testsetup(){
-        cannonball = new Mesh("src/Game/data/models/cannonball/cannonball.obj");
-        meshRenderer.addMesh(cannonball);
 
-        basketball = new Mesh("src/Game/data/models/basketball/Basketball.obj");
-        meshRenderer.addMesh(basketball);
+    //Input
 
-        laser = new Mesh("src/Game/data/models/laser/laser.obj");
-        meshRenderer.addMesh(laser);
+    //Shoot the projectiles
+    public void shoot() {
+
+        this.projectile = new Projectile3D(this.world, 3, this.projectileOrigin, null, meshs[currentMesh]);
+        //this.projectile.addForce(new Vector3(0,0,-100));
 
     }
+
 
     float rotation = 0;
     public void testdraw(){
@@ -140,24 +154,27 @@ public class TP3GameManager {
             rotation
         );
 
+
         meshRenderer.drawMesh(
-            cannonball,
-            new Vector3(sketch.width/2f,sketch.height/2f,100),
+                meshs[0],
+            new Vector3(sketch.width/2f,sketch.height/2f,renderDepth),
             quat
         );
 
+
+        /**
         meshRenderer.drawMesh(
-            basketball,
+            meshs[currentMesh],
             new Vector3(sketch.width/2f - 125,sketch.height/2f,100),
             quat
         );
 
 
         meshRenderer.drawMesh(
-            laser,
+            meshs[2],
             new Vector3(sketch.width/2f + 125,sketch.height/2f,100),
             quat
-        );
+        );*/
 
     }
 

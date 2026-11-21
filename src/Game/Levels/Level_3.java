@@ -23,4 +23,12 @@ public class Level_3 {
     public void draw() {
         gameManager.draw();
     }
+
+    public void keyPressed(char key) {
+
+    }
+
+    public void mousePressed() {
+        gameManager.shoot();
+    }
 }

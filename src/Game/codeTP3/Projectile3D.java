@@ -34,15 +34,20 @@ public class Projectile3D {
         return this.rigidBody.getPosition();
     }
 
+    public void addForce(Vector3 force) {
+        this.rigidBody.addForce(force);
+    }
+
     public void removeProjectile(World world) {
         world.removeRigidBody(this.rigidBody);
     }
 
-    public void drawProjectile(MeshRenderer meshRenderer){
+    public void drawProjectile(MeshRenderer meshRenderer) {
+
         meshRenderer.drawMesh(
-            this.mesh,
-            this.rigidBody.getPosition(),
-            this.rigidBody.getQRotation()
+                this.mesh,
+                this.rigidBody.getPosition(),
+                this.rigidBody.getQRotation()
         );
     }
 }
