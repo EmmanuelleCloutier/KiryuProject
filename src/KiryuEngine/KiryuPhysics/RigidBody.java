@@ -526,7 +526,6 @@ public class RigidBody {
    */
   public void clearContacts(){
     this.contacts.clear();
-    resetTorque();
   }
   /**
    * Find a contact with another RigidBody in the list of contacts
