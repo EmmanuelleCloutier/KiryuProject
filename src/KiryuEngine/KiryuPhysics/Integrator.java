@@ -75,6 +75,7 @@ public class Integrator {
       //Calcul de l'accélération angulaire
 
       Vector3 angularAcceleration = rigidBody.getTorque().multiplyMatrix(rigidBody.getInverseInertiaTensor());
+      rigidBody.resetTorque();
 
       //Mise à jour de la vélocité angulaire
 
@@ -108,7 +109,6 @@ public class Integrator {
         inverseInertiaTensor.multiplyMatrix(inverseR);
       }
       rigidBody.setInverseInertiaTensor(inverseInertiaTensor);
-
   }
 
 

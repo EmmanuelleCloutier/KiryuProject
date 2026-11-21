@@ -493,6 +493,21 @@ public class RigidBody {
   //endregion
 
   /**
+   * Recalcule la torque en fonction de la nouvelle force appliquée.
+   * @param contact Point de contact avec la force.
+   * @param force Vecteur force appliqué.
+   */
+  public void addTorque(Vector3 contact, Vector3 force) {
+    Vector3 leverArm = contact.copy().sub(this.getCenterOfMassWorld());
+    this.torque.add(leverArm.mul(force));
+  }
+  /**
+   * Réinitialise la torque.
+   */
+  public void resetTorque() {
+    this.torque = Vector3.ZERO_VECTOR.copy();
+  }
+  /**
    * adds a new contact to the RigidBody's list
    * @param contact <font color="yellow">{@link Contact}</font>
    * - the contact to add
@@ -500,10 +515,7 @@ public class RigidBody {
    * - Whether we added the contact successfully or not
    */
   public boolean addContact(@NotNull Contact contact){
-    // Calcule la nouvelle torque, pour déterminer la possibilité de faire tourner l'objet suite à la collision.
-    //
-    Vector3 newTorque = contact.getImpulseForce().mul(contact.getLeverArm());
-    this.torque.add(newTorque);
+    addTorque(contact.getContactPoint(), contact.getImpulseForce());
     return this.contacts.add(contact);
   }
   /**
@@ -511,7 +523,7 @@ public class RigidBody {
    */
   public void clearContacts(){
     this.contacts.clear();
-    this.torque = Vector3.ZERO_VECTOR.copy();
+    resetTorque();
   }
   /**
    * Find a contact with another RigidBody in the list of contacts
