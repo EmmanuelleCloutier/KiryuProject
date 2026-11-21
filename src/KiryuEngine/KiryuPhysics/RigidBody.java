@@ -108,6 +108,7 @@ public class RigidBody {
    * Vector describing the angular velocity of the body
    */
   private Vector3 angularVelocity;
+
   /**
    * The Quaternion that describe the current rotation
    */
@@ -526,7 +527,6 @@ public class RigidBody {
    */
   public void clearContacts(){
     this.contacts.clear();
-    resetTorque();
   }
   /**
    * Find a contact with another RigidBody in the list of contacts

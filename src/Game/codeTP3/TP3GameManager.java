@@ -28,6 +28,8 @@ public class TP3GameManager {
     private Projectile3D projectile = null; //projectile lancé
     private int score = 0;
 
+    float rotation = 0;
+
     public TP3GameManager(PApplet sketch) {
         this.sketch = sketch;
 
@@ -78,9 +80,8 @@ public class TP3GameManager {
 
         if (this.projectile != null) {
             if (terrain.checkOnGround(this.projectile.getPos())) {
-                //double distance = this.projectile.getPos().distance(this.projectileOrigin);
 
-                //score += Math.round(distance);
+                score += this.terrain.computeScore(this.projectile.getPos());
                 this.projectile.removeProjectile(this.world);
                 this.projectile = null;
             }
@@ -118,7 +119,7 @@ public class TP3GameManager {
         if (this.projectile != null) {
             this.projectile.drawProjectile(this.meshRenderer);
         } else {
-            testdraw();
+            drawProjBeforeShoot();
         }
 
 
@@ -170,7 +171,7 @@ public class TP3GameManager {
             //Initial Rotation
             Quaternion quat = Quaternion.fromAxisAngle(
                     Vector3.UP_VECTOR.copy(),
-                    0
+                    rotation
             );
 
             this.projectile = new Projectile3D(this.world,
@@ -182,7 +183,7 @@ public class TP3GameManager {
 
             //Calcul de la trajectoire
             Vector3 endShootPosition = new Vector3(sketch.mouseX, sketch.mouseY, 0);
-            Vector3 shootForce = this.startShootPosition.sub(endShootPosition).scale(1000);
+            Vector3 shootForce = this.startShootPosition.sub(endShootPosition);
             this.projectile.hit(startShootPosition, shootForce);
 
             this.startShootPosition = null;
@@ -197,12 +198,11 @@ public class TP3GameManager {
     }
 
 
-    float rotation = 0;
-    public void testdraw(){
+
+    public void drawProjBeforeShoot(){
 
 
-
-        rotation+=1;
+        if (startShootPosition == null) rotation+=1;
         Quaternion quat = Quaternion.fromAxisAngle(
             Vector3.UP_VECTOR.copy(),
             rotation
@@ -214,21 +214,6 @@ public class TP3GameManager {
             this.projectileOrigin,//new Vector3(sketch.width/2f + 100,sketch.height/2f,0),
             quat
         );
-
-
-        /**
-        meshRenderer.drawMesh(
-            meshs[currentMesh],
-            new Vector3(sketch.width/2f - 125,sketch.height/2f,100),
-            quat
-        );
-
-
-        meshRenderer.drawMesh(
-            meshs[2],
-            new Vector3(sketch.width/2f + 125,sketch.height/2f,100),
-            quat
-        );*/
 
     }
 
