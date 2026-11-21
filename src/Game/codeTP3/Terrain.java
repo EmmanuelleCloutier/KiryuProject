@@ -97,9 +97,19 @@ public class Terrain {
      * @return
      */
     public int computeScore(Vector3 pos) {
-        //Si le projectile sort en hauteur (hauteur < 0) mais reste dans les limites du terrain on incrémente le score
-        //Sinon on a 0 point
-        return 0;
+
+        if (!checkOutside(pos) || pos.x < this.x) {
+            return 0;
+        } else if (pos.x < this.x + scale) {
+            return 1;
+        } else if (pos.x < this.x + (scale*3)/2) {
+            return 2;
+        } else if (pos.x < this.x + (scale*7)/4) {
+            return 3;
+        } else {
+            return 4;
+        }
+
     }
 
 
