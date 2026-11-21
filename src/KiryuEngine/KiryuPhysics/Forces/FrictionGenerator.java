@@ -27,19 +27,41 @@ public class FrictionGenerator implements ForceGenerator {
     ){
 
         double normalImpulse = contact.getNormalImpulse();
+
         double inverseMassSum = bodyA.getInverseMass() +
             bodyB.getInverseMass();
+
         Vector3 normal = contact.getNormal();
 
+        Vector3 radiusA = new Vector3(contact.getContactPoint())
+            .sub(bodyA.getCenterOfMassWorld());
+
+        Vector3 radiusB = new Vector3(contact.getContactPoint())
+            .sub(bodyB.getCenterOfMassWorld());
+
         // Relative velocity: B relative to A.
-        Vector3 relativeVelocity =
-            new Vector3(bodyB.getLinearVelocity())
-                .sub(bodyA.getLinearVelocity());
+        Vector3 velocityA = new Vector3(bodyA.getLinearVelocity())
+            .add(
+                new Vector3(bodyA.getAngularVelocity())
+                    .crossProduct(radiusA)
+            );
+
+        Vector3 velocityB = new Vector3(bodyB.getLinearVelocity())
+            .add(
+                new Vector3(bodyB.getAngularVelocity())
+                    .crossProduct(radiusB)
+            );
+
+        Vector3 relativeVelocity = new Vector3(velocityB).sub(velocityA);
 
         // Remove the normal component to obtain tangential velocity.
         // this is the velocity tangent to the contact point
         double velocityAlongNormal =
             relativeVelocity.dotProduct(normal);
+
+        if (velocityAlongNormal >= 0.0) {
+            return; // Bodies are already separating
+        }
 
         Vector3 tangent =
             new Vector3(relativeVelocity)
@@ -53,12 +75,6 @@ public class FrictionGenerator implements ForceGenerator {
 
         tangent.scale(1.0 / tangentLength);
 
-
-        Vector3 radiusA = new Vector3(contact.getContactPoint())
-            .sub(bodyA.getCenterOfMassWorld());
-
-        Vector3 radiusB = new Vector3(contact.getContactPoint())
-            .sub(bodyB.getCenterOfMassWorld());
 
         // Angular contribution.
         Vector3 angularA = bodyA.getInverseInertiaTensor()
@@ -81,15 +97,15 @@ public class FrictionGenerator implements ForceGenerator {
             -relativeVelocity.dotProduct(tangent) / effectiveInverseMass;
 
         // Average friction coefficients.
-        double staticFriction = (
+        double staticFriction = Math.sqrt(
             bodyA.getStaticFrictionCoefficient()
-                + bodyB.getStaticFrictionCoefficient()
-        ) * 0.5;
+                * bodyB.getStaticFrictionCoefficient()
+        );
 
-        double kineticFriction = (
+        double kineticFriction = Math.sqrt(
             bodyA.getKineticFrictionCoefficient()
-                + bodyB.getKineticFrictionCoefficient()
-        ) * 0.5;
+                * bodyB.getKineticFrictionCoefficient()
+        );
 
 
         double maxStaticFriction = normalImpulse * staticFriction;

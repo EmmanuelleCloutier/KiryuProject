@@ -377,15 +377,15 @@ public class World {
     double penetration = minimumDistance - distance;
 
     // Baumgarte stabilization parameters.
-    double slop = 0.1;
-    double percent = 0.8;
+    double slop = 0.01;
+    double percent = 0.2;
 
     if (penetration <= slop) {
       return;
     }
 
     double correctionMagnitude =
-        (penetration - slop) * percent / inverseMassSum;
+        Math.max(penetration - slop, 0.0)  / inverseMassSum * percent;
 
     Vector3 correction = new Vector3(contact.getNormal())
         .scale(correctionMagnitude);
@@ -421,17 +421,29 @@ public class World {
     Vector3 radiusB = new Vector3(contact.getContactPoint())
         .sub(bodyB.getCenterOfMassWorld());
 
-    Vector3 relativeVelocity = new Vector3(bodyA.getVelocityAtPoint(radiusA))
-        .sub(bodyB.getVelocityAtPoint(radiusB));
+    // Relative velocity: B relative to A.
+    Vector3 velocityA = new Vector3(bodyA.getLinearVelocity())
+        .add(
+            new Vector3(bodyA.getAngularVelocity())
+                .crossProduct(radiusA)
+        );
 
+    Vector3 velocityB = new Vector3(bodyB.getLinearVelocity())
+        .add(
+            new Vector3(bodyB.getAngularVelocity())
+                .crossProduct(radiusB)
+        );
+
+    Vector3 relativeVelocity = new Vector3(velocityB).sub(velocityA);
+
+    // Remove the normal component to obtain tangential velocity.
+    // this is the velocity tangent to the contact point
     double velocityAlongNormal =
         relativeVelocity.dotProduct(normal);
 
     if (velocityAlongNormal >= 0.0) {
-      contact.setNormalImpulse(0.0);
-      return;
+      return; // Bodies are already separating
     }
-
     // Angular contribution.
     Vector3 angularA =  bodyA.getInverseInertiaTensor()
         .multiplyVector(new Vector3(radiusA).crossProduct(normal));
@@ -451,8 +463,10 @@ public class World {
 
     double restitution = 0.0;
 
-    double impulseMagnitude =
-        -(1.0 + restitution) * velocityAlongNormal / effectiveInverseMass;
+    double impulseMagnitude = Math.max(
+        -(1.0 + restitution) * velocityAlongNormal / effectiveInverseMass,
+        0.0
+    );
 
     Vector3 impulse = new Vector3(normal)
         .scale(impulseMagnitude);
