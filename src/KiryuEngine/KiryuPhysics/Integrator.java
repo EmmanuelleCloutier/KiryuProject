@@ -94,6 +94,7 @@ public class Integrator {
       newRQuaternion.y = rigidBody.getQRotation().y + (newRQuaternion.y * 0.5f * deltaTime);
       newRQuaternion.z = rigidBody.getQRotation().z + (newRQuaternion.z * 0.5f * deltaTime);
 
+      newRQuaternion = newRQuaternion.normalize();
       rigidBody.setQRotation(newRQuaternion);
 
       //Mise à jour de la Matrice associée
@@ -103,12 +104,14 @@ public class Integrator {
 
       //Mise à jour de la matrice inverse d'inertie
       Matrix3 inverseR = newRMatrix.getInverse();
-      Matrix3 inverseInertiaTensor = new Matrix3(newRMatrix);
-      inverseInertiaTensor.multiplyMatrix(rigidBody.getInverseInertiaTensor());
       if (inverseR!=null) {
+        Matrix3 inverseInertiaTensor = new Matrix3(newRMatrix);
+        inverseInertiaTensor.multiplyMatrix(rigidBody.getInverseInertiaTensor());
+
         inverseInertiaTensor.multiplyMatrix(inverseR);
+        rigidBody.setInverseInertiaTensor(inverseInertiaTensor);
       }
-      rigidBody.setInverseInertiaTensor(inverseInertiaTensor);
+
   }
 
 

@@ -182,7 +182,7 @@ public class TP3GameManager {
 
             //Calcul de la trajectoire
             Vector3 endShootPosition = new Vector3(sketch.mouseX, sketch.mouseY, 0);
-            Vector3 shootForce = this.startShootPosition.sub(endShootPosition).scale(1000);
+            Vector3 shootForce = this.startShootPosition.sub(endShootPosition);
             this.projectile.hit(startShootPosition, shootForce);
 
             this.startShootPosition = null;

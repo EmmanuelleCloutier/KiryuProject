@@ -108,6 +108,7 @@ public class RigidBody {
    * Vector describing the angular velocity of the body
    */
   private Vector3 angularVelocity;
+
   /**
    * The Quaternion that describe the current rotation
    */
