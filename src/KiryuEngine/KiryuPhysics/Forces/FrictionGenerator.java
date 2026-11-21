@@ -27,19 +27,41 @@ public class FrictionGenerator implements ForceGenerator {
     ){
 
         double normalImpulse = contact.getNormalImpulse();
+
         double inverseMassSum = bodyA.getInverseMass() +
             bodyB.getInverseMass();
+
         Vector3 normal = contact.getNormal();
 
+        Vector3 radiusA = new Vector3(contact.getContactPoint())
+            .sub(bodyA.getCenterOfMassWorld());
+
+        Vector3 radiusB = new Vector3(contact.getContactPoint())
+            .sub(bodyB.getCenterOfMassWorld());
+
         // Relative velocity: B relative to A.
-        Vector3 relativeVelocity =
-            new Vector3(bodyB.getLinearVelocity())
-                .sub(bodyA.getLinearVelocity());
+        Vector3 velocityA = new Vector3(bodyA.getLinearVelocity())
+            .add(
+                new Vector3(bodyA.getAngularVelocity())
+                    .crossProduct(radiusA)
+            );
+
+        Vector3 velocityB = new Vector3(bodyB.getLinearVelocity())
+            .add(
+                new Vector3(bodyB.getAngularVelocity())
+                    .crossProduct(radiusB)
+            );
+
+        Vector3 relativeVelocity = new Vector3(velocityB).sub(velocityA);
 
         // Remove the normal component to obtain tangential velocity.
         // this is the velocity tangent to the contact point
         double velocityAlongNormal =
             relativeVelocity.dotProduct(normal);
+
+        if (velocityAlongNormal >= 0.0) {
+            return; // Bodies are already separating
+        }
 
         Vector3 tangent =
             new Vector3(relativeVelocity)
@@ -53,11 +75,28 @@ public class FrictionGenerator implements ForceGenerator {
 
         tangent.scale(1.0 / tangentLength);
 
-        //calculate the impulse needed to stop the sliding motion
-        double tangentImpulseMagnitude =
-            -relativeVelocity.dotProduct(tangent) / inverseMassSum;
 
-        //combine friction coefficients
+        // Angular contribution.
+        Vector3 angularA = bodyA.getInverseInertiaTensor()
+            .multiplyVector(new Vector3(radiusA).crossProduct(tangent));
+
+        Vector3 angularB = bodyB.getInverseInertiaTensor()
+            .multiplyVector(new Vector3(radiusB).crossProduct(tangent));
+
+        double angularEffect =
+            angularA.crossProduct(radiusA).dotProduct(tangent)
+                + angularB.crossProduct(radiusB).dotProduct(tangent);
+
+        double effectiveInverseMass = inverseMassSum + angularEffect;
+
+        if (effectiveInverseMass <= 0.0) {
+            return;
+        }
+
+        double frictionImpulseMagnitude =
+            -relativeVelocity.dotProduct(tangent) / effectiveInverseMass;
+
+        // Average friction coefficients.
         double staticFriction = Math.sqrt(
             bodyA.getStaticFrictionCoefficient()
                 * bodyB.getStaticFrictionCoefficient()
@@ -68,37 +107,57 @@ public class FrictionGenerator implements ForceGenerator {
                 * bodyB.getKineticFrictionCoefficient()
         );
 
-        //the impulse needed to break over static friction
-        double maxStaticImpulse = staticFriction * normalImpulse;
 
-        //if the tangent velocity is greater than the static friction
-        if (Math.abs(tangentImpulseMagnitude) > maxStaticImpulse) {
-            // this means the bodies are sliding:
-            // clamp to the kinetic friction.
-            tangentImpulseMagnitude =
-                // we get the direction on the velocity and inverse it
-                // either 1, 0 or -1, then we
-                -Math.signum(relativeVelocity.dotProduct(tangent))
-                    * kineticFriction * normalImpulse;
+        double maxStaticFriction = normalImpulse * staticFriction;
+
+        Vector3 frictionImpulse;
+
+        if (Math.abs(frictionImpulseMagnitude) <= maxStaticFriction) {
+
+            // Static friction.
+            frictionImpulse = new Vector3(tangent)
+                .scale(frictionImpulseMagnitude);
+
+        } else {
+
+            // Kinetic friction.
+            frictionImpulse = new Vector3(tangent)
+                .scale(-normalImpulse * kineticFriction);
         }
-
-        Vector3 frictionImpulse =
-            new Vector3(tangent).scale(tangentImpulseMagnitude);
 
 
         if (!bodyA.isStatic()) {
+
             bodyA.setLinearVelocity(
                 new Vector3(bodyA.getLinearVelocity())
-                    .sub(new Vector3(frictionImpulse)
-                        .scale(bodyA.getInverseMass()))
+                    .sub(new Vector3(frictionImpulse).scale(bodyA.getInverseMass()))
+            );
+
+            Vector3 angularImpulseA = new Vector3(radiusA)
+                .crossProduct(frictionImpulse)
+                .scale(-1.0);
+
+            bodyA.setAngularVelocity(
+                new Vector3(bodyA.getAngularVelocity())
+                    .add(bodyA.getInverseInertiaTensor()
+                        .multiplyVector(angularImpulseA))
             );
         }
 
         if (!bodyB.isStatic()) {
+
             bodyB.setLinearVelocity(
                 new Vector3(bodyB.getLinearVelocity())
-                    .add(new Vector3(frictionImpulse)
-                        .scale(bodyB.getInverseMass()))
+                    .add(new Vector3(frictionImpulse).scale(bodyB.getInverseMass()))
+            );
+
+            Vector3 angularImpulseB = new Vector3(radiusB)
+                .crossProduct(frictionImpulse);
+
+            bodyB.setAngularVelocity(
+                new Vector3(bodyB.getAngularVelocity())
+                    .add(bodyB.getInverseInertiaTensor()
+                        .multiplyVector(angularImpulseB))
             );
         }
     }

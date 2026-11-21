@@ -351,35 +351,11 @@ public class World {
       return;
     }
 
-    resolvePenetration(
-        bodyA,
-        bodyB,
-        contact,
-        inverseMassSum
-    );
+    resolvePenetration(bodyA, bodyB, contact, inverseMassSum);
 
-    Vector3 normal = contact.getNormal();
+    resolveContactImpulse(bodyA, bodyB, contact, inverseMassSum);
 
-    Vector3 radiusA = new Vector3(contact.getContactPoint())
-        .sub(bodyA.getCenterOfMassWorld());
-
-    Vector3 radiusB = new Vector3(contact.getContactPoint())
-        .sub(bodyB.getCenterOfMassWorld());
-
-    Vector3 relativeVelocity = new Vector3(bodyA.getVelocityAtPoint(radiusA))
-        .sub(bodyB.getVelocityAtPoint(radiusB));
-
-    Vector3[] vectors = {
-        normal,
-        radiusA,
-        radiusB,
-        relativeVelocity
-    };
-
-
-    resolveLinearImpulse(bodyA, bodyB, contact, inverseMassSum, vectors);
-
-    resolveFrictionImpulse(bodyA, bodyB, contact, inverseMassSum, vectors);
+    frictionGenerator.applyForce(bodyA,bodyB,contact);
 
     bodyA.onCollision(bodyB);
     bodyB.onCollision(bodyA);
@@ -401,15 +377,15 @@ public class World {
     double penetration = minimumDistance - distance;
 
     // Baumgarte stabilization parameters.
-    double slop = 0.1;
-    double percent = 0.8;
+    double slop = 0.01;
+    double percent = 0.2;
 
     if (penetration <= slop) {
       return;
     }
 
     double correctionMagnitude =
-        (penetration - slop) * percent / inverseMassSum;
+        Math.max(penetration - slop, 0.0)  / inverseMassSum * percent;
 
     Vector3 correction = new Vector3(contact.getNormal())
         .scale(correctionMagnitude);
@@ -431,26 +407,43 @@ public class World {
     }
   }
 
-  public void resolveLinearImpulse(
+  public void resolveContactImpulse(
       RigidBody bodyA,
       RigidBody bodyB,
       Contact contact,
-      double inverseMassSum,
-      Vector3[] vectors
+      double inverseMassSum
   ){
-    Vector3 normal = vectors[0];
-    Vector3 radiusA = vectors[1];
-    Vector3 radiusB = vectors[2];
-    Vector3 relativeVelocity = vectors[3];
+    Vector3 normal = contact.getNormal();
 
+    Vector3 radiusA = new Vector3(contact.getContactPoint())
+        .sub(bodyA.getCenterOfMassWorld());
+
+    Vector3 radiusB = new Vector3(contact.getContactPoint())
+        .sub(bodyB.getCenterOfMassWorld());
+
+    // Relative velocity: B relative to A.
+    Vector3 velocityA = new Vector3(bodyA.getLinearVelocity())
+        .add(
+            new Vector3(bodyA.getAngularVelocity())
+                .crossProduct(radiusA)
+        );
+
+    Vector3 velocityB = new Vector3(bodyB.getLinearVelocity())
+        .add(
+            new Vector3(bodyB.getAngularVelocity())
+                .crossProduct(radiusB)
+        );
+
+    Vector3 relativeVelocity = new Vector3(velocityB).sub(velocityA);
+
+    // Remove the normal component to obtain tangential velocity.
+    // this is the velocity tangent to the contact point
     double velocityAlongNormal =
         relativeVelocity.dotProduct(normal);
 
     if (velocityAlongNormal >= 0.0) {
-      contact.setNormalImpulse(0.0);
-      return;
+      return; // Bodies are already separating
     }
-
     // Angular contribution.
     Vector3 angularA =  bodyA.getInverseInertiaTensor()
         .multiplyVector(new Vector3(radiusA).crossProduct(normal));
@@ -470,8 +463,10 @@ public class World {
 
     double restitution = 0.0;
 
-    double impulseMagnitude =
-        -(1.0 + restitution) * velocityAlongNormal / effectiveInverseMass;
+    double impulseMagnitude = Math.max(
+        -(1.0 + restitution) * velocityAlongNormal / effectiveInverseMass,
+        0.0
+    );
 
     Vector3 impulse = new Vector3(normal)
         .scale(impulseMagnitude);
@@ -480,84 +475,6 @@ public class World {
 
     contact.setNormalImpulse(impulseMagnitude);
 
-  }
-
-  private void resolveFrictionImpulse(
-      RigidBody bodyA,
-      RigidBody bodyB,
-      Contact contact,
-      double inverseMassSum,
-      Vector3[] vectors
-  ) {
-    Vector3 normal = vectors[0];
-    Vector3 radiusA = vectors[1];
-    Vector3 radiusB = vectors[2];
-    Vector3 relativeVelocity = vectors[3];
-
-    // Remove the normal component.
-    Vector3 tangent = new Vector3(relativeVelocity)
-        .sub(new Vector3(normal)
-            .scale(relativeVelocity.dotProduct(normal)));
-
-    double tangentLength = tangent.getLength();
-
-    if (tangentLength < 1e-8) {
-      return;
-    }
-
-    tangent.scale(1.0 / tangentLength);
-
-    // Angular contribution.
-    Vector3 angularA = bodyA.getInverseInertiaTensor()
-        .multiplyVector(new Vector3(radiusA).crossProduct(tangent));
-
-    Vector3 angularB = bodyB.getInverseInertiaTensor()
-        .multiplyVector(new Vector3(radiusB).crossProduct(tangent));
-
-    double angularEffect =
-        angularA.crossProduct(radiusA).dotProduct(tangent)
-            + angularB.crossProduct(radiusB).dotProduct(tangent);
-
-    double effectiveInverseMass = inverseMassSum + angularEffect;
-
-    if (effectiveInverseMass <= 0.0) {
-      return;
-    }
-
-    double frictionImpulseMagnitude =
-        -relativeVelocity.dotProduct(tangent) / effectiveInverseMass;
-
-    // Average friction coefficients.
-    double staticFriction = (
-        bodyA.getStaticFrictionCoefficient()
-            + bodyB.getStaticFrictionCoefficient()
-    ) * 0.5;
-
-    double kineticFriction = (
-        bodyA.getKineticFrictionCoefficient()
-            + bodyB.getKineticFrictionCoefficient()
-    ) * 0.5;
-
-    double normalImpulse = contact.getNormalImpulse();
-
-    double maxStaticFriction = normalImpulse * staticFriction;
-
-    Vector3 frictionImpulse;
-
-    if (Math.abs(frictionImpulseMagnitude) <= maxStaticFriction) {
-
-      // Static friction.
-      frictionImpulse = new Vector3(tangent)
-          .scale(frictionImpulseMagnitude);
-
-    } else {
-
-      // Kinetic friction.
-      frictionImpulse = new Vector3(tangent)
-          .scale(-normalImpulse * kineticFriction);
-    }
-
-    applyImpulse(bodyA, bodyB, radiusA, radiusB, frictionImpulse);
   }
 
   private void applyImpulse(
