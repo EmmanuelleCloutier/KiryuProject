@@ -304,6 +304,9 @@ public class RigidBody {
   public boolean isStatic() {
     return isStatic;
   }
+  public boolean isRotating() {
+    return isRotating;
+  }
   /**
    *  @return <span style="color: orange;">ArrayList</span>&lt;<span style="color: yellow;">{@link Contact}</span>&gt;
    * - List of contacts affecting this RigidBody
