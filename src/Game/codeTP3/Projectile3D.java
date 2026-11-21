@@ -14,16 +14,15 @@ public class Projectile3D {
 
     public Projectile3D(
         World world,
-        double mass,
         Vector3 pos,
-        Collider collider,
+        Projectile3DType ptype,
         Mesh mesh
     ) {
 
-        this.rigidBody = new RigidBody(mass,
+        this.rigidBody = new RigidBody(ptype.mass,
                 pos,
                 Vector3.ZERO_VECTOR.copy(),
-                collider);
+                ptype.collider);
 
         world.addRigidBody(this.rigidBody);
 

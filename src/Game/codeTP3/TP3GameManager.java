@@ -52,10 +52,11 @@ public class TP3GameManager {
     }
 
     public void setupMesh(){
-        meshs[0] = new Mesh("src/Game/data/models/cannonball/cannonball.obj");
+
+        meshs[0] = new Mesh("src/Game/data/models/basketball/Basketball.obj");
         meshRenderer.addMesh(meshs[0]);
 
-        meshs[1] = new Mesh("src/Game/data/models/basketball/Basketball.obj");
+        meshs[1] = new Mesh("src/Game/data/models/cannonball/cannonball.obj");
         meshRenderer.addMesh(meshs[1]);
 
         meshs[2] = new Mesh("src/Game/data/models/laser/laser.obj");
@@ -149,9 +150,9 @@ public class TP3GameManager {
         }
 
         this.projectile = new Projectile3D(this.world,
-                5,
                 this.projectileOrigin,
-                new SphereCollider2D(10), meshs[currentMesh]);
+                Projectile3DType.BALL,
+                meshs[currentMesh]);
         this.projectile.addForce(new Vector3(10000,0,0));
 
     }
