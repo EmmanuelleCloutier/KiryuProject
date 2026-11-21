@@ -71,6 +71,7 @@ public class TP3GameManager {
         world.updatePhysics(deltaTime);
 
         //Si le projectile sort du terrain on calcul le score avec la distance
+        /**
         if (this.projectile != null) {
             if (terrain.checkOutside(new Vector3(0,0,0))) {
                 double distance = this.projectile.getPos().distance(this.projectileOrigin);
@@ -79,6 +80,7 @@ public class TP3GameManager {
                 this.projectile = null;
             }
         }
+         */
 
 
     }
