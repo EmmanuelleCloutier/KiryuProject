@@ -12,6 +12,7 @@ public class Projectile3D {
 
     private final Mesh mesh;
     private final RigidBody rigidBody;
+    private Vector3 referencePoint; // point utilisé pour dessiner la trajectoire du point de contact
 
     public Projectile3D(
         World world,
@@ -38,7 +39,7 @@ public class Projectile3D {
     }
 
     public void hit(Vector3 contact, Vector3 force) {
-        addForce(force.scale(100));
+        addForce(force.scale(400));
         this.rigidBody.addTorque(contact, force);
     }
 
@@ -59,5 +60,23 @@ public class Projectile3D {
                 this.rigidBody.getPosition(),
                 this.rigidBody.getQRotation()
         );
+    }
+
+    /**
+     * Initialise le point de référence.
+     * @param worldPosition Coordonnées globales du point de référence
+     */
+    public void setReferencePoint(Vector3 worldPosition) {
+        referencePoint = new Vector3(worldPosition).sub(getPos());
+
+        referencePoint = rigidBody.getQRotation().inverse().rotate(referencePoint);
+    }
+
+    /**
+     * Renvoie la position globale du point de référence selon la position et la rotation du projectile.
+     * @return Coordonnées du point de référence.
+     */
+    public Vector3 getReferencePoint() {
+        return new Vector3(getPos()).add(rigidBody.getQRotation().rotate(referencePoint));
     }
 }

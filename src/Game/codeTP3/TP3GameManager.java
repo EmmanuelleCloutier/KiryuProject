@@ -88,10 +88,10 @@ public class TP3GameManager {
 
             compteur++;
             if (compteur > 100) {
-                this.projectileTrace.add(this.projectile.getPos());
+                this.projectileTrace.add(projectile.getReferencePoint());
             }
 
-            if (terrain.checkOnGround(this.projectile.getPos())) {
+            if (terrain.checkOnGround(this.projectile.getPos()) || isProjectileOutsideScreen()) {
 
                 score += this.terrain.computeScore(this.projectile.getPos());
                 this.projectile.removeProjectile(this.world);
@@ -182,7 +182,6 @@ public class TP3GameManager {
 
     //Shoot the projectiles
     public void shoot() {
-
         this.projectileTrace.clear();
 
         if (this.projectile != null) {
@@ -206,38 +205,36 @@ public class TP3GameManager {
 
             //Calcul de la trajectoire
             Vector3 endShootPosition = new Vector3(sketch.mouseX, sketch.mouseY, 0);
-            Vector3 shootForce = this.startShootPosition.sub(endShootPosition);
+            Vector3 shootForce = this.startShootPosition.copy().sub(endShootPosition);
             this.projectile.hit(startShootPosition, shootForce);
+            this.projectile.setReferencePoint(startShootPosition);
 
             this.startShootPosition = null;
 
         }
-
     }
 
     public void switchProjectile() {
         currentMesh = (currentMesh + 1)%3;
-
     }
 
-
-
     public void drawProjBeforeShoot(){
-
-
         if (startShootPosition == null) rotation+=1;
         Quaternion quat = Quaternion.fromAxisAngle(
             Vector3.UP_VECTOR.copy(),
             rotation
         );
 
-
         meshRenderer.drawMesh(
                 meshs[currentMesh],
             this.projectileOrigin,//new Vector3(sketch.width/2f + 100,sketch.height/2f,0),
             quat
         );
-
     }
 
+    private boolean isProjectileOutsideScreen() {
+        Vector3 position = projectile.getPos();
+
+        return (position.x < 0) || (position.x > sketch.width) || (position.y > sketch.height);
+    }
 }

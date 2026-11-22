@@ -81,7 +81,6 @@ public class Terrain {
 
     }
 
-
     /**
      * retourne si le projectile est à l'intérieur du terrain (il n'a pas dépassé le fond du terrain
      * @param pos : la position du projectile
