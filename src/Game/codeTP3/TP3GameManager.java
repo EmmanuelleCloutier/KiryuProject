@@ -7,29 +7,42 @@ import KiryuEngine.KiryuRendering.ThreeDimentional.Mesh;
 import KiryuEngine.KiryuRendering.ThreeDimentional.MeshRenderer;
 import processing.core.PApplet;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class TP3GameManager {
 
     private final PApplet sketch;
     private final World world;
 
-
+    //Mesh
     MeshRenderer meshRenderer;
+    Mesh [] meshs = new Mesh[3];
+    Projectile3DType [] projectilesType = new Projectile3DType[3];
+    int currentMesh = 0;
 
 
-    private final Vector3 projectileOrigin = Vector3.ZERO_VECTOR.copy(); //Position initiale du projectile
+    private final Vector3 projectileOrigin; //Position initiale du projectile
+
+    private Vector3 startShootPosition;
 
     private Terrain terrain;
     private Projectile3D projectile = null; //projectile lancé
     private int score = 0;
+
+    float rotation = 0;
+
+    private List<Vector3> projectileTrace = new ArrayList<>();
+    private int compteur = 0;
 
     public TP3GameManager(PApplet sketch) {
         this.sketch = sketch;
 
         this.terrain = new Terrain(
             400,
-            sketch.width/2,
-            sketch.height * 0.75f
+            sketch.width * 0.35f,
+            sketch.height/2
         );
 
         world = new World();
@@ -37,28 +50,61 @@ public class TP3GameManager {
 
         meshRenderer = new MeshRenderer(this.sketch);
 
-        testsetup();
+        this.projectileOrigin = new Vector3(sketch.width*0.20f,sketch.height/2f, 0);
+
+        setupMesh();
+
+        //shoot();
+
 
     }
 
+    public void setupMesh(){
+
+        meshs[0] = new Mesh("src/Game/data/models/basketball/Basketball.obj");
+        meshRenderer.addMesh(meshs[0]);
+        projectilesType[0] = Projectile3DType.BALL;
+
+
+        meshs[1] = new Mesh("src/Game/data/models/cannonball/cannonball.obj");
+        meshRenderer.addMesh(meshs[1]);
+        projectilesType[1] = Projectile3DType.CANNONBALL;
+
+        meshs[2] = new Mesh("src/Game/data/models/laser/laser.obj");
+        meshRenderer.addMesh(meshs[2]);
+        projectilesType[2] = Projectile3DType.BAR;
+
+    }
+
+//Update
 
     public void update(float deltaTime) {
 
         world.updatePhysics(deltaTime);
 
         //Si le projectile sort du terrain on calcul le score avec la distance
+
         if (this.projectile != null) {
-            if (terrain.checkOutside(new Vector3(0,0,0))) {
-                double distance = this.projectile.getPos().distance(this.projectileOrigin);
-                score += Math.round(distance);
+
+            compteur++;
+            if (compteur > 100) {
+                this.projectileTrace.add(projectile.getReferencePoint());
+            }
+
+            if (terrain.checkOnGround(this.projectile.getPos()) || isProjectileOutsideScreen()) {
+
+                score += this.terrain.computeScore(this.projectile.getPos());
                 this.projectile.removeProjectile(this.world);
                 this.projectile = null;
             }
+
         }
+
 
 
     }
 
+//draw
 
     public void draw() {
 
@@ -67,7 +113,7 @@ public class TP3GameManager {
 
         sketch.camera(
             sketch.width/2,
-            sketch.mouseY,
+                sketch.height/2,
             1000,
             sketch.width/2,
             sketch.height/2,
@@ -77,17 +123,27 @@ public class TP3GameManager {
             0
         );
 
-        testdraw();
-
-
-
-
 
 
         //draw le terrain
         terrain.draw_terrain(sketch);
 
         //draw the projectile
+        if (this.projectile != null) {
+            this.projectile.drawProjectile(this.meshRenderer);
+        } else {
+            drawProjBeforeShoot();
+        }
+
+        //draw trace
+        for (Vector3 v : projectileTrace) {
+            sketch.pushMatrix();
+            sketch.translate((float)v.x, (float)v.y, (float)v.z);
+            sketch.sphere(2);
+            sketch.popMatrix();
+        }
+
+
 
         //draw the ui
         this.drawUI();
@@ -108,57 +164,77 @@ public class TP3GameManager {
         sketch.fill(255);
         sketch.text(scoreText, sketch.width/2, 32);
 
-
+        //Tracer la visé
+        if (this.startShootPosition != null) {
+            sketch.line((float)this.startShootPosition.x, (float)this.startShootPosition.y, sketch.mouseX, sketch.mouseY);
+        }
 
 
         sketch.hint(sketch.ENABLE_DEPTH_TEST);
     }
 
-    Mesh cannonball;
-    Mesh basketball;
-    Mesh laser;
-    public void testsetup(){
-        cannonball = new Mesh("src/Game/data/models/cannonball/cannonball.obj");
-        meshRenderer.addMesh(cannonball);
 
-        basketball = new Mesh("src/Game/data/models/basketball/Basketball.obj");
-        meshRenderer.addMesh(basketball);
+    //Input
 
-        laser = new Mesh("src/Game/data/models/laser/laser.obj");
-        meshRenderer.addMesh(laser);
-
+    public void startShoot() {
+        this.startShootPosition = new  Vector3(sketch.mouseX, sketch.mouseY, 0);
     }
 
-    float rotation = 0;
-    public void testdraw(){
+    //Shoot the projectiles
+    public void shoot() {
+        this.projectileTrace.clear();
 
+        if (this.projectile != null) {
+            this.projectile.removeProjectile(this.world);
+        }
 
+        if (this.startShootPosition != null) {
 
-        rotation+=1;
+            //Initial Rotation
+            Quaternion quat = Quaternion.fromAxisAngle(
+                    Vector3.UP_VECTOR.copy(),
+                    rotation
+            );
+
+            this.projectile = new Projectile3D(this.world,
+                    this.projectileOrigin,
+                    quat,
+                    Projectile3DType.BALL,
+                    meshs[currentMesh]
+            );
+
+            //Calcul de la trajectoire
+            Vector3 endShootPosition = new Vector3(sketch.mouseX, sketch.mouseY, 0);
+            Vector3 shootForce = this.startShootPosition.copy().sub(endShootPosition);
+            this.projectile.hit(startShootPosition, shootForce);
+            this.projectile.setReferencePoint(startShootPosition);
+
+            this.startShootPosition = null;
+
+        }
+    }
+
+    public void switchProjectile() {
+        currentMesh = (currentMesh + 1)%3;
+    }
+
+    public void drawProjBeforeShoot(){
+        if (startShootPosition == null) rotation+=1;
         Quaternion quat = Quaternion.fromAxisAngle(
             Vector3.UP_VECTOR.copy(),
             rotation
         );
 
         meshRenderer.drawMesh(
-            cannonball,
-            new Vector3(sketch.width/2f,sketch.height/2f,100),
+                meshs[currentMesh],
+            this.projectileOrigin,//new Vector3(sketch.width/2f + 100,sketch.height/2f,0),
             quat
         );
-
-        meshRenderer.drawMesh(
-            basketball,
-            new Vector3(sketch.width/2f - 125,sketch.height/2f,100),
-            quat
-        );
-
-
-        meshRenderer.drawMesh(
-            laser,
-            new Vector3(sketch.width/2f + 125,sketch.height/2f,100),
-            quat
-        );
-
     }
 
+    private boolean isProjectileOutsideScreen() {
+        Vector3 position = projectile.getPos();
+
+        return (position.x < 0) || (position.x > sketch.width) || (position.y > sketch.height);
+    }
 }

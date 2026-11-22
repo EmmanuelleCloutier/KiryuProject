@@ -314,4 +314,18 @@ public class Matrix3 {
     );
   }
 
+  @Override
+  public String toString(){
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("Matrix3{");
+    for (int i = 0; i < elements.length; i++){
+      sb .append(this.elements[i] + ", ");
+    }
+    sb.append("}");
+    return sb.toString();
+
+  }
+
+
 }

@@ -112,7 +112,28 @@ public class KiryuGame extends PApplet {
                 break;
 
             case LEVEL_3:
-                // Future keyboard inputs
+                level3.mousePressed();
+                break;
+        }
+    }
+
+    @Override
+    public void mouseReleased() {
+
+        switch (currentState) {
+
+            case MENU:
+                break;
+
+            case LEVEL_1:
+                break;
+
+            case LEVEL_2:
+                // Future mouse inputs
+                break;
+
+            case LEVEL_3:
+                level3.mouseReleased();
                 break;
         }
     }
@@ -138,7 +159,7 @@ public class KiryuGame extends PApplet {
                 break;
 
             case LEVEL_3:
-                // Future keyboard inputs
+                level3.keyPressed(key);
                 break;
             default:
                 break;
